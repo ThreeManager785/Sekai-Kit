@@ -208,6 +208,7 @@ public final class DoriOfflineAsset: Sendable {
         case movie
         case sound
         case unsupported
+        case shared
     }
     
     public struct UpdateCheckerResult: Sendable {

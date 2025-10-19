@@ -66,8 +66,8 @@ func fetchNewestID() async -> Int? {
 func analyzePathBranch(_ path: String) -> String {
     if pathIsInUnavailableBranch(path) {
         return "unsupported"
-    } else if path.hasPrefix("video") {
-        return "video"
+    } else if path.hasPrefix("movie") {
+        return "movie"
     } else if path.hasPrefix("sound") {
         return "sound"
     } else {

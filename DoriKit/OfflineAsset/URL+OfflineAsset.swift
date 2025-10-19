@@ -100,7 +100,7 @@ extension URL {
             let separatedPath = basePath.split(separator: "/")
             guard separatedPath.count > 3 else { return self } // To prevent out of index
             guard let locale = DoriAPI.Locale(rawValue: String(separatedPath[1])) else { return self }
-            let resourceType = resourceType(from: String(separatedPath[2]), next: separatedPath.dropFirst(3).map { String($0) })
+            let resourceType = analyzePathBranch(separatedPath.dropFirst().dropFirst().joined(separator: "/"))
             let localPath = separatedPath.dropFirst().joined(separator: "/") // removes 'assets/'
             if let url = checkedOutFileURL(base: localPath, in: locale, of: resourceType) {
                 return url
@@ -117,20 +117,74 @@ extension URL {
 
 #if canImport(DoriAssetShims)
 
-private func resourceType(from recognizer: String, next: [String]) -> DoriOfflineAsset.ResourceType {
-    switch recognizer {
-    case "movie": .movie
-    case "sound": .sound
-    case "characters":
-        if let nextRecognizer = next.first,
-           nextRecognizer == "ingameresourceset" {
-            .unsupported
-        } else {
-            .basic
+func analyzePathBranch(_ path: String) -> DoriOfflineAsset.ResourceType {
+    if pathIsInUnavailableBranch(path) {
+        return .unsupported
+    } else if false { //FIXME: Shared Determination Logic
+        return .shared
+    } else if path.hasPrefix("movie") {
+        return .movie
+    } else if path.hasPrefix("sound") {
+        return .sound
+    } else {
+        return .basic
+    }
+    
+    func pathIsInUnavailableBranch(_ path: String) -> Bool {
+        let unavailablePaths = [
+            "characters/ingameresourceset",
+            "live2d",
+            "musicscore",
+            "pickupsituation",
+            "star3d",
+            "additional_music",
+            "ani_degree_aniver_8.5th_rip",
+            "animationbg",
+            "appeal",
+            "changedstamp",
+            "character_name_rip",
+            "character_profile_data_rip",
+            "characterprofile",
+            "commenthomebanner_rip",
+            "effect",
+            "eventcommon_rip",
+            "friendinvite",
+            "genericanimation",
+            "graphicalinfo",
+            "homebanner_rip",
+            "limitedmission",
+            "limitedpage",
+            "loading",
+            "map",
+            "memorial",
+            "multiplay",
+            "newsituationintroduction_rip",
+            "newyearholidays",
+            "popipa_10th_rip",
+            "speciallottery",
+            "specialtraining",
+            "starshop",
+            "thumb/billinggoods",
+            "thumb/characterrank_exp_rip",
+            "thumb/costume3ddress",
+            "thumb/costume3dhairstyle",
+            "thumb/limiteditem_rip",
+            "thumb/selfintroductionepisode_rip",
+            "thumbnail",
+            "title",
+            "tutorial_rip",
+            "worldmap_rip",
+            "april",
+            "button_"
+        ]
+        for unavailablePath in unavailablePaths {
+            if path.hasPrefix(unavailablePath) {
+                return true
+            }
         }
-    case "live2d", "star3d", "musicscore", "pickupsituation": .unsupported
-    default: .basic
+        return false
     }
 }
+
 
 #endif
