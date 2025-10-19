@@ -18,6 +18,8 @@ import Foundation
 internal import Alamofire
 internal import SwiftyJSON
 
+private let placeholderURL = URL(string: "placeholder://nil")!
+
 extension DoriAPI {
     /// Request and fetch data about community posts in Bandori.
     ///
@@ -35,9 +37,16 @@ extension DoriAPI {
                         total: respJSON["count"].intValue,
                         currentOffset: request.offset,
                         content: respJSON["posts"].map {
-                            var storyMetadata: Post.StoryMetadata? = nil
+                            var replyInfo: Post.ReplyInfo? = nil
+                            if let id = $0.1["repliesTo"]["id"].int {
+                                replyInfo = .init(
+                                    id: id,
+                                    author: $0.1["repliesTo"]["author"].stringValue
+                                )
+                            }
                             let categoryName = Category(rawValue: $0.1["categoryName"].stringValue) ?? .selfPost
                             let categoryID = $0.1["categoryId"].stringValue
+                            var storyMetadata: Post.StoryMetadata? = nil
                             if categoryName == .selfPost && categoryID == "story" {
                                 storyMetadata = .init(
                                     storyType: $0.1["storyType"].intValue,
@@ -47,23 +56,6 @@ extension DoriAPI {
                                     warningDeath: $0.1["warningDeath"].boolValue,
                                     warningNonCon: $0.1["warningNonCon"].boolValue,
                                     warningUnderage: $0.1["warningUnderage"].boolValue,
-                                    time: .init(timeIntervalSince1970: $0.1["time"].doubleValue / 1000),
-                                    author: .init(
-                                        username: $0.1["author"]["username"].stringValue,
-                                        nickname: $0.1["author"]["nickname"].stringValue,
-                                        titles: $0.1["author"]["titles"].map {
-                                            .init(
-                                                id: $0.1["id"].intValue,
-                                                type: $0.1["type"].stringValue,
-                                                server: .init(rawIntValue: $0.1["server"].intValue) ?? .jp
-                                            )
-                                        }
-                                    ),
-                                    likes: $0.1["likes"].intValue,
-                                    liked: $0.1["liked"].boolValue,
-                                    tags: $0.1["tags"].compactMap {
-                                        .init(parsing: $0.1)
-                                    },
                                     storyParent: $0.1["storyParent"]["id"].int != nil ? .init(
                                         id: $0.1["storyParent"]["id"].intValue,
                                         title: $0.1["storyParent"]["title"].stringValue,
@@ -76,13 +68,48 @@ extension DoriAPI {
                                     ) : nil
                                 )
                             }
+                            var chartMetadata: Post.ChartMetadata? = nil
+                            if categoryName == .selfPost && categoryID == "chart" {
+                                chartMetadata = .init(
+                                    song: $0.1["song"]["type"].stringValue == "bandori" ? .bandori(
+                                        $0.1["song"]["id"].intValue
+                                    ) : .custom(
+                                        .init(
+                                            audio: .init(string: $0.1["song"]["audio"].stringValue) ?? placeholderURL,
+                                            cover: .init(string: $0.1["song"]["cover"].stringValue) ?? placeholderURL
+                                        )
+                                    ),
+                                    artist: $0.1["artists"].stringValue,
+                                    difficulty: .init(rawValue: $0.1["diff"].intValue) ?? .easy,
+                                    level: $0.1["level"].intValue
+                                )
+                            }
                             return .init(
                                 id: $0.1["id"].intValue,
                                 categoryName: categoryName,
                                 categoryID: categoryID,
                                 title: $0.1["title"].stringValue,
                                 content: .init(parsing: $0.1["content"]),
-                                storyMetadata: storyMetadata
+                                time: .init(timeIntervalSince1970: $0.1["time"].doubleValue / 1000),
+                                author: .init(
+                                    username: $0.1["author"]["username"].stringValue,
+                                    nickname: $0.1["author"]["nickname"].stringValue,
+                                    titles: $0.1["author"]["titles"].map {
+                                        .init(
+                                            id: $0.1["id"].intValue,
+                                            type: $0.1["type"].stringValue,
+                                            server: .init(rawIntValue: $0.1["server"].intValue) ?? .jp
+                                        )
+                                    }
+                                ),
+                                likes: $0.1["likes"].intValue,
+                                liked: $0.1["liked"].boolValue,
+                                tags: $0.1["tags"].compactMap {
+                                    .init(parsing: $0.1)
+                                },
+                                repliesTo: replyInfo,
+                                storyMetadata: storyMetadata,
+                                chartMetadata: chartMetadata
                             )
                         }
                     )
@@ -116,8 +143,59 @@ extension DoriAPI.Post {
         public var categoryID: String
         public var title: String
         public var content: RichContentGroup
+        public var time: Date // Int64(JSON) -> Date(Swift)
+        public var author: Author
+        public var likes: Int
+        public var liked: Bool
+        public var tags: [Tag]
+        public var repliesTo: ReplyInfo?
         public var storyMetadata: StoryMetadata?
+        public var chartMetadata: ChartMetadata?
         
+        public struct Author: Sendable, Hashable {
+            public var username: String
+            public var nickname: String
+            public var titles: [Title]
+            
+            public struct Title: Sendable, Identifiable, Hashable {
+                public var id: Int
+                public var type: String
+                public var server: DoriAPI.Locale // Int(JSON) -> Locale(Swift)
+            }
+        }
+        public enum Tag: Sendable, Hashable {
+            case text(String)
+            case character(Int) // String(JSON) -> Int(Swift) CharacterID
+            case card(Int) // String(JSON) -> Int(Swift) CardID
+            
+            internal init?(parsing json: JSON) {
+                if let type = json["type"].string {
+                    switch type {
+                    case "text":
+                        self = .text(json["data"].stringValue)
+                    case "character":
+                        if let id = Int(json["data"].stringValue) {
+                            self = .character(id)
+                        } else {
+                            return nil
+                        }
+                    case "card":
+                        if let id = Int(json["data"].stringValue) {
+                            self = .card(id)
+                        } else {
+                            return nil
+                        }
+                    default: return nil
+                    }
+                } else {
+                    return nil
+                }
+            }
+        }
+        public struct ReplyInfo: Sendable, Identifiable, Hashable {
+            public var id: Int
+            public var author: String
+        }
         public struct StoryMetadata: Sendable, Hashable {
             public var storyType: Int
             public var summary: String
@@ -126,11 +204,6 @@ extension DoriAPI.Post {
             public var warningDeath: Bool
             public var warningNonCon: Bool
             public var warningUnderage: Bool
-            public var time: Date // Int64(JSON) -> Date(Swift)
-            public var author: Author
-            public var likes: Int
-            public var liked: Bool
-            public var tags: [Tag]
             public var storyParent: StoryParent?
             
             public enum AgeRating: Int, Sendable, Hashable {
@@ -138,46 +211,6 @@ extension DoriAPI.Post {
                 case teenAndUp
                 case mature
                 case explicit
-            }
-            public struct Author: Sendable, Hashable {
-                public var username: String
-                public var nickname: String
-                public var titles: [Title]
-                
-                public struct Title: Sendable, Identifiable, Hashable {
-                    public var id: Int
-                    public var type: String
-                    public var server: DoriAPI.Locale // Int(JSON) -> Locale(Swift)
-                }
-            }
-            public enum Tag: Sendable, Hashable {
-                case text(String)
-                case character(Int) // String(JSON) -> Int(Swift) CharacterID
-                case card(Int) // String(JSON) -> Int(Swift) CardID
-                
-                internal init?(parsing json: JSON) {
-                    if let type = json["type"].string {
-                        switch type {
-                        case "text":
-                            self = .text(json["data"].stringValue)
-                        case "character":
-                            if let id = Int(json["data"].stringValue) {
-                                self = .character(id)
-                            } else {
-                                return nil
-                            }
-                        case "card":
-                            if let id = Int(json["data"].stringValue) {
-                                self = .card(id)
-                            } else {
-                                return nil
-                            }
-                        default: return nil
-                        }
-                    } else {
-                        return nil
-                    }
-                }
             }
             public struct StoryParent: Sendable, Identifiable, Hashable {
                 public var id: Int
@@ -188,6 +221,22 @@ extension DoriAPI.Post {
                 public var warningDeath: Bool
                 public var warningNonCon: Bool
                 public var warningUnderage: Bool
+            }
+        }
+        public struct ChartMetadata: Sendable, Hashable {
+            public var song: Song
+            public var artist: String
+            public var difficulty: DoriAPI.Song.DifficultyType // Int(JSON) -> ~(Swift)
+            public var level: Int
+            
+            public enum Song: Sendable, Hashable {
+                case bandori(Int) // ID
+                case custom(CustomData)
+                
+                public struct CustomData: Sendable, Hashable {
+                    public var audio: URL
+                    public var cover: URL
+                }
             }
         }
     }
