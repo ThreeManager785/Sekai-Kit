@@ -68,6 +68,7 @@
 		8C3264042E3B760100081F4F /* PreCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264032E3B75FF00081F4F /* PreCache.swift */; };
 		8C3264062E3C69C900081F4F /* FrontendGacha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264052E3C69C000081F4F /* FrontendGacha.swift */; };
 		8C32F31C2E8D61F0002D183A /* NetworkCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C32F31B2E8D61E9002D183A /* NetworkCache.swift */; };
+		8C3D4E7A2EA671240034E831 /* FrontendPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3D4E792EA6711E0034E831 /* FrontendPost.swift */; };
 		8C3D684E2EA6092F0034E831 /* RichContentMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3D684D2EA6092A0034E831 /* RichContentMarkdown.swift */; };
 		8C4C89412E620C63007F1E9F /* CopyOnWrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */; };
 		8C4C89432E620EC9007F1E9F /* CopyOnWriteMacro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */; };
@@ -287,6 +288,7 @@
 		8C3264032E3B75FF00081F4F /* PreCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreCache.swift; sourceTree = "<group>"; };
 		8C3264052E3C69C000081F4F /* FrontendGacha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendGacha.swift; sourceTree = "<group>"; };
 		8C32F31B2E8D61E9002D183A /* NetworkCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCache.swift; sourceTree = "<group>"; };
+		8C3D4E792EA6711E0034E831 /* FrontendPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendPost.swift; sourceTree = "<group>"; };
 		8C3D684D2EA6092A0034E831 /* RichContentMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichContentMarkdown.swift; sourceTree = "<group>"; };
 		8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWrite.swift; sourceTree = "<group>"; };
 		8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWriteMacro.swift; sourceTree = "<group>"; };
@@ -832,6 +834,7 @@
 				8C3264052E3C69C000081F4F /* FrontendGacha.swift */,
 				8CFEF5BE2E4DD5E60017FF66 /* FrontendLoginCampaign.swift */,
 				8CD13FBB2E2FE2BF00673E15 /* FrontendNews.swift.gyb */,
+				8C3D4E792EA6711E0034E831 /* FrontendPost.swift */,
 				8CB4D46B2E43049E0085D57A /* FrontendSong.swift */,
 				8C7855DB2E4A6BEC000EA06E /* FrontendMiracleTicket.swift */,
 				8C9474422E348D1A003A90B4 /* FrontendMisc.swift */,
@@ -1509,6 +1512,7 @@
 				8C0872BB2E72FCDA00447B05 /* DoriNotification.swift in Sources */,
 				8CD13FB82E2FE2BF00673E15 /* Skill.swift in Sources */,
 				8CD13FB92E2FE2BF00673E15 /* Song.swift in Sources */,
+				8C3D4E7A2EA671240034E831 /* FrontendPost.swift in Sources */,
 				8C7855992E48C68F000EA06E /* Comic.swift in Sources */,
 				8C62485A2E9116B600FF6950 /* CachePreloading.swift in Sources */,
 				8CFEF5BF2E4DD5F00017FF66 /* FrontendLoginCampaign.swift in Sources */,
