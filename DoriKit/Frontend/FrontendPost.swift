@@ -34,13 +34,8 @@ extension DoriAPI.Post.Post {
         case comic(DoriAPI.Comic.Comic)
         case eventTracker(DoriAPI.Event.Event)
         case chartSimulator(DoriAPI.Song.Song)
-        case live2d(Live2D)
-//        case story(DoriAPI.Misc.) // FIXME: Protocol-based story
-        
-        public enum Live2D: Sendable, Hashable {
-            case costume(DoriAPI.Costume.PreviewCostume)
-//            case seasonCostume(DoriAPI.Character) // FIXME: Season costume of characters
-        }
+        case live2d(URL)
+        case story(DoriAPI.Misc.StoryAsset)
     }
 }
 
@@ -134,8 +129,13 @@ private func provideParent(for post: DoriAPI.Post.Post) async -> DoriAPI.Post.Po
             return nil
         }
     case .live2dComment:
-        return nil // FIXME
+        return .live2d(.init(string: "https://bestdori.com/assets/jp/\(post.categoryID)_rip/buildData.asset")!.respectOfflineAssetContext())
     case .storyComment:
-        return nil // FIXME
+        let request = await requestJSON("https://bestdori.com/assets/jp\(post.categoryID)")
+        if case let .success(respJSON) = request {
+            return .story(await DoriAPI.Misc._parseStoryAsset(respJSON))
+        } else {
+            return nil
+        }
     }
 }
