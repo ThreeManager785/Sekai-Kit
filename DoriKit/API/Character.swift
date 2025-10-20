@@ -167,7 +167,7 @@ extension DoriAPI {
             //     "colorCode": "#FFDD88",
             //     "sdAssetBundleName": "00039",
             //     "defaultCostumeId": 1789,
-            //     "seasonCostumeListMap": ..., // This attribute is not provided in Swift API
+            //     "seasonCostumeListMap": ...,
             //     "ruby": [
             //         "ながさき そよ",
             //         ...
@@ -252,6 +252,18 @@ extension DoriAPI {
                                 color: .init(hex: respJSON["colorCode"].stringValue),
                                 sdAssetBundleName: respJSON["sdAssetBundleName"].stringValue,
                                 defaultCostumeID: respJSON["defaultCostumeId"].intValue,
+                                seasonCostumeList: respJSON["seasonCostumeListMap"]["entries"].map {
+                                    $0.1["entries"].map {
+                                        .init(
+                                            characterID: $0.1["characterId"].intValue,
+                                            basicSeasonID: $0.1["basicSeasonId"].intValue,
+                                            costumeType: .init(rawValue: $0.1["costumeType"].stringValue) ?? .casual,
+                                            seasonCostumeType: .init(rawValue: $0.1["seasonCostumeType"].stringValue) ?? .casualSpring,
+                                            sdAssetBundleName: $0.1["sdAssetBundleName"].stringValue,
+                                            live2dAssetBundleName: $0.1["live2dAssetBundleName"].stringValue
+                                        )
+                                    }
+                                }.reversed(),
                                 ruby: .init(
                                     jp: respJSON["ruby"][0].string,
                                     en: respJSON["ruby"][1].string,
@@ -450,6 +462,35 @@ extension DoriAPI.Character {
         public var sdAssetBundleName: String
         /// ID of default costume of character.
         public var defaultCostumeID: Int?
+        /// A list of season costumes of character, if present.
+        ///
+        /// This array contains all seasonal costumes of this character.
+        ///
+        /// The first level of this array stands for *season*,
+        /// which is the same as the ones in the story page in GBP.
+        /// For instance, *Poppin' Party* was introduced in *season 1*,
+        /// as well as *MyGO!!!!!* was introduced in *season 3*.
+        /// Like all arrays, the indexs start from 0,
+        /// so the code below gets all seasonal costumes of *Kasumi* in **season 1**:
+        ///
+        /// ```swift
+        /// let kasumi = await Character(id: 1)!
+        /// let season1Costumes = kasumi.seasonCostumeList![0]
+        /// ```
+        ///
+        /// - NOTE:
+        ///     Some characters were introduced after season 1,
+        ///     so they have no costumes in season 1.
+        ///     In that case, the index 0 gets all seasonal costumes
+        ///     in the season they **introduced**.
+        ///     For instance, the code below gets all seasonal costumes
+        ///     of *Soyo* in **season 3**:
+        ///
+        ///     ```swift
+        ///     let soyo = await Character(id: 39)!
+        ///     let season3Costumes = soyo.seasonCostumeList![0]
+        ///     ```
+        public var seasonCostumeList: [[SeasonCostume]]?
         /// Localized ruby of character's name.
         public var ruby: DoriAPI.LocalizedData<String>
         /// Profile of character
@@ -466,6 +507,7 @@ extension DoriAPI.Character {
             color: Color?,
             sdAssetBundleName: String,
             defaultCostumeID: Int?,
+            seasonCostumeList: [[SeasonCostume]]?,
             ruby: DoriAPI.LocalizedData<String>,
             profile: Profile?
         ) {
@@ -479,6 +521,7 @@ extension DoriAPI.Character {
             self.color = color
             self.sdAssetBundleName = sdAssetBundleName
             self.defaultCostumeID = defaultCostumeID
+            self.seasonCostumeList = seasonCostumeList
             self.ruby = ruby
             self.profile = profile
         }
@@ -556,6 +599,37 @@ extension DoriAPI.Character {
         case unique
         case common
         case another
+    }
+    
+    /// Represent a seasonal costume.
+    public struct SeasonCostume: Sendable, Hashable, DoriCache.Cacheable {
+        /// The ID of the character related to this costume.
+        public var characterID: Int
+        /// The basic season ID of costume.
+        public var basicSeasonID: Int
+        /// Type of costume.
+        public var costumeType: CostumeType
+        /// Season type of costume.
+        public var seasonCostumeType: SeasonCostumeType
+        /// Name of super deformed resource bundle, used for combination of resource URLs.
+        public var sdAssetBundleName: String
+        /// Name of Live 2D asset bundle, used for combination of resource URLs.
+        public var live2dAssetBundleName: String
+        
+        public enum CostumeType: String, Sendable, Hashable, DoriCache.Cacheable {
+            case casual = "CASUAL"
+            case uniform = "UNIFORM"
+        }
+        public enum SeasonCostumeType: String, Sendable, Hashable, DoriCache.Cacheable {
+            case casualSpring = "CASUAL_SPRING"
+            case casualSummer = "CASUAL_SUMMER"
+            case casualWinter = "CASUAL_WINTER"
+            case casualAprilFool = "CASUAL_APRILFOOL"
+            case uniformSpring = "UNIFORM_SPRING"
+            case uniformSummer = "UNIFORM_SUMMER"
+            case uniformWinter = "UNIFORM_WINTER"
+            case uniformAprilFool = "UNIFORM_APRILFOOL"
+        }
     }
 }
 
