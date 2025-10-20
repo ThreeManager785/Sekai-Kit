@@ -133,6 +133,25 @@ extension DoriAPI {
         public static func communityStories(limit: Int = 20, offset: Int) async -> PagedPosts? {
             await _list(.init(categoryName: .selfPost, categoryId: "story", order: .timeDescending, limit: limit, offset: offset))
         }
+        
+        public static func basicData(of id: Int) async -> BasicData? {
+            let result = await requestJSON("https://bestdori.com/api/post/basic?id=\(id)")
+            if case let .success(respJSON) = result {
+                let task = Task.detached(priority: .userInitiated) { () -> BasicData? in
+                    if respJSON["result"].boolValue {
+                        BasicData(
+                            id: id,
+                            title: respJSON["title"].stringValue,
+                            author: respJSON["author"]["username"].stringValue
+                        )
+                    } else {
+                        nil
+                    }
+                }
+                return await task.value
+            }
+            return nil
+        }
     }
 }
 
@@ -293,6 +312,12 @@ extension DoriAPI.Post {
     public enum ListOrder: String, Hashable {
         case timeAscending = "TIME_ASC"
         case timeDescending = "TIME_DESC"
+    }
+    
+    public struct BasicData: Sendable, Identifiable, Hashable {
+        public var id: Int
+        public var title: String
+        public var author: String
     }
 }
 
