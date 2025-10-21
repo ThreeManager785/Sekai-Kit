@@ -48,7 +48,7 @@ extension DoriAPI {
         /// - Returns: Contents, nil if failed to fetch.
         @inlinable
         public static func contentsOf(_ path: PathDescriptor) async -> [String]? {
-            await _contentsOf(path._path, in: path.locale)
+            await _contentsOf(String(path._path.dropLast()), in: path.locale)
         }
         public static func _contentsOf(_ path: String, in locale: Locale) async -> [String]? {
             let request = await requestJSON("https://bestdori.com/api/explorer/\(locale.rawValue)/assets\(path).json")
@@ -82,12 +82,23 @@ extension DoriAPI.Asset {
         }
         
         @inlinable
+        public var componments: [String] {
+            [locale.rawValue] + _path.split(separator: "/").map {
+                if $0.hasSuffix("_rip") {
+                    String($0.dropLast("_rip".count))
+                } else {
+                    String($0)
+                }
+            }
+        }
+        
+        @inlinable
         public func resourceURL(name: String) -> URL {
             var separatedPath = _path.split(separator: "/")
             if !separatedPath.isEmpty {
                 separatedPath[separatedPath.count - 1] += "_rip"
             }
-            return .init(string: "https://bestdori.com/assets/\(locale.rawValue)\(separatedPath.joined(separator: "/"))/\(name)")!
+            return .init(string: "https://bestdori.com/assets/\(locale.rawValue)/\(separatedPath.joined(separator: "/"))/\(name)")!
         }
     }
 }
