@@ -86,11 +86,10 @@ func updateLocale(datas: [String], forLocale locale: DoriLocale, to destination:
             fflush(stdout)
             
             var gitBranch = "\(locale.rawValue)/\(branch)"
-            if gitBranch == "shared" {
+            if branch == "shared" {
+                gitBranch = branch
                 print("[$][Update][\(locale.rawValue)/\(branch)] This is a shared branch. Git branch changed to 'shared'")
             }
-            
-            //FIXME: [251022] VERY IMPORTANT: Replace Git Directory
             
             // 1. Pull
             let script = #"""
@@ -152,7 +151,7 @@ git remote set-url origin https://x-access-token:\#(token)@github.com/Greatdori/
 
 echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Github user verification set."
 
-git checkout "\#(locale.rawValue)/\#(branch)"
+git checkout "\#(gitBranch)"
 
 echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Checked out."
 
