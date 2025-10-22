@@ -100,7 +100,7 @@ extension URL {
             let separatedPath = basePath.split(separator: "/")
             guard separatedPath.count > 3 else { return self } // To prevent out of index
             guard let locale = DoriAPI.Locale(rawValue: String(separatedPath[1])) else { return self }
-            let resourceType = analyzePathBranch(separatedPath.dropFirst().dropFirst().joined(separator: "/"))
+            let resourceType = DoriOfflineAsset.ResourceType(rawValue: analyzePathBranch(separatedPath.dropFirst().dropFirst().joined(separator: "/")))!
             let localPath = separatedPath.dropFirst().joined(separator: "/") // removes 'assets/'
             if let url = checkedOutFileURL(base: localPath, in: locale, of: resourceType) {
                 return url
@@ -117,67 +117,79 @@ extension URL {
 
 #if canImport(DoriAssetShims)
 
-func analyzePathBranch(_ path: String) -> DoriOfflineAsset.ResourceType {
-    if pathIsInUnavailableBranch(path) {
-        return .unsupported
-    } else if false { //FIXME: Shared Determination Logic
-        return .shared
+func analyzePathBranch(_ path: String) -> String {
+    let unavailablePaths = [
+        "characters/ingameresourceset",
+        "live2d",
+        "musicscore",
+        "pickupsituation",
+        "star3d",
+        "additional_music",
+        "ani_degree_aniver_8.5th_rip",
+        "animationbg",
+        "appeal",
+        "bili",
+        "bilispend_rip",
+        "birthday",
+        "birthdayintroduction",
+        "birthdayintroduction2021_rip",
+        "changedstamp",
+        "character_name_rip",
+        "character_profile_data_rip",
+        "characterprofile",
+        "commenthomebanner_rip",
+        "effect",
+        "eventcommon_rip",
+        "friendinvite",
+        "genericanimation",
+        "graphicalinfo",
+        "growthfund_mission",
+        "homebanner_rip",
+        "limitedmission",
+        "limitedpage",
+        "loading",
+        "map",
+        "memorial",
+        "multiplay",
+        "newsituationintroduction_rip",
+        "newyearcard",
+        "newyearholidays",
+        "popipa_10th_rip",
+        "speciallottery",
+        "specialtraining",
+        "starshop",
+        "thumb/billinggoods",
+        "thumb/characterrank_exp_rip",
+        "thumb/costume3ddress",
+        "thumb/costume3dhairstyle",
+        "thumb/limiteditem_rip",
+        "thumb/selfintroductionepisode_rip",
+        "thumbnail",
+        "title",
+        "tutorial_rip",
+        "worldmap_rip",
+        "april",
+        "button_",
+        "bili_bottun",
+    ]
+    let sharedPaths = [
+        "FIXME: SHARED PATH"
+    ]
+    
+    if pathMatchesPrefix(path, prefixs: unavailablePaths) {
+        return "unsupported"
+    } else if pathMatchesPrefix(path, prefixs: sharedPaths) {
+        return "shared"
     } else if path.hasPrefix("movie") {
-        return .movie
+        return "movie"
     } else if path.hasPrefix("sound") {
-        return .sound
+        return "sound"
     } else {
-        return .basic
+        return "basic"
     }
     
-    func pathIsInUnavailableBranch(_ path: String) -> Bool {
-        let unavailablePaths = [
-            "characters/ingameresourceset",
-            "live2d",
-            "musicscore",
-            "pickupsituation",
-            "star3d",
-            "additional_music",
-            "ani_degree_aniver_8.5th_rip",
-            "animationbg",
-            "appeal",
-            "changedstamp",
-            "character_name_rip",
-            "character_profile_data_rip",
-            "characterprofile",
-            "commenthomebanner_rip",
-            "effect",
-            "eventcommon_rip",
-            "friendinvite",
-            "genericanimation",
-            "graphicalinfo",
-            "homebanner_rip",
-            "limitedmission",
-            "limitedpage",
-            "loading",
-            "map",
-            "memorial",
-            "multiplay",
-            "newsituationintroduction_rip",
-            "newyearholidays",
-            "popipa_10th_rip",
-            "speciallottery",
-            "specialtraining",
-            "starshop",
-            "thumb/billinggoods",
-            "thumb/characterrank_exp_rip",
-            "thumb/costume3ddress",
-            "thumb/costume3dhairstyle",
-            "thumb/limiteditem_rip",
-            "thumb/selfintroductionepisode_rip",
-            "thumbnail",
-            "title",
-            "tutorial_rip",
-            "worldmap_rip",
-            "april",
-            "button_"
-        ]
-        for unavailablePath in unavailablePaths {
+    func pathMatchesPrefix(_ path: String, prefixs: [String]) -> Bool {
+        for unavailablePath in prefixs {
             if path.hasPrefix(unavailablePath) {
                 return true
             }

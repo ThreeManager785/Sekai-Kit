@@ -64,8 +64,68 @@ func fetchNewestID() async -> Int? {
 
 
 func analyzePathBranch(_ path: String) -> String {
-    if pathIsInUnavailableBranch(path) {
+    let unavailablePaths = [
+        "characters/ingameresourceset",
+        "live2d",
+        "musicscore",
+        "pickupsituation",
+        "star3d",
+        "additional_music",
+        "ani_degree_aniver_8.5th_rip",
+        "animationbg",
+        "appeal",
+        "bili",
+        "bilispend_rip",
+        "birthday",
+        "birthdayintroduction",
+        "birthdayintroduction2021_rip",
+        "changedstamp",
+        "character_name_rip",
+        "character_profile_data_rip",
+        "characterprofile",
+        "commenthomebanner_rip",
+        "effect",
+        "eventcommon_rip",
+        "friendinvite",
+        "genericanimation",
+        "graphicalinfo",
+        "growthfund_mission",
+        "homebanner_rip",
+        "limitedmission",
+        "limitedpage",
+        "loading",
+        "map",
+        "memorial",
+        "multiplay",
+        "newsituationintroduction_rip",
+        "newyearcard",
+        "newyearholidays",
+        "popipa_10th_rip",
+        "speciallottery",
+        "specialtraining",
+        "starshop",
+        "thumb/billinggoods",
+        "thumb/characterrank_exp_rip",
+        "thumb/costume3ddress",
+        "thumb/costume3dhairstyle",
+        "thumb/limiteditem_rip",
+        "thumb/selfintroductionepisode_rip",
+        "thumbnail",
+        "title",
+        "tutorial_rip",
+        "worldmap_rip",
+        "april",
+        "button_",
+        "bili_bottun",
+    ]
+    let sharedPaths = [
+        "FIXME: SHARED PATH"
+    ]
+    
+    if pathMatchesPrefix(path, prefixs: unavailablePaths) {
         return "unsupported"
+    } else if pathMatchesPrefix(path, prefixs: sharedPaths) {
+        return "shared"
     } else if path.hasPrefix("movie") {
         return "movie"
     } else if path.hasPrefix("sound") {
@@ -74,54 +134,8 @@ func analyzePathBranch(_ path: String) -> String {
         return "basic"
     }
     
-    func pathIsInUnavailableBranch(_ path: String) -> Bool {
-        let unavailablePaths = [
-            "characters/ingameresourceset",
-            "live2d",
-            "musicscore",
-            "pickupsituation",
-            "star3d",
-            "additional_music",
-            "ani_degree_aniver_8.5th_rip",
-            "animationbg",
-            "appeal",
-            "changedstamp",
-            "character_name_rip",
-            "character_profile_data_rip",
-            "characterprofile",
-            "commenthomebanner_rip",
-            "effect",
-            "eventcommon_rip",
-            "friendinvite",
-            "genericanimation",
-            "graphicalinfo",
-            "homebanner_rip",
-            "limitedmission",
-            "limitedpage",
-            "loading",
-            "map",
-            "memorial",
-            "multiplay",
-            "newsituationintroduction_rip",
-            "newyearholidays",
-            "popipa_10th_rip",
-            "speciallottery",
-            "specialtraining",
-            "starshop",
-            "thumb/billinggoods",
-            "thumb/characterrank_exp_rip",
-            "thumb/costume3ddress",
-            "thumb/costume3dhairstyle",
-            "thumb/limiteditem_rip",
-            "thumb/selfintroductionepisode_rip",
-            "thumbnail",
-            "title",
-            "tutorial_rip",
-            "worldmap_rip",
-            "april",
-            "button_"
-        ]
-        for unavailablePath in unavailablePaths {
+    func pathMatchesPrefix(_ path: String, prefixs: [String]) -> Bool {
+        for unavailablePath in prefixs {
             if path.hasPrefix(unavailablePath) {
                 return true
             }

@@ -85,6 +85,13 @@ func updateLocale(datas: [String], forLocale locale: DoriLocale, to destination:
             var updatedItemsCount = 0
             fflush(stdout)
             
+            var gitBranch = "\(locale.rawValue)/\(branch)"
+            if gitBranch == "shared" {
+                print("[$][Update][\(locale.rawValue)/\(branch)] This is a shared branch. Git branch changed to 'shared'")
+            }
+            
+            //FIXME: [251022] VERY IMPORTANT: Replace Git Directory
+            
             // 1. Pull
             let script = #"""
 echo "[%][Git Pull][\#(locale.rawValue)/\#(branch)] Pull process starts."
@@ -94,7 +101,7 @@ cd "\#(destination.absoluteString.dropURLPrefix())"
 
 echo "[%][Git Pull][\#(locale.rawValue)/\#(branch)] Directory set to \#(destination.absoluteString.dropURLPrefix())."
 
-git checkout "\#(locale.rawValue)/\#(branch)"
+git checkout "\#(gitBranch)"
 
 echo "[%][Git Pull][\#(locale.rawValue)/\#(branch)] Checked out."
 
