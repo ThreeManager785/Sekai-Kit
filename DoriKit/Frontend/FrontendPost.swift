@@ -12,6 +12,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if HAS_BINARY_RESOURCE_BUNDLES
+
 import Foundation
 
 extension DoriAPI.Post.Post {
@@ -139,3 +141,5 @@ private func provideParent(for post: DoriAPI.Post.Post) async -> DoriAPI.Post.Po
         }
     }
 }
+
+#endif // HAS_BINARY_RESOURCE_BUNDLES
