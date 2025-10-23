@@ -30,51 +30,51 @@ struct PreCacheGen {
             exit(EXIT_FAILURE)
         }
         
-        var bands: [DoriAPI.Band.Band]!
+        var bands: [DoriAPI.Bands.Band]!
         LimitedTaskQueue.shared.addTask {
             DispatchQueue.main.async {
                 print("Fetching bands...", to: &stderr)
             }
-            bands = await retryUntilNonNil(perform: DoriAPI.Band.all)
+            bands = await retryUntilNonNil(perform: DoriAPI.Bands.all)
         }
-        var mainBands: [DoriAPI.Band.Band]!
+        var mainBands: [DoriAPI.Bands.Band]!
         LimitedTaskQueue.shared.addTask {
             DispatchQueue.main.async {
                 print("Fetching main bands...", to: &stderr)
             }
-            mainBands = await retryUntilNonNil(perform: DoriAPI.Band.main)
+            mainBands = await retryUntilNonNil(perform: DoriAPI.Bands.main)
         }
-        var characters: [DoriAPI.Character.PreviewCharacter]!
+        var characters: [DoriAPI.Characters.PreviewCharacter]!
         LimitedTaskQueue.shared.addTask {
             DispatchQueue.main.async {
                 print("Fetching characters...", to: &stderr)
             }
-            characters = await retryUntilNonNil(perform: DoriAPI.Character.all)
+            characters = await retryUntilNonNil(perform: DoriAPI.Characters.all)
         }
-        var birthdayCharacters: [DoriAPI.Character.BirthdayCharacter]!
+        var birthdayCharacters: [DoriAPI.Characters.BirthdayCharacter]!
         LimitedTaskQueue.shared.addTask {
             DispatchQueue.main.async {
                 print("Fetching birthday characters...", to: &stderr)
             }
-            birthdayCharacters = await retryUntilNonNil(perform: DoriAPI.Character.allBirthday)
+            birthdayCharacters = await retryUntilNonNil(perform: DoriAPI.Characters.allBirthday)
         }
-        var categorizedCharacters: DoriFrontend.Character.CategorizedCharacters!
+        var categorizedCharacters: DoriFrontend.Characters.CategorizedCharacters!
         LimitedTaskQueue.shared.addTask {
             DispatchQueue.main.async {
                 print("Fetching categorized characters...", to: &stderr)
             }
-            categorizedCharacters = await retryUntilNonNil(perform: DoriFrontend.Character.categorizedCharacters)
+            categorizedCharacters = await retryUntilNonNil(perform: DoriFrontend.Characters.categorizedCharacters)
         }
         
         await LimitedTaskQueue.shared.waitUntilAllFinished()
         
-        var characterDetails = [Int: DoriAPI.Character.Character]()
+        var characterDetails = [Int: DoriAPI.Characters.Character]()
         for (index, character) in characters.enumerated() {
             LimitedTaskQueue.shared.addTask {
                 DispatchQueue.main.async {
                     print("Fetching character detail for \(character.characterName.jp ?? "\(character.id)")... [\(index + 1)/\(characters.count)]", to: &stderr)
                 }
-                let detail = await retryUntilNonNil { await DoriAPI.Character.detail(of: character.id) }
+                let detail = await retryUntilNonNil { await DoriAPI.Characters.detail(of: character.id) }
                 DispatchQueue.main.async {
                     characterDetails.updateValue(detail, forKey: character.id)
                 }
@@ -107,12 +107,12 @@ struct PreCacheGen {
 }
 
 struct CacheResult: Codable {
-    var bands: [DoriAPI.Band.Band]
-    var mainBands: [DoriAPI.Band.Band]
-    var characters: [DoriAPI.Character.PreviewCharacter]
-    var birthdayCharacters: [DoriAPI.Character.BirthdayCharacter]
-    var categorizedCharacters: DoriFrontend.Character.CategorizedCharacters
-    var characterDetails: [Int: DoriAPI.Character.Character] // [CharacterID: Detail]
+    var bands: [DoriAPI.Bands.Band]
+    var mainBands: [DoriAPI.Bands.Band]
+    var characters: [DoriAPI.Characters.PreviewCharacter]
+    var birthdayCharacters: [DoriAPI.Characters.BirthdayCharacter]
+    var categorizedCharacters: DoriFrontend.Characters.CategorizedCharacters
+    var characterDetails: [Int: DoriAPI.Characters.Character] // [CharacterID: Detail]
 }
 
 func retryUntilNonNil<T>(maxRetry: Int = 5, perform: () async -> T?) async -> T {
