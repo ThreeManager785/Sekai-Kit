@@ -126,7 +126,7 @@ extension DoriFrontend {
             case releaseDate(in: DoriAPI.Locale)
             case difficultyReleaseDate(in: DoriAPI.Locale)
             case mvReleaseDate(in: DoriAPI.Locale)
-            case level(for: DoriAPI.Song.DifficultyType)
+            case level(for: DoriAPI.Songs.DifficultyType)
             case rarity
             case maximumStat
             case id
@@ -180,7 +180,7 @@ extension DoriFrontend {
                         return nil
                     }
                 case 1 << 3:
-                    if let difficulty = DoriAPI.Song.DifficultyType(rawValue: Int(low)) {
+                    if let difficulty = DoriAPI.Songs.DifficultyType(rawValue: Int(low)) {
                         self = .level(for: difficulty)
                     } else {
                         return nil
@@ -327,7 +327,7 @@ extension Set<DoriFrontend.Sorter.Keyword> {
 }
 
 // MARK: extension PreviewEvent
-extension DoriAPI.Event.PreviewEvent: DoriFrontend.Sortable {
+extension DoriAPI.Events.PreviewEvent: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.releaseDate(in: .jp), .releaseDate(in: .en), .releaseDate(in: .tw), .releaseDate(in: .cn), .releaseDate(in: .kr), .id]
@@ -337,7 +337,7 @@ extension DoriAPI.Event.PreviewEvent: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { true }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriAPI.Event.PreviewEvent, let castedRHS = rhs as? DoriAPI.Event.PreviewEvent else { return nil }
+        guard let castedLHS = lhs as? DoriAPI.Events.PreviewEvent, let castedRHS = rhs as? DoriAPI.Events.PreviewEvent else { return nil }
         switch sorter.keyword {
         case .releaseDate(let locale):
             return sorter.strictCompare(
@@ -353,7 +353,7 @@ extension DoriAPI.Event.PreviewEvent: DoriFrontend.Sortable {
 }
 
 // MARK: extension PreviewGacha
-extension DoriAPI.Gacha.PreviewGacha: DoriFrontend.Sortable {
+extension DoriAPI.Gachas.PreviewGacha: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.releaseDate(in: .jp), .releaseDate(in: .en), .releaseDate(in: .tw), .releaseDate(in: .cn), .releaseDate(in: .kr), .id]
@@ -363,7 +363,7 @@ extension DoriAPI.Gacha.PreviewGacha: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { true }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriAPI.Gacha.PreviewGacha, let castedRHS = rhs as? DoriAPI.Gacha.PreviewGacha else { return nil }
+        guard let castedLHS = lhs as? DoriAPI.Gachas.PreviewGacha, let castedRHS = rhs as? DoriAPI.Gachas.PreviewGacha else { return nil }
         switch sorter.keyword {
         case .releaseDate(let locale):
             return sorter.strictCompare(
@@ -379,7 +379,7 @@ extension DoriAPI.Gacha.PreviewGacha: DoriFrontend.Sortable {
 }
 
 // MARK: extension CardWithBand
-extension DoriFrontend.Card.CardWithBand: DoriFrontend.Sortable {
+extension DoriFrontend.Cards.CardWithBand: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.releaseDate(in: .jp), .releaseDate(in: .en), .releaseDate(in: .tw), .releaseDate(in: .cn), .releaseDate(in: .kr), .rarity, .maximumStat, .id]
@@ -389,7 +389,7 @@ extension DoriFrontend.Card.CardWithBand: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { false }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriFrontend.Card.CardWithBand, let castedRHS = rhs as? DoriFrontend.Card.CardWithBand else { return nil }
+        guard let castedLHS = lhs as? DoriFrontend.Cards.CardWithBand, let castedRHS = rhs as? DoriFrontend.Cards.CardWithBand else { return nil }
         switch sorter.keyword {
         case .releaseDate(let locale):
             return sorter.strictCompare(
@@ -409,7 +409,7 @@ extension DoriFrontend.Card.CardWithBand: DoriFrontend.Sortable {
 }
 
 // MARK: extension PreviewCard
-extension DoriFrontend.Card.PreviewCard: DoriFrontend.Sortable {
+extension DoriFrontend.Cards.PreviewCard: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.releaseDate(in: .jp), .releaseDate(in: .en), .releaseDate(in: .tw), .releaseDate(in: .cn), .releaseDate(in: .kr), .rarity, .maximumStat, .id]
@@ -419,7 +419,7 @@ extension DoriFrontend.Card.PreviewCard: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { false }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriFrontend.Card.PreviewCard, let castedRHS = rhs as? DoriFrontend.Card.PreviewCard else { return nil }
+        guard let castedLHS = lhs as? DoriFrontend.Cards.PreviewCard, let castedRHS = rhs as? DoriFrontend.Cards.PreviewCard else { return nil }
         switch sorter.keyword {
         case .releaseDate(let locale):
             return sorter.strictCompare(
@@ -439,7 +439,7 @@ extension DoriFrontend.Card.PreviewCard: DoriFrontend.Sortable {
 }
 
 // MARK: extension PreviewSong
-extension DoriAPI.Song.PreviewSong: DoriFrontend.Sortable {
+extension DoriAPI.Songs.PreviewSong: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.releaseDate(in: .jp), .releaseDate(in: .en), .releaseDate(in: .tw), .releaseDate(in: .cn), .releaseDate(in: .kr), .difficultyReleaseDate(in: .jp), .difficultyReleaseDate(in: .en), .difficultyReleaseDate(in: .tw), .difficultyReleaseDate(in: .cn), .difficultyReleaseDate(in: .kr), .mvReleaseDate(in: .jp), .mvReleaseDate(in: .en), .mvReleaseDate(in: .tw), .mvReleaseDate(in: .cn), .mvReleaseDate(in: .kr), .level(for: .easy), .level(for: .normal), .level(for: .hard), .level(for: .expert), .level(for: .special), .id]
@@ -449,7 +449,7 @@ extension DoriAPI.Song.PreviewSong: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { false }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriAPI.Song.PreviewSong, let castedRHS = rhs as? DoriAPI.Song.PreviewSong else { return nil }
+        guard let castedLHS = lhs as? DoriAPI.Songs.PreviewSong, let castedRHS = rhs as? DoriAPI.Songs.PreviewSong else { return nil }
         switch sorter.keyword {
         case .releaseDate(let locale):
             return sorter.strictCompare(
@@ -465,14 +465,14 @@ extension DoriAPI.Song.PreviewSong: DoriFrontend.Sortable {
             var finalReleaseDateForLHS: Date?
             var finalReleaseDateForRHS: Date?
             if let allMVDictForLHS = castedLHS.musicVideos {
-                let mvListForLHS: [DoriAPI.Song.MusicVideoMetadata?] = Array(allMVDictForLHS.values)
+                let mvListForLHS: [DoriAPI.Songs.MusicVideoMetadata?] = Array(allMVDictForLHS.values)
                 let mvDatesForLHS = mvListForLHS.compactMap{ $0?.startAt.forLocale(locale) }.sorted(by: <)
                 finalReleaseDateForLHS = mvDatesForLHS.first
             } else {
                 finalReleaseDateForLHS = nil
             }
             if let allMVDictForRHS = castedRHS.musicVideos {
-                let mvListForRHS: [DoriAPI.Song.MusicVideoMetadata?] = Array(allMVDictForRHS.values)
+                let mvListForRHS: [DoriAPI.Songs.MusicVideoMetadata?] = Array(allMVDictForRHS.values)
                 let mvDatesForRHS = mvListForRHS.compactMap{ $0?.startAt.forLocale(locale) }.sorted(by: <)
                 finalReleaseDateForRHS = mvDatesForRHS.first
             } else {
@@ -490,7 +490,7 @@ extension DoriAPI.Song.PreviewSong: DoriFrontend.Sortable {
 }
 
 // MARK: extension PreviewCampaign
-extension DoriAPI.LoginCampaign.PreviewCampaign: DoriFrontend.Sortable {
+extension DoriAPI.LoginCampaigns.PreviewCampaign: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.releaseDate(in: .jp), .releaseDate(in: .en), .releaseDate(in: .tw), .releaseDate(in: .cn), .releaseDate(in: .kr), .id]
@@ -500,7 +500,7 @@ extension DoriAPI.LoginCampaign.PreviewCampaign: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { true }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriAPI.LoginCampaign.PreviewCampaign, let castedRHS = rhs as? DoriAPI.LoginCampaign.PreviewCampaign else { return nil }
+        guard let castedLHS = lhs as? DoriAPI.LoginCampaigns.PreviewCampaign, let castedRHS = rhs as? DoriAPI.LoginCampaigns.PreviewCampaign else { return nil }
         switch sorter.keyword {
         case .releaseDate(let locale):
             return sorter.strictCompare(
@@ -516,7 +516,7 @@ extension DoriAPI.LoginCampaign.PreviewCampaign: DoriFrontend.Sortable {
 }
 
 // MARK: extension Comic
-extension DoriAPI.Comic.Comic: DoriFrontend.Sortable {
+extension DoriAPI.Comics.Comic: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.id]
@@ -526,7 +526,7 @@ extension DoriAPI.Comic.Comic: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { false }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriAPI.Comic.Comic, let castedRHS = rhs as? DoriAPI.Comic.Comic else { return nil }
+        guard let castedLHS = lhs as? DoriAPI.Comics.Comic, let castedRHS = rhs as? DoriAPI.Comics.Comic else { return nil }
         switch sorter.keyword {
 //        case .releaseDate(let locale):
 //            return sorter.compare(
@@ -543,7 +543,7 @@ extension DoriAPI.Comic.Comic: DoriFrontend.Sortable {
 
 
 // MARK: extension PreviewCostume
-extension DoriFrontend.Costume.PreviewCostume: DoriFrontend.Sortable {
+extension DoriFrontend.Costumes.PreviewCostume: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.releaseDate(in: .jp), .releaseDate(in: .en), .releaseDate(in: .tw), .releaseDate(in: .cn), .releaseDate(in: .kr), .id]
@@ -553,7 +553,7 @@ extension DoriFrontend.Costume.PreviewCostume: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { false }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriFrontend.Costume.PreviewCostume, let castedRHS = rhs as? DoriFrontend.Costume.PreviewCostume else { return nil }
+        guard let castedLHS = lhs as? DoriFrontend.Costumes.PreviewCostume, let castedRHS = rhs as? DoriFrontend.Costumes.PreviewCostume else { return nil }
         switch sorter.keyword {
         case .releaseDate(let locale):
             return sorter.strictCompare(
@@ -569,7 +569,7 @@ extension DoriFrontend.Costume.PreviewCostume: DoriFrontend.Sortable {
 }
 
 // MARK: extension PreviewCharacter
-extension DoriFrontend.Character.PreviewCharacter: DoriFrontend.Sortable {
+extension DoriFrontend.Characters.PreviewCharacter: DoriFrontend.Sortable {
     @inlinable
     public static var applicableSortingTypes: [DoriFrontend.Sorter.Keyword] {
         [.id]
@@ -579,7 +579,7 @@ extension DoriFrontend.Character.PreviewCharacter: DoriFrontend.Sortable {
     public static var hasEndingDate: Bool { false }
     
     public static func _compare<ValueType>(usingDoriSorter sorter: DoriFrontend.Sorter, lhs: ValueType, rhs: ValueType) -> Bool? {
-        guard let castedLHS = lhs as? DoriFrontend.Character.PreviewCharacter, let castedRHS = rhs as? DoriFrontend.Character.PreviewCharacter else { return nil }
+        guard let castedLHS = lhs as? DoriFrontend.Characters.PreviewCharacter, let castedRHS = rhs as? DoriFrontend.Characters.PreviewCharacter else { return nil }
         switch sorter.keyword {
         case .id:
             return sorter.compare(castedLHS.id, castedRHS.id)

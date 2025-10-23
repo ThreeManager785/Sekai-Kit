@@ -18,12 +18,12 @@ internal class InMemoryCache {
     private init() {}
     
     @safe
-    nonisolated(unsafe) internal static var skills: [DoriAPI.Skill.Skill]?
+    nonisolated(unsafe) internal static var skills: [DoriAPI.Skills.Skill]?
     
     internal static func updateAll() {
         Task.detached {
             for _ in 1...5 {
-                let skills = await DoriAPI.Skill.all()
+                let skills = await DoriAPI.Skills.all()
                 
                 if let skills {
                     self.skills = skills

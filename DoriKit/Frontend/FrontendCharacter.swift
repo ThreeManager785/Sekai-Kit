@@ -16,7 +16,7 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about character in Bandori.
-    public enum Character {
+    public enum Characters {
         /// Returns characters that birthdays are around provided date.
         ///
         /// - Parameters:
@@ -41,7 +41,7 @@ extension DoriFrontend {
                 return calendar.date(from: components)!/*.componentsRewritten(year: 2000, hour: 0, minute: 0, second: 0)*/
             }
             
-            guard let allBirthday = await DoriAPI.Character.allBirthday() else { return nil }
+            guard let allBirthday = await DoriAPI.Characters.allBirthday() else { return nil }
             
             var todaysCalender = Calendar(identifier: .gregorian)
             todaysCalender.timeZone = timeZone
@@ -95,14 +95,14 @@ extension DoriFrontend {
         /// Characters without a corresponding band can be accessed by `nil` as key of the result dictionary.
         public static func categorizedCharacters() async -> CategorizedCharacters? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Band.main()
+                await DoriAPI.Bands.main()
             } _: {
-                await DoriAPI.Character.all()
+                await DoriAPI.Characters.all()
             }
             guard let bands = groupResult.0 else { return nil }
             guard let characters = groupResult.1 else { return nil }
             
-            var result = [DoriAPI.Band.Band?: [PreviewCharacter]]()
+            var result = [DoriAPI.Bands.Band?: [PreviewCharacter]]()
             
             // Add characters for each bands
             for band in bands {
@@ -127,17 +127,17 @@ extension DoriFrontend {
         ///     with related band, cards, costumes, events and gacha.
         public static func extendedInformation(of id: Int) async -> ExtendedCharacter? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Character.detail(of: id)
+                await DoriAPI.Characters.detail(of: id)
             } _: {
-                await DoriAPI.Band.all()
+                await DoriAPI.Bands.all()
             } _: {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await DoriAPI.Costume.all()
+                await DoriAPI.Costumes.all()
             } _: {
-                await DoriAPI.Event.all()
+                await DoriAPI.Events.all()
             } _: {
-                await DoriAPI.Gacha.all()
+                await DoriAPI.Gachas.all()
             }
             guard let character = groupResult.0 else { return nil }
             guard let bands = groupResult.1 else { return nil }
@@ -149,7 +149,7 @@ extension DoriFrontend {
             let band = if let id = character.bandID {
                 bands.first { $0.id == id }
             } else {
-                nil as DoriAPI.Band.Band?
+                nil as DoriAPI.Bands.Band?
             }
             
             let newCards = cards.filter { $0.characterID == character.id }
@@ -167,11 +167,11 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.Character {
-    public typealias PreviewCharacter = DoriAPI.Character.PreviewCharacter
-    public typealias BirthdayCharacter = DoriAPI.Character.BirthdayCharacter
-    public typealias CategorizedCharacters = [DoriAPI.Band.Band?: [PreviewCharacter]]
-    public typealias Character = DoriAPI.Character.Character
+extension DoriFrontend.Characters {
+    public typealias PreviewCharacter = DoriAPI.Characters.PreviewCharacter
+    public typealias BirthdayCharacter = DoriAPI.Characters.BirthdayCharacter
+    public typealias CategorizedCharacters = [DoriAPI.Bands.Band?: [PreviewCharacter]]
+    public typealias Character = DoriAPI.Characters.Character
     
     /// Represent an extended character.
     public struct ExtendedCharacter: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -180,24 +180,24 @@ extension DoriFrontend.Character {
         /// The base character information.
         public var character: Character
         /// The band that the character belongs to, if present.
-        public var band: DoriAPI.Band.Band?
+        public var band: DoriAPI.Bands.Band?
         /// Cards of this character.
-        public var cards: [DoriAPI.Card.PreviewCard]
+        public var cards: [DoriAPI.Cards.PreviewCard]
         /// Costumes of this character.
-        public var costumes: [DoriAPI.Costume.PreviewCostume]
+        public var costumes: [DoriAPI.Costumes.PreviewCostume]
         /// Events that contain this character.
-        public var events: [DoriAPI.Event.PreviewEvent]
+        public var events: [DoriAPI.Events.PreviewEvent]
         /// Gacha that contain this character.
-        public var gacha: [DoriAPI.Gacha.PreviewGacha]
+        public var gacha: [DoriAPI.Gachas.PreviewGacha]
         
         internal init(
             id: Int,
             character: Character,
-            band: DoriAPI.Band.Band?,
-            cards: [DoriAPI.Card.PreviewCard],
-            costumes: [DoriAPI.Costume.PreviewCostume],
-            events: [DoriAPI.Event.PreviewEvent],
-            gacha: [DoriAPI.Gacha.PreviewGacha]
+            band: DoriAPI.Bands.Band?,
+            cards: [DoriAPI.Cards.PreviewCard],
+            costumes: [DoriAPI.Costumes.PreviewCostume],
+            events: [DoriAPI.Events.PreviewEvent],
+            gacha: [DoriAPI.Gachas.PreviewGacha]
         ) {
             self.id = id
             self.character = character
@@ -210,10 +210,10 @@ extension DoriFrontend.Character {
     }
 }
 
-extension DoriFrontend.Character.ExtendedCharacter {
+extension DoriFrontend.Characters.ExtendedCharacter {
     @inlinable
     public init?(id: Int) async {
-        if let character = await DoriFrontend.Character.extendedInformation(of: id) {
+        if let character = await DoriFrontend.Characters.extendedInformation(of: id) {
             self = character
         } else {
             return nil
@@ -221,10 +221,10 @@ extension DoriFrontend.Character.ExtendedCharacter {
     }
 }
 
-extension DoriFrontend.Character.ExtendedCharacter {
+extension DoriFrontend.Characters.ExtendedCharacter {
     /// Returns a random card of this character.
     /// - Returns: A random card of this character.
-    public func randomCard() -> DoriAPI.Card.PreviewCard? {
+    public func randomCard() -> DoriAPI.Cards.PreviewCard? {
         self.cards.randomElement()
     }
 }

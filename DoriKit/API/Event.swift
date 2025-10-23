@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about events in Bandori.
-    public enum Event {
+    public enum Events {
         /// Get all events in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -304,7 +304,7 @@ extension DoriAPI {
                 let task = Task.detached(priority: .userInitiated) {
                     // We break up expressions because of:
                     // The compiler is unable to type-check this expression in reasonable time;
-                    // try breaking up the expression into distinct sub-expressions 😇
+                    // try breaking up the expression into distinct sub-expressions
                     let pointRewards = DoriAPI.LocalizedData(
                         jp: respJSON["pointRewards"][0].map {
                             Event.PointReward(
@@ -827,7 +827,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Event {
+extension DoriAPI.Events {
     /// Represent simplified data of an event.
     public struct PreviewEvent: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of event.
@@ -849,7 +849,7 @@ extension DoriAPI.Event {
         /// Characters related to this event, with bonus percentage.
         public var characters: [EventCharacter]
         public var eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?
-        public var eventCharacterParameterBonus: DoriAPI.Card.Stat?
+        public var eventCharacterParameterBonus: DoriAPI.Cards.Stat?
         /// Members related to this event, with bonus percentage.
         ///
         /// A *member* related to event is a card with bonus during the event.
@@ -892,7 +892,7 @@ extension DoriAPI.Event {
         /// Characters related to this event, with bonus percentage.
         public var characters: [EventCharacter]
         public var eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?
-        public var eventCharacterParameterBonus: DoriAPI.Card.Stat?
+        public var eventCharacterParameterBonus: DoriAPI.Cards.Stat?
         /// Members related to this event, with bonus percentage.
         ///
         /// A *member* related to event is a card with bonus during the event.
@@ -923,7 +923,7 @@ extension DoriAPI.Event {
             attributes: [EventAttribute],
             characters: [EventCharacter],
             eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?,
-            eventCharacterParameterBonus: DoriAPI.Card.Stat?,
+            eventCharacterParameterBonus: DoriAPI.Cards.Stat?,
             members: [EventMember],
             limitBreaks: [EventLimitBreak],
             stories: [Story],
@@ -1113,8 +1113,8 @@ extension DoriAPI.Event {
     }
 }
 
-extension DoriAPI.Event.PreviewEvent {
-    public init(_ full: DoriAPI.Event.Event) {
+extension DoriAPI.Events.PreviewEvent {
+    public init(_ full: DoriAPI.Events.Event) {
         self.init(
             id: full.id,
             eventType: full.eventType,
@@ -1131,10 +1131,10 @@ extension DoriAPI.Event.PreviewEvent {
         )
     }
 }
-extension DoriAPI.Event.Event {
+extension DoriAPI.Events.Event {
     @inlinable
     public init?(id: Int) async {
-        if let event = await DoriAPI.Event.detail(of: id) {
+        if let event = await DoriAPI.Events.detail(of: id) {
             self = event
         } else {
             return nil
@@ -1142,7 +1142,7 @@ extension DoriAPI.Event.Event {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Event.PreviewEvent) async {
+    public init?(preview: DoriAPI.Events.PreviewEvent) async {
         await self.init(id: preview.id)
     }
 }

@@ -17,17 +17,17 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about songs in Bandori.
-    public enum Song {
+    public enum Songs {
         /// List all songs.
         ///
         /// - Returns: All songs, nil if failed to fetch.
         public static func list() async -> [PreviewSong]? {
-            guard let songs = await DoriAPI.Song.all() else { return nil }
+            guard let songs = await DoriAPI.Songs.all() else { return nil }
             return songs
         }
         
         public static func allMeta(
-            with skill: DoriAPI.Skill.Skill,
+            with skill: DoriAPI.Skills.Skill,
             in locale: DoriAPI.Locale,
             skillLevel: Int,
             perfectRate: Double,
@@ -36,9 +36,9 @@ extension DoriFrontend {
             sort: MetaSort = .efficiency
         ) async -> [SongWithMeta]? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Song.meta()
+                await DoriAPI.Songs.meta()
             } _: {
-                await DoriAPI.Song.all()
+                await DoriAPI.Songs.all()
             }
             guard let meta = groupResult.0 else { return nil }
             guard let songs = groupResult.1 else { return nil }
@@ -83,17 +83,17 @@ extension DoriFrontend {
             }
         }
         public static func meta(
-            for song: DoriAPI.Song.PreviewSong,
-            with skill: DoriAPI.Skill.Skill,
+            for song: DoriAPI.Songs.PreviewSong,
+            with skill: DoriAPI.Skills.Skill,
             in locale: DoriAPI.Locale,
             skillLevel: Int,
             perfectRate: Double,
             downtime: Double,
             fever: Bool
-        ) async -> [DoriAPI.Song.DifficultyType: Meta]? {
-            guard let meta = await DoriAPI.Song.meta() else { return nil }
+        ) async -> [DoriAPI.Songs.DifficultyType: Meta]? {
+            guard let meta = await DoriAPI.Songs.meta() else { return nil }
             
-            var result = [DoriAPI.Song.DifficultyType: Meta]()
+            var result = [DoriAPI.Songs.DifficultyType: Meta]()
             
             for (difficulty, _) in song.difficulty {
                 if let m = _meta(
@@ -114,10 +114,10 @@ extension DoriFrontend {
             return result
         }
         public static func _meta(
-            _ meta: DoriAPI.Song.SongMeta,
+            _ meta: DoriAPI.Songs.SongMeta,
             for song: PreviewSong,
-            of difficulty: DoriAPI.Song.DifficultyType,
-            with skill: DoriAPI.Skill.Skill,
+            of difficulty: DoriAPI.Songs.DifficultyType,
+            with skill: DoriAPI.Skills.Skill,
             in locale: DoriAPI.Locale,
             skillLevel: Int,
             perfectRate: Double,
@@ -204,16 +204,16 @@ extension DoriFrontend {
         ///     with related events, band and meta.
         public static func extendedInformation(of id: Int) async -> ExtendedSong? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Song.detail(of: id)
+                await DoriAPI.Songs.detail(of: id)
             } _: {
-                await DoriAPI.Event.all()
+                await DoriAPI.Events.all()
             } _: {
-                await DoriAPI.Band.all()
+                await DoriAPI.Bands.all()
             }
             guard let song = groupResult.0 else { return nil }
             guard let events = groupResult.1 else { return nil }
             guard let bands = groupResult.2 else { return nil }
-            let pseudoSkill = DoriAPI.Skill.Skill(
+            let pseudoSkill = DoriAPI.Skills.Skill(
                 id: -0x0527,
                 simpleDescription: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
                 description: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
@@ -267,13 +267,13 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.Song {
-    public typealias PreviewSong = DoriAPI.Song.PreviewSong
-    public typealias Song = DoriAPI.Song.Song
+extension DoriFrontend.Songs {
+    public typealias PreviewSong = DoriAPI.Songs.PreviewSong
+    public typealias Song = DoriAPI.Songs.Song
     
     public struct Meta: Sendable, Hashable, DoriCache.Cacheable {
         public var id: Int
-        public var difficulty: DoriAPI.Song.DifficultyType
+        public var difficulty: DoriAPI.Songs.DifficultyType
         public var playLevel: Int
         public var length: Double
         public var score: Double
@@ -306,10 +306,10 @@ extension DoriFrontend.Song {
     
     public struct ExtendedSong: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var song: Song
-        public var band: DoriAPI.Band.Band?
-        public var events: [DoriAPI.Event.PreviewEvent]
-        public var meta: [DoriAPI.Song.DifficultyType: Meta]
-        public var metaFever: [DoriAPI.Song.DifficultyType: Meta]
+        public var band: DoriAPI.Bands.Band?
+        public var events: [DoriAPI.Events.PreviewEvent]
+        public var meta: [DoriAPI.Songs.DifficultyType: Meta]
+        public var metaFever: [DoriAPI.Songs.DifficultyType: Meta]
         
         @inlinable
         public var id: Int {
@@ -318,10 +318,10 @@ extension DoriFrontend.Song {
     }
 }
 
-extension DoriFrontend.Song.ExtendedSong {
+extension DoriFrontend.Songs.ExtendedSong {
     @inlinable
     public init?(id: Int) async {
-        if let song = await DoriFrontend.Song.extendedInformation(of: id) {
+        if let song = await DoriFrontend.Songs.extendedInformation(of: id) {
             self = song
         } else {
             return nil
@@ -329,7 +329,7 @@ extension DoriFrontend.Song.ExtendedSong {
     }
 }
 
-extension DoriFrontend.Song {
+extension DoriFrontend.Songs {
     public struct Lyrics: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var version: Int

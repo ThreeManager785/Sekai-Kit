@@ -449,13 +449,13 @@ extension DoriAPI {
                     }
                     
                     let userMusicClearInfo = profile["userMusicClearInfoMap"]["entries"].map {
-                        (key: DoriAPI.Song.DifficultyType(rawStringValue: $0.0) ?? .easy,
+                        (key: DoriAPI.Songs.DifficultyType(rawStringValue: $0.0) ?? .easy,
                          value: PlayerProfile.MusicClearInfo(
                             clearedMusicCount: $0.1["clearedMusicCount"].intValue,
                             fullComboMusicCount: $0.1["fullComboMusicCount"].intValue,
                             allPerfectMusicCount: $0.1["allPerfectMusicCount"].intValue
                          ))
-                    }.reduce(into: [DoriAPI.Song.DifficultyType: PlayerProfile.MusicClearInfo]()) { $0.updateValue($1.value, forKey: $1.key) }
+                    }.reduce(into: [DoriAPI.Songs.DifficultyType: PlayerProfile.MusicClearInfo]()) { $0.updateValue($1.value, forKey: $1.key) }
                     let stageChallengeAchievementConditions = profile["stageChallengeAchievementConditionsMap"]["entries"].map {
                         (key: Int($0.0) ?? 0, value: $0.1.intValue)
                     }.reduce(into: [Int: Int]()) { $0.updateValue($1.value, forKey: $1.key) }
@@ -823,7 +823,7 @@ extension DoriAPI.Misc {
         public var userProfileSituation: ProfileSituation
         public var userProfileDegree: [Int?] // [FirstID, SecondID]
         public var stageChallengeAchievementConditions: [Int: Int]
-        public var userMusicClearInfo: [DoriAPI.Song.DifficultyType: MusicClearInfo]
+        public var userMusicClearInfo: [DoriAPI.Songs.DifficultyType: MusicClearInfo]
         
         public struct Flags: Sendable, OptionSet, Hashable, DoriCache.Cacheable {
             public var rawValue: UInt16
@@ -865,9 +865,9 @@ extension DoriAPI.Misc {
             public var limitBreakRank: Int
             
             public struct AppendParameter: Sendable, Hashable, DoriCache.Cacheable {
-                public var stat: DoriAPI.Card.Stat // Int<performance|technique|visual>(JSON) -> Stat(Swift)
-                public var characterPotentialStat: DoriAPI.Card.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
-                public var characterBonusStat: DoriAPI.Card.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
+                public var stat: DoriAPI.Cards.Stat // Int<performance|technique|visual>(JSON) -> Stat(Swift)
+                public var characterPotentialStat: DoriAPI.Cards.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
+                public var characterBonusStat: DoriAPI.Cards.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
             }
         }
         
@@ -884,7 +884,7 @@ extension DoriAPI.Misc {
             
             public struct HighScoreMusic: Sendable, Hashable, DoriCache.Cacheable {
                 public var musicID: Int
-                public var difficulty: DoriAPI.Song.DifficultyType
+                public var difficulty: DoriAPI.Songs.DifficultyType
                 public var rating: Int
             }
         }

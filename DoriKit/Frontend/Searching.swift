@@ -22,7 +22,7 @@ extension DoriFrontend {
         var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] { get }
         var _searchIntegers: [Int] { get }
         var _searchLocales: [DoriAPI.Locale] { get }
-        var _searchBands: [DoriAPI.Band.Band] { get }
+        var _searchBands: [DoriAPI.Bands.Band] { get }
         var _searchAttributes: [DoriAPI.Attribute] { get }
     }
 }
@@ -32,7 +32,7 @@ extension DoriFrontend.Searchable {
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] { [] }
     public var _searchIntegers: [Int] { [] }
     public var _searchLocales: [DoriAPI.Locale] { [] }
-    public var _searchBands: [DoriAPI.Band.Band] { [] }
+    public var _searchBands: [DoriAPI.Bands.Band] { [] }
     public var _searchAttributes: [DoriAPI.Attribute] { [] }
 }
 
@@ -183,7 +183,7 @@ extension Array where Element: DoriFrontend.Searchable {
     }
 }
 
-extension DoriAPI.Card.PreviewCard: DoriFrontend.Searchable {
+extension DoriAPI.Cards.PreviewCard: DoriFrontend.Searchable {
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
         [self.prefix]
     }
@@ -203,7 +203,7 @@ extension DoriAPI.Card.PreviewCard: DoriFrontend.Searchable {
         [self.attribute]
     }
 }
-extension DoriAPI.Comic.Comic: DoriFrontend.Searchable {
+extension DoriAPI.Comics.Comic: DoriFrontend.Searchable {
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
         [self.title, self.subTitle]
     }
@@ -217,7 +217,7 @@ extension DoriAPI.Comic.Comic: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.Costume.PreviewCostume: DoriFrontend.Searchable {
+extension DoriAPI.Costumes.PreviewCostume: DoriFrontend.Searchable {
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
         [self.description]
     }
@@ -231,7 +231,7 @@ extension DoriAPI.Costume.PreviewCostume: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.Event.PreviewEvent: DoriFrontend.Searchable {
+extension DoriAPI.Events.PreviewEvent: DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.eventType.localizedString]
     }
@@ -251,7 +251,7 @@ extension DoriAPI.Event.PreviewEvent: DoriFrontend.Searchable {
         self.attributes.map { $0.attribute }
     }
 }
-extension DoriAPI.Gacha.PreviewGacha: DoriFrontend.Searchable {
+extension DoriAPI.Gachas.PreviewGacha: DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.type.localizedString]
     }
@@ -268,7 +268,7 @@ extension DoriAPI.Gacha.PreviewGacha: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.LoginCampaign.PreviewCampaign: DoriFrontend.Searchable {
+extension DoriAPI.LoginCampaigns.PreviewCampaign: DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.loginBonusType.localizedString]
     }
@@ -285,7 +285,7 @@ extension DoriAPI.LoginCampaign.PreviewCampaign: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.Song.PreviewSong: DoriFrontend.Searchable {
+extension DoriAPI.Songs.PreviewSong: DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.tag.localizedString]
     }

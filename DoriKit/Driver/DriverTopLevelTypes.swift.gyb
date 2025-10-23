@@ -21,19 +21,19 @@ public typealias Constellation = DoriAPI.Constellation
 public typealias Attribute = DoriAPI.Attribute
 
 // MARK: Login Campaign
-public typealias LoginCampaign = DoriAPI.LoginCampaign.Campaign
-public typealias PreviewLoginCampaign = DoriAPI.LoginCampaign.PreviewCampaign
+public typealias LoginCampaign = DoriAPI.LoginCampaigns.Campaign
+public typealias PreviewLoginCampaign = DoriAPI.LoginCampaigns.PreviewCampaign
 
 extension LoginCampaign {
     @inlinable
     public static func all() async -> [PreviewLoginCampaign]? {
-        await DoriAPI.LoginCampaign.all()
+        await DoriAPI.LoginCampaigns.all()
     }
 }
 extension PreviewLoginCampaign {
     @inlinable
     public static func all() async -> [Self]? {
-        await DoriAPI.LoginCampaign.all()
+        await DoriAPI.LoginCampaigns.all()
     }
 }
 
@@ -66,19 +66,19 @@ extension RecentNewsItems {
     baseNames = ["Costume", "Event", "Gacha", "Song"]
 }%
 % for baseName in baseNames:
-public typealias ${baseName} = DoriAPI.${baseName}.${baseName}
-public typealias Preview${baseName} = DoriAPI.${baseName}.Preview${baseName}
+public typealias ${baseName} = DoriAPI.${baseName}s.${baseName}
+public typealias Preview${baseName} = DoriAPI.${baseName}s.Preview${baseName}
 
 extension ${baseName} {
     @inlinable
     public static func all() async -> [Preview${baseName}]? {
-        await DoriFrontend.${baseName}.list()
+        await DoriFrontend.${baseName}s.list()
     }
 }
 extension Preview${baseName} {
     @inlinable
     public static func all() async -> [Self]? {
-        await DoriFrontend.${baseName}.list()
+        await DoriFrontend.${baseName}s.list()
     }
 }
 % end
@@ -88,12 +88,12 @@ extension Preview${baseName} {
     baseNames = ["Band", "Comic", "Degree", "Skill", "MiracleTicket"]
 }%
 % for baseName in baseNames:
-public typealias ${baseName} = DoriAPI.${baseName}.${baseName}
+public typealias ${baseName} = DoriAPI.${baseName}s.${baseName}
 
 extension ${baseName} {
     @inlinable
     public static func all() async -> [Self]? {
-        await DoriAPI.${baseName}.all()
+        await DoriAPI.${baseName}s.all()
     }
 }
 % end
@@ -102,72 +102,72 @@ extension ${baseName} {
 extension Band {
     @inlinable
     public static func main() async -> [Self]? {
-        await DoriAPI.Band.main()
+        await DoriAPI.Bands.main()
     }
 }
 
 // MARK: Card
-public typealias Card = DoriAPI.Card.Card
-public typealias PreviewCard = DoriAPI.Card.PreviewCard
-public typealias CardType = DoriAPI.Card.CardType
-public typealias CardEpisode = DoriAPI.Card.CardEpisode
-public typealias CardStat = DoriAPI.Card.CardStat
+public typealias Card = DoriAPI.Cards.Card
+public typealias PreviewCard = DoriAPI.Cards.PreviewCard
+public typealias CardType = DoriAPI.Cards.CardType
+public typealias CardEpisode = DoriAPI.Cards.CardEpisode
+public typealias CardStat = DoriAPI.Cards.CardStat
 
 extension Card {
     @inlinable
     public static func all() async -> [PreviewCard]? {
-        await DoriAPI.Card.all()
+        await DoriAPI.Cards.all()
     }
     
     @inlinable
     public static func allWithBand() async -> [CardWithBand]? {
-        await DoriFrontend.Card.list()
+        await DoriFrontend.Cards.list()
     }
 }
 extension PreviewCard {
     @inlinable
     public static func all() async -> [Self]? {
-        await DoriAPI.Card.all()
+        await DoriAPI.Cards.all()
     }
     
     @inlinable
     public static func allWithBand() async -> [CardWithBand]? {
-        await DoriFrontend.Card.list()
+        await DoriFrontend.Cards.list()
     }
 }
 
 // MARK: Character
-public typealias Character = DoriAPI.Character.Character
-public typealias PreviewCharacter = DoriAPI.Character.PreviewCharacter
-public typealias BirthdayCharacter = DoriAPI.Character.BirthdayCharacter
-public typealias CategorizedCharacters = DoriFrontend.Character.CategorizedCharacters
+public typealias Character = DoriAPI.Characters.Character
+public typealias PreviewCharacter = DoriAPI.Characters.PreviewCharacter
+public typealias BirthdayCharacter = DoriAPI.Characters.BirthdayCharacter
+public typealias CategorizedCharacters = DoriFrontend.Characters.CategorizedCharacters
 
 extension Character {
     @inlinable
     public static func all() async -> [PreviewCharacter]? {
-        await DoriAPI.Character.all()
+        await DoriAPI.Characters.all()
     }
     
     @inlinable
     public static func categorized() async -> CategorizedCharacters? {
-        await DoriFrontend.Character.categorizedCharacters()
+        await DoriFrontend.Characters.categorizedCharacters()
     }
 }
 extension PreviewCharacter {
     @inlinable
     public static func all() async -> [Self]? {
-        await DoriAPI.Character.all()
+        await DoriAPI.Characters.all()
     }
     
     @inlinable
     public static func categorized() async -> CategorizedCharacters? {
-        await DoriFrontend.Character.categorizedCharacters()
+        await DoriFrontend.Characters.categorizedCharacters()
     }
 }
 extension BirthdayCharacter {
     @inlinable
     public static func all() async -> [Self]? {
-        await DoriAPI.Character.allBirthday()
+        await DoriAPI.Characters.allBirthday()
     }
 }
 
@@ -184,35 +184,35 @@ public typealias DoriURLValidator = DoriFrontend.URLValidator
     baseNames = ["Card", "Character", "Costume", "Event", "Gacha", "Song"]
 }%
 % for baseName in baseNames:
-public typealias Extended${baseName} = DoriFrontend.${baseName}.Extended${baseName}
+public typealias Extended${baseName} = DoriFrontend.${baseName}s.Extended${baseName}
 % end
 
-public typealias CardWithBand = DoriFrontend.Card.CardWithBand
+public typealias CardWithBand = DoriFrontend.Cards.CardWithBand
 
 extension BirthdayCharacter {
     @inlinable
     public static func recent() async -> [Self]? {
-        await DoriFrontend.Character.recentBirthdayCharacters()
+        await DoriFrontend.Characters.recentBirthdayCharacters()
     }
 }
 
 extension CategorizedCharacters {
     @inlinable
     public static func all() async -> CategorizedCharacters? {
-        await DoriFrontend.Character.categorizedCharacters()
+        await DoriFrontend.Characters.categorizedCharacters()
     }
 }
 
 extension Event {
     @inlinable
     public static func localizedLatest() async -> LocalizedData<PreviewEvent>? {
-        await DoriFrontend.Event.localizedLatestEvent()
+        await DoriFrontend.Events.localizedLatestEvent()
     }
 }
 extension PreviewEvent {
     @inlinable
     public static func localizedLatest() async -> LocalizedData<Self>? {
-        await DoriFrontend.Event.localizedLatestEvent()
+        await DoriFrontend.Events.localizedLatestEvent()
     }
 }
 
@@ -226,12 +226,12 @@ extension NewsListItem {
     }
 }
 
-public typealias ExtendedMiracleTicket = DoriFrontend.MiracleTicket.ExtendedMiracleTicket
+public typealias ExtendedMiracleTicket = DoriFrontend.MiracleTickets.ExtendedMiracleTicket
 
 extension ExtendedMiracleTicket {
     @inlinable
     public static func all() async -> [Self]? {
-        await DoriFrontend.MiracleTicket.extendedList()
+        await DoriFrontend.MiracleTickets.extendedList()
     }
 }
 

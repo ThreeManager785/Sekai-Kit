@@ -17,7 +17,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about assets in Bandori.
-    public enum Asset {
+    public enum Assets {
         /// Get asset information of locale.
         /// - Parameter locale: Target locale.
         /// - Returns: Asset information of requested locale, nil if failed to fetch.
@@ -63,7 +63,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Asset {
+extension DoriAPI.Assets {
     public typealias AssetList = [String: Child]
     @frozen
     public enum Child: Sendable {
@@ -102,13 +102,14 @@ extension DoriAPI.Asset {
         }
     }
 }
-extension DoriAPI.Asset.AssetList {
+
+extension DoriAPI.Assets.AssetList {
     @inlinable
-    public func access(_ key: String) -> DoriAPI.Asset.Child? {
+    public func access(_ key: String) -> DoriAPI.Assets.Child? {
         self[key]
     }
     @inlinable
-    public func access(_ key: String, updatingPath descriptor: inout DoriAPI.Asset.PathDescriptor) -> DoriAPI.Asset.Child? {
+    public func access(_ key: String, updatingPath descriptor: inout DoriAPI.Assets.PathDescriptor) -> DoriAPI.Assets.Child? {
         descriptor._path += "\(key)/"
         return self[key]
     }

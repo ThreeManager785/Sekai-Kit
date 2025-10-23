@@ -27,7 +27,7 @@ extension DoriAPI {
     /// >
     /// > This API is currently in development and is unstable.
     /// > It is subject to change, and software implemented with this API should be tested with its stable version.
-    public enum Post {
+    public enum Posts {
         public static func _list(_ request: ListRequest) async -> PagedPosts? {
             let result = await requestJSON("https://bestdori.com/api/post/list", method: .post, parameters: request, encoder: JSONParameterEncoder.default)
             if case let .success(respJSON) = result {
@@ -155,7 +155,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Post {
+extension DoriAPI.Posts {
     public struct Post: Identifiable, Sendable, Hashable {
         public var id: Int
         public var categoryName: Category
@@ -245,7 +245,7 @@ extension DoriAPI.Post {
         public struct ChartMetadata: Sendable, Hashable {
             public var song: Song
             public var artist: String
-            public var difficulty: DoriAPI.Song.DifficultyType // Int(JSON) -> ~(Swift)
+            public var difficulty: DoriAPI.Songs.DifficultyType // Int(JSON) -> ~(Swift)
             public var level: Int
             
             public enum Song: Sendable, Hashable {

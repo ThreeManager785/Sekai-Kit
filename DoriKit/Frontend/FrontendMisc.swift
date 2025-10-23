@@ -95,11 +95,11 @@ extension DoriFrontend {
             let groupResult = await withTasksResult {
                 await DoriAPI.Misc.playerProfile(of: id, in: locale)
             } _: {
-                await DoriAPI.Degree.all()
+                await DoriAPI.Degrees.all()
             } _: {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await DoriAPI.Song.all()
+                await DoriAPI.Songs.all()
             }
             guard let profile = groupResult.0 else { return nil }
             guard let degrees = groupResult.1 else { return nil }
@@ -167,10 +167,10 @@ extension DoriFrontend {
 extension DoriFrontend.Misc {
     public struct ExtendedPlayerProfile: Sendable, Hashable, DoriCache.Cacheable {
         public var profile: DoriAPI.Misc.PlayerProfile
-        public var degrees: [DoriAPI.Degree.Degree]
-        public var keyVisualCard: DoriAPI.Card.PreviewCard
-        public var mainDeckCards: [DoriAPI.Card.PreviewCard]
-        public var songs: [DoriAPI.Song.PreviewSong]
+        public var degrees: [DoriAPI.Degrees.Degree]
+        public var keyVisualCard: DoriAPI.Cards.PreviewCard
+        public var mainDeckCards: [DoriAPI.Cards.PreviewCard]
+        public var songs: [DoriAPI.Songs.PreviewSong]
     }
 }
 

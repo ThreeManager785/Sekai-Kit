@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about costume in Bandori.
-    public enum Costume {
+    public enum Costumes {
         /// Get all costumes in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -143,7 +143,7 @@ extension DoriAPI {
     }
 }
     
-extension DoriAPI.Costume {
+extension DoriAPI.Costumes {
     /// Represent simplified data of a costume.
     public struct PreviewCostume: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of costume.
@@ -179,8 +179,8 @@ extension DoriAPI.Costume {
     }
 }
 
-extension DoriAPI.Costume.PreviewCostume {
-    public init(_ full: DoriAPI.Costume.Costume) {
+extension DoriAPI.Costumes.PreviewCostume {
+    public init(_ full: DoriAPI.Costumes.Costume) {
         self.init(
             id: full.id,
             characterID: full.characterID,
@@ -190,10 +190,10 @@ extension DoriAPI.Costume.PreviewCostume {
         )
     }
 }
-extension DoriAPI.Costume.Costume {
+extension DoriAPI.Costumes.Costume {
     @inlinable
     public init?(id: Int) async {
-        if let costume = await DoriAPI.Costume.detail(of: id) {
+        if let costume = await DoriAPI.Costumes.detail(of: id) {
             self = costume
         } else {
             return nil
@@ -201,7 +201,7 @@ extension DoriAPI.Costume.Costume {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Costume.PreviewCostume) async {
+    public init?(preview: DoriAPI.Costumes.PreviewCostume) async {
         await self.init(id: preview.id)
     }
 }

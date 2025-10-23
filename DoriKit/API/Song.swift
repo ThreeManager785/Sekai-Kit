@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about songs in Bandori.
-    public enum Song {
+    public enum Songs {
         /// Get all songs in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -63,12 +63,12 @@ extension DoriAPI {
                     var result = [PreviewSong]()
                     for (key, value) in respJSON {
                         let notes = value["notes"].map {
-                            (key: DoriAPI.Song.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                            (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                              value: $0.1.intValue)
                         }.reduce(into: [DifficultyType: Int]()) { $0.updateValue($1.value, forKey: $1.key) }
                         
                         let bpm = value["bpm"].map {
-                            (key: DoriAPI.Song.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                            (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                              value: $0.1.map {
                                 BPM(bpm: $0.1["bpm"].intValue, start: $0.1["start"].doubleValue, end: $0.1["end"].doubleValue)
                             })
@@ -309,12 +309,12 @@ extension DoriAPI {
                     // The compiler is unable to type-check this expression in reasonable time;
                     // try breaking up the expression into distinct sub-expressions 😇
                     let notes = respJSON["notes"].map {
-                        (key: DoriAPI.Song.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                        (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                          value: $0.1.intValue)
                     }.reduce(into: [DifficultyType: Int]()) { $0.updateValue($1.value, forKey: $1.key) }
                     
                     let bpm = respJSON["bpm"].map {
-                        (key: DoriAPI.Song.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                        (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                          value: $0.1.map {
                             BPM(bpm: $0.1["bpm"].intValue, start: $0.1["start"].doubleValue, end: $0.1["end"].doubleValue)
                         })
@@ -421,8 +421,8 @@ extension DoriAPI {
                                 )
                             }
                             return (
-                                key: DoriAPI.Song.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
-                                value: DoriAPI.Song.Song.Difficulty(
+                                key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                                value: DoriAPI.Songs.Song.Difficulty(
                                     playLevel: $0.1["playLevel"].intValue,
                                     publishedAt: publishedAt,
                                     notesQuantity: $0.1["notesQuantity"].intValue,
@@ -434,7 +434,7 @@ extension DoriAPI {
                                     multiLiveScoreMap: $0.1["multiLiveScoreMap"].map {
                                         (
                                             key: Int($0.0)!,
-                                            value: DoriAPI.Song.Song.Difficulty.MultiLiveScore(
+                                            value: DoriAPI.Songs.Song.Difficulty.MultiLiveScore(
                                                 musicID: $0.1["musicId"].intValue,
                                                 musicDifficulty: $0.1["musicDifficulty"].stringValue,
                                                 multiLiveDifficultyID: $0.1["multiLiveDifficultyID"].intValue,
@@ -559,7 +559,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Song {
+extension DoriAPI.Songs {
     /// Represent simplified data of a song.
     public struct PreviewSong: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of song.
@@ -886,7 +886,7 @@ extension DoriAPI.Song {
     }
 }
 
-extension DoriAPI.Song.DifficultyType {
+extension DoriAPI.Songs.DifficultyType {
     internal init?(rawStringValue name: String) {
         switch name {
         case "easy": self = .easy
@@ -909,8 +909,8 @@ extension DoriAPI.Song.DifficultyType {
     }
 }
 
-extension DoriAPI.Song.PreviewSong {
-    public init(_ full: DoriAPI.Song.Song) {
+extension DoriAPI.Songs.PreviewSong {
+    public init(_ full: DoriAPI.Songs.Song) {
         self.init(
             id: full.id,
             tag: full.tag,
@@ -932,10 +932,10 @@ extension DoriAPI.Song.PreviewSong {
         )
     }
 }
-extension DoriAPI.Song.Song {
+extension DoriAPI.Songs.Song {
     @inlinable
     public init?(id: Int) async {
-        if let song = await DoriAPI.Song.detail(of: id) {
+        if let song = await DoriAPI.Songs.detail(of: id) {
             self = song
         } else {
             return nil
@@ -943,7 +943,7 @@ extension DoriAPI.Song.Song {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Song.PreviewSong) async {
+    public init?(preview: DoriAPI.Songs.PreviewSong) async {
         await self.init(id: preview.id)
     }
 }

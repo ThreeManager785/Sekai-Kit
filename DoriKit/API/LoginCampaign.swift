@@ -17,7 +17,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about login campaigns in Bandori.
-    public enum LoginCampaign {
+    public enum LoginCampaigns {
         /// Get all login campaigns in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -203,7 +203,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.LoginCampaign {
+extension DoriAPI.LoginCampaigns {
     /// Represent simplified data of login campaign.
     public struct PreviewCampaign: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of login campaign.
@@ -282,8 +282,8 @@ extension DoriAPI.LoginCampaign {
     }
 }
 
-extension DoriAPI.LoginCampaign.PreviewCampaign {
-    public init(_ full: DoriAPI.LoginCampaign.Campaign) {
+extension DoriAPI.LoginCampaigns.PreviewCampaign {
+    public init(_ full: DoriAPI.LoginCampaigns.Campaign) {
         self.init(
             id: full.id,
             loginBonusType: full.loginBonusType,
@@ -294,10 +294,10 @@ extension DoriAPI.LoginCampaign.PreviewCampaign {
         )
     }
 }
-extension DoriAPI.LoginCampaign.Campaign {
+extension DoriAPI.LoginCampaigns.Campaign {
     @inlinable
     public init?(id: Int) async {
-        if let campaign = await DoriAPI.LoginCampaign.detail(of: id) {
+        if let campaign = await DoriAPI.LoginCampaigns.detail(of: id) {
             self = campaign
         } else {
             return nil
@@ -305,7 +305,7 @@ extension DoriAPI.LoginCampaign.Campaign {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.LoginCampaign.PreviewCampaign) async {
+    public init?(preview: DoriAPI.LoginCampaigns.PreviewCampaign) async {
         await self.init(id: preview.id)
     }
 }

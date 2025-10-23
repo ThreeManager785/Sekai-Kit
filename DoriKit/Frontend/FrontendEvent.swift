@@ -16,12 +16,12 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about events in Bandori.
-    public enum Event {
+    public enum Events {
         /// Returns latest events for each locales.
         ///
         /// - Returns: Latest events for each locales, nil if failed to fetch.
         public static func localizedLatestEvent() async -> DoriAPI.LocalizedData<PreviewEvent>? {
-            guard let allEvents = await DoriAPI.Event.all() else { return nil }
+            guard let allEvents = await DoriAPI.Events.all() else { return nil }
             var result = DoriAPI.LocalizedData<PreviewEvent>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
             // Find from latest to earliest.
             let reversedEvents = allEvents.filter { $0.id <= 5000 }.reversed()
@@ -60,7 +60,7 @@ extension DoriFrontend {
         ///
         /// - Returns: All events, nil if failed to fetch.
         public static func list() async -> [PreviewEvent]? {
-            guard let events = await DoriAPI.Event.all() else { return nil }
+            guard let events = await DoriAPI.Events.all() else { return nil }
             return events
         }
         
@@ -71,19 +71,19 @@ extension DoriFrontend {
         ///     with related bands, characters, cards, gacha, songs and degrees.
         public static func extendedInformation(of id: Int) async -> ExtendedEvent? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Event.detail(of: id)
+                await DoriAPI.Events.detail(of: id)
             } _: {
-                await DoriAPI.Band.all()
+                await DoriAPI.Bands.all()
             } _: {
-                await DoriAPI.Character.all()
+                await DoriAPI.Characters.all()
             } _: {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await DoriAPI.Gacha.all()
+                await DoriAPI.Gachas.all()
             } _: {
-                await DoriAPI.Song.all()
+                await DoriAPI.Songs.all()
             } _: {
-                await DoriAPI.Degree.all()
+                await DoriAPI.Degrees.all()
             }
             guard let event = groupResult.0 else { return nil }
             guard let bands = groupResult.1 else { return nil }
@@ -120,11 +120,11 @@ extension DoriFrontend {
         ///     for cutoff data of tier *20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000, 10000, 20000 and 30000*.
         public static func topData(of id: Int, in locale: DoriAPI.Locale, interval: TimeInterval = 0) async -> [TopData]? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Event.topData(of: id, in: locale, interval: interval)
+                await DoriAPI.Events.topData(of: id, in: locale, interval: interval)
             } _: {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await DoriAPI.Degree.all()
+                await DoriAPI.Degrees.all()
             }
             guard let data = groupResult.0 else { return nil }
             guard let cards = groupResult.1 else { return nil }
@@ -230,7 +230,7 @@ extension DoriFrontend {
         }
         public static func _trackerData(
             of id: Int,
-            eventType: DoriAPI.Event.EventType,
+            eventType: DoriAPI.Events.EventType,
             eventStartDate: Date,
             eventEndDate: Date,
             in locale: DoriAPI.Locale,
@@ -343,9 +343,9 @@ extension DoriFrontend {
             }
             
             let groupResult = await withTasksResult {
-                await DoriAPI.Event.trackerRates()
+                await DoriAPI.Events.trackerRates()
             } _: {
-                await DoriAPI.Event.trackerData(of: id, in: locale, tier: tier)
+                await DoriAPI.Events.trackerData(of: id, in: locale, tier: tier)
             }
             guard let rates = groupResult.0 else { return nil }
             guard let trackerData = groupResult.1 else { return nil }
@@ -365,9 +365,9 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.Event {
-    public typealias PreviewEvent = DoriAPI.Event.PreviewEvent
-    public typealias Event = DoriAPI.Event.Event
+extension DoriFrontend.Events {
+    public typealias PreviewEvent = DoriAPI.Events.PreviewEvent
+    public typealias Event = DoriAPI.Events.Event
     
     /// Represent an extended event.
     public struct ExtendedEvent: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -376,17 +376,17 @@ extension DoriFrontend.Event {
         /// The base event information.
         public var event: Event
         /// The bands that participate in this event.
-        public var bands: [DoriAPI.Band.Band]
+        public var bands: [DoriAPI.Bands.Band]
         /// The characters that participate in this event.
-        public var characters: [DoriAPI.Character.PreviewCharacter]
+        public var characters: [DoriAPI.Characters.PreviewCharacter]
         /// The cards that related to this event.
-        public var cards: [DoriAPI.Card.PreviewCard]
+        public var cards: [DoriAPI.Cards.PreviewCard]
         /// The gacha that related to relating cards to this event.
-        public var gacha: [DoriAPI.Gacha.PreviewGacha]
+        public var gacha: [DoriAPI.Gachas.PreviewGacha]
         /// The songs that were released during this event.
-        public var songs: [DoriAPI.Song.PreviewSong]
+        public var songs: [DoriAPI.Songs.PreviewSong]
         /// The degrees that related to this event.
-        public var degrees: [DoriAPI.Degree.Degree]
+        public var degrees: [DoriAPI.Degrees.Degree]
     }
     
     /// Represent data of a user of top 10 in an event.
@@ -400,11 +400,11 @@ extension DoriFrontend.Event {
         /// The rank of user.
         public var rank: Int
         /// The card that is set to main by the user.
-        public var card: DoriAPI.Card.PreviewCard
+        public var card: DoriAPI.Cards.PreviewCard
         /// A boolean value that indicates whether the ``card`` is trained.
         public var trained: Bool
         /// The degrees that the user displaying.
-        public var degrees: [DoriAPI.Degree.Degree]
+        public var degrees: [DoriAPI.Degrees.Degree]
         /// Time-related points data in an event of the user.
         public var points: [Point]
         
@@ -436,10 +436,10 @@ extension DoriFrontend.Event {
     }
 }
 
-extension DoriFrontend.Event.ExtendedEvent {
+extension DoriFrontend.Events.ExtendedEvent {
     @inlinable
     public init?(id: Int) async {
-        if let event = await DoriFrontend.Event.extendedInformation(of: id) {
+        if let event = await DoriFrontend.Events.extendedInformation(of: id) {
             self = event
         } else {
             return nil

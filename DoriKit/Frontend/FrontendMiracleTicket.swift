@@ -16,15 +16,15 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about miracle tickets in Bandori.
-    public enum MiracleTicket {
+    public enum MiracleTickets {
         /// List all miracle tickets with related information.
         ///
         /// - Returns: All miracle tickets with related cards.
         public static func extendedList() async -> [ExtendedMiracleTicket]? {
             let groupResult = await withTasksResult {
-                await DoriAPI.MiracleTicket.all()
+                await DoriAPI.MiracleTickets.all()
             } _: {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             }
             guard let tickets = groupResult.0 else { return nil }
             guard let cards = groupResult.1 else { return nil }
@@ -45,10 +45,10 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.MiracleTicket {
+extension DoriFrontend.MiracleTickets {
     public struct ExtendedMiracleTicket: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
-        public var ticket: DoriAPI.MiracleTicket.MiracleTicket
-        public var cards: DoriAPI.LocalizedData<[DoriAPI.Card.PreviewCard]>
+        public var ticket: DoriAPI.MiracleTickets.MiracleTicket
+        public var cards: DoriAPI.LocalizedData<[DoriAPI.Cards.PreviewCard]>
         
         public var id: Int {
             ticket.id

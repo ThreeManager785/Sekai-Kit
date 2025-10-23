@@ -16,17 +16,17 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about card in Bandori.
-    public enum Card {
+    public enum Cards {
         /// List all cards with related information.
         ///
         /// - Returns: All cards with band information, nil if failed to fetch.
         public static func list() async -> [CardWithBand]? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await DoriAPI.Character.all()
+                await DoriAPI.Characters.all()
             } _: {
-                await DoriAPI.Band.main()
+                await DoriAPI.Bands.main()
             }
             guard let cards = groupResult.0 else { return nil }
             guard let characters = groupResult.1 else { return nil }
@@ -52,21 +52,21 @@ extension DoriFrontend {
         ///     events and gacha information.
         public static func extendedInformation(of id: Int) async -> ExtendedCard? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Card.detail(of: id)
+                await DoriAPI.Cards.detail(of: id)
             } _: {
-                await DoriAPI.Character.all()
+                await DoriAPI.Characters.all()
             } _: {
-                await DoriAPI.Band.main()
+                await DoriAPI.Bands.main()
             } _: {
-                await DoriAPI.Skill.all()
+                await DoriAPI.Skills.all()
             } _: {
-                await DoriAPI.Costume.all()
+                await DoriAPI.Costumes.all()
             } _: {
-                await DoriAPI.Event.all()
+                await DoriAPI.Events.all()
             } _: {
-                await DoriAPI.Gacha.all()
+                await DoriAPI.Gachas.all()
             } _: {
-                await DoriAPI.LoginCampaign.all()
+                await DoriAPI.LoginCampaigns.all()
             }
             guard let card = groupResult.0 else { return nil }
             guard let characters = groupResult.1 else { return nil }
@@ -78,7 +78,7 @@ extension DoriFrontend {
             guard let campaigns = groupResult.7 else { return nil }
             
             let character = characters.first { $0.id == card.characterID }!
-            var resultGacha = [DoriAPI.Gacha.PreviewGacha]()
+            var resultGacha = [DoriAPI.Gachas.PreviewGacha]()
             if let source = card.source.forPreferredLocale() {
                 for src in source {
                     guard case .gacha(let info) = src else { continue }
@@ -97,7 +97,7 @@ extension DoriFrontend {
                 id: id,
                 card: card,
                 cardSource: card.source.map {
-                    let mappedResult = $0?.map { (src: DoriAPI.Card.Card.CardSource) -> DoriFrontend.Card.ExtendedCard.Source in
+                    let mappedResult = $0?.map { (src: DoriAPI.Cards.Card.CardSource) -> DoriFrontend.Cards.ExtendedCard.Source in
                         switch src {
                         case .gacha(let dict): .gacha(dict.compactMap { key, value in
                             if let g = gacha.first(where: { $0.id == key }) {
@@ -105,7 +105,7 @@ extension DoriFrontend {
                             } else {
                                 nil
                             }
-                        }.reduce(into: [:]) { (dict, pair: (key: DoriAPI.Gacha.PreviewGacha, value: Double)) in
+                        }.reduce(into: [:]) { (dict, pair: (key: DoriAPI.Gachas.PreviewGacha, value: Double)) in
                             // Swift says the types are too complex
                             // so we have to annotate the type
                             // of `pair` explicitly.
@@ -117,7 +117,7 @@ extension DoriFrontend {
                             } else {
                                 nil
                             }
-                        }.reduce(into: [:]) { (dict, pair: (key: DoriAPI.Event.PreviewEvent, value: Int)) in
+                        }.reduce(into: [:]) { (dict, pair: (key: DoriAPI.Events.PreviewEvent, value: Int)) in
                             // Swift says the types are too complex
                             // so we have to annotate the type
                             // of `pair` explicitly.
@@ -147,14 +147,14 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.Card {
-    public typealias PreviewCard = DoriAPI.Card.PreviewCard
-    public typealias Card = DoriAPI.Card.Card
+extension DoriFrontend.Cards {
+    public typealias PreviewCard = DoriAPI.Cards.PreviewCard
+    public typealias Card = DoriAPI.Cards.Card
     
     /// Represent a ``PreviewCard`` with a related ``DoriAPI/Band/Band``.
     public struct CardWithBand: Sendable, Hashable, DoriCache.Cacheable {
         public var card: PreviewCard
-        public var band: DoriAPI.Band.Band
+        public var band: DoriAPI.Bands.Band
     }
     /// Represent an extended card.
     public struct ExtendedCard: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -165,19 +165,19 @@ extension DoriFrontend.Card {
         /// Extended sources of this card.
         public var cardSource: DoriAPI.LocalizedData<Set<Source>>
         /// The related character of this card.
-        public var character: DoriAPI.Character.PreviewCharacter
+        public var character: DoriAPI.Characters.PreviewCharacter
         /// The band of the related character of this card.
-        public var band: DoriAPI.Band.Band
+        public var band: DoriAPI.Bands.Band
         /// The skill of this card.
-        public var skill: DoriAPI.Skill.Skill
+        public var skill: DoriAPI.Skills.Skill
         /// The costume of this card.
-        public var costume: DoriAPI.Costume.PreviewCostume
+        public var costume: DoriAPI.Costumes.PreviewCostume
         /// The event which introduces this card.
         ///
         /// If no events introduce this card, all locales' data is `nil`.
-        public var event: DoriAPI.LocalizedData<DoriAPI.Event.PreviewEvent>
+        public var event: DoriAPI.LocalizedData<DoriAPI.Events.PreviewEvent>
         /// Gacha that contain this card.
-        public var gacha: [DoriAPI.Gacha.PreviewGacha]
+        public var gacha: [DoriAPI.Gachas.PreviewGacha]
         
         /// Represent a part of extended sources of a card.
         public enum Source: Sendable, Hashable, DoriCache.Cacheable {
@@ -185,18 +185,18 @@ extension DoriFrontend.Card {
             ///
             /// This case is associated an `[PreviewGacha: Double]` dictionary,
             /// which represents `[gacha: probability]`.
-            case gacha([DoriAPI.Gacha.PreviewGacha: Double])
+            case gacha([DoriAPI.Gachas.PreviewGacha: Double])
             /// Information about a card can be got from events.
             ///
             /// This case is associated an `[PreviewEvent: Int]` dictionary,
             /// which represents `[event: point]`.
-            case event([DoriAPI.Event.PreviewEvent: Int])
+            case event([DoriAPI.Events.PreviewEvent: Int])
             /// Information about a card can be got from login campaigns.
-            case login([DoriAPI.LoginCampaign.PreviewCampaign])
+            case login([DoriAPI.LoginCampaigns.PreviewCampaign])
         }
     }
 }
-extension DoriFrontend.Card.CardWithBand: DoriFrontend.Searchable {
+extension DoriFrontend.Cards.CardWithBand: DoriFrontend.Searchable {
     public var id: Int { self.card.id }
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
         self.card._searchLocalizedStrings
@@ -207,7 +207,7 @@ extension DoriFrontend.Card.CardWithBand: DoriFrontend.Searchable {
     public var _searchLocales: [DoriAPI.Locale] {
         self.card._searchLocales
     }
-    public var _searchBands: [DoriAPI.Band.Band] {
+    public var _searchBands: [DoriAPI.Bands.Band] {
         [self.band]
     }
     public var _searchAttributes: [DoriAPI.Attribute] {
@@ -215,10 +215,10 @@ extension DoriFrontend.Card.CardWithBand: DoriFrontend.Searchable {
     }
 }
 
-extension DoriFrontend.Card.ExtendedCard {
+extension DoriFrontend.Cards.ExtendedCard {
     @inlinable
     public init?(id: Int) async {
-        if let card = await DoriFrontend.Card.extendedInformation(of: id) {
+        if let card = await DoriFrontend.Cards.extendedInformation(of: id) {
             self = card
         } else {
             return nil

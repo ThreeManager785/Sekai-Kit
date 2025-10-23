@@ -2654,6 +2654,7 @@
       }
     },
     "EVENT_%@_IN_%@_HAS_ENDED" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2682,6 +2683,7 @@
       }
     },
     "EVENT_%@_IN_%@_WILL_END_AFTER_%lld_DAYS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -2722,6 +2724,7 @@
       }
     },
     "EVENT_%@_IN_%@_WILL_END_TODAY" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -2750,6 +2753,7 @@
       }
     },
     "EVENT_%@_IN_%@_WILL_START_AFTER_%lld_DAYS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -2790,6 +2794,7 @@
       }
     },
     "EVENT_%@_IN_%@_WILL_START_TODAY" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4175,6 +4180,7 @@
       }
     },
     "GACHA_%@_IN_%@_HAS_ENDED" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4203,6 +4209,7 @@
       }
     },
     "GACHA_%@_IN_%@_WILL_END_AFTER_%lld_DAYS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -4243,6 +4250,7 @@
       }
     },
     "GACHA_%@_IN_%@_WILL_END_TODAY" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -4271,6 +4279,7 @@
       }
     },
     "GACHA_%@_IN_%@_WILL_START_AFTER_%lld_DAYS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -4311,6 +4320,7 @@
       }
     },
     "GACHA_%@_IN_%@_WILL_START_TODAY" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5400,6 +5410,7 @@
       }
     },
     "LOGIN_CAMPAIGN_%@_IN_%@_HAS_ENDED" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5428,6 +5439,7 @@
       }
     },
     "LOGIN_CAMPAIGN_%@_IN_%@_WILL_END_AFTER_%lld_DAYS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -5468,6 +5480,7 @@
       }
     },
     "LOGIN_CAMPAIGN_%@_IN_%@_WILL_END_TODAY" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -5496,6 +5509,7 @@
       }
     },
     "LOGIN_CAMPAIGN_%@_IN_%@_WILL_START_AFTER_%lld_DAYS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -5536,6 +5550,7 @@
       }
     },
     "LOGIN_CAMPAIGN_%@_IN_%@_WILL_START_TODAY" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6347,6 +6362,7 @@
       }
     },
     "SONG_%@_IN_%@_HAS_PUBLISHED" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {
@@ -6375,6 +6391,7 @@
       }
     },
     "SONG_%@_IN_%@_WILL_START_AFTER_%lld_DAYS" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "variations" : {
@@ -6415,6 +6432,7 @@
       }
     },
     "SONG_%@_IN_%@_WILL_START_TODAY" : {
+      "extractionState" : "stale",
       "localizations" : {
         "en" : {
           "stringUnit" : {

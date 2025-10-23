@@ -34,14 +34,14 @@ extension DoriAPI.Constellation {
     }
 }
 
-extension DoriAPI.Card.CardType {
+extension DoriAPI.Cards.CardType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("card" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
 
-extension DoriAPI.Character.Character.Profile.Part {
+extension DoriAPI.Characters.Character.Profile.Part {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -58,20 +58,20 @@ extension DoriAPI.Character.Character.Profile.Part {
     }
 }
 
-extension DoriAPI.Event.EventType {
+extension DoriAPI.Events.EventType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("event" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
 
-extension DoriAPI.Gacha.GachaType {
+extension DoriAPI.Gachas.GachaType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("gacha" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
-extension DoriAPI.Gacha.Gacha.PaymentMethod.Method {
+extension DoriAPI.Gachas.Gacha.PaymentMethod.Method {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -85,7 +85,7 @@ extension DoriAPI.Gacha.Gacha.PaymentMethod.Method {
         }
     }
 }
-extension DoriAPI.Gacha.Gacha.PaymentMethod.Behavior {
+extension DoriAPI.Gachas.Gacha.PaymentMethod.Behavior {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -99,7 +99,7 @@ extension DoriAPI.Gacha.Gacha.PaymentMethod.Behavior {
     }
 }
 
-extension DoriAPI.LoginCampaign.CampaignType {
+extension DoriAPI.LoginCampaigns.CampaignType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("login" + self.rawValue, bundle: #bundle, comment: "")
@@ -107,7 +107,7 @@ extension DoriAPI.LoginCampaign.CampaignType {
 }
 
 #if HAS_BINARY_RESOURCE_BUNDLES
-extension DoriAPI.Post.Post.StoryMetadata.AgeRating {
+extension DoriAPI.Posts.Post.StoryMetadata.AgeRating {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -120,7 +120,7 @@ extension DoriAPI.Post.Post.StoryMetadata.AgeRating {
 }
 #endif
 
-extension DoriAPI.Song.SongTag {
+extension DoriAPI.Songs.SongTag {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("tag" + self.rawValue, bundle: #bundle, comment: "")

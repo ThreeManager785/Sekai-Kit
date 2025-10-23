@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about skills in Bandori.
-    public enum Skill {
+    public enum Skills {
         /// Get all skills in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -128,7 +128,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Skill {
+extension DoriAPI.Skills {
     /// Represent a skill of card.
     public struct Skill: Sendable, Identifiable, Equatable, Hashable, DoriCache.Cacheable {
         /// A unique ID of skill.
@@ -271,7 +271,7 @@ extension DoriAPI.Skill {
     }
 }
 
-extension DoriAPI.Skill.Skill {
+extension DoriAPI.Skills.Skill {
     public func replacedDescription(with replacement: (String, String?)) -> DoriAPI.LocalizedData<String> {
         let description = self.description
         return description.map { desc in

@@ -39,7 +39,7 @@ extension DoriAPI.Attribute {
     properties = ["PreviewEvent", "Event"]
 }%
 % for property in properties:
-extension DoriAPI.Event.${property} {
+extension DoriAPI.Events.${property} {
     @inlinable
     public var bannerImageURL: URL {
         .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/event/\(self.assetBundleName)/images_rip/banner.png")!.respectOfflineAssetContext()
@@ -104,7 +104,7 @@ extension DoriAPI.Event.${property} {
     }
 }
 % end
-extension DoriAPI.Event.EventCharacter {
+extension DoriAPI.Events.EventCharacter {
     @inlinable
     public var iconImageURL: URL {
         _doriResourceBundle?.url(forResource: "chara_icon_\(self.characterID)", withExtension: "png")
@@ -112,7 +112,7 @@ extension DoriAPI.Event.EventCharacter {
     }
 }
 
-extension DoriAPI.Band.Band {
+extension DoriAPI.Bands.Band {
     @inlinable
     public var logoImageURL: URL {
         var id = String(self.id)
@@ -145,7 +145,7 @@ extension DoriAPI.Band.Band {
     properties = ["PreviewCharacter", "BirthdayCharacter", "Character"]
 }%
 % for property in properties:
-extension DoriAPI.Character.${property} {
+extension DoriAPI.Characters.${property} {
     @inlinable
     public var keyVisualImageURL: URL {
         var id = String(self.id)
@@ -179,7 +179,7 @@ extension DoriAPI.Character.${property} {
     properties = ["PreviewCard", "Card"]
 }%
 % for property in properties:
-extension DoriAPI.Card.${property} {
+extension DoriAPI.Cards.${property} {
     @inlinable
     public var coverNormalImageURL: URL {
         .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/characters/resourceset/\(self.resourceSetName)_rip/card_normal.png")!.respectOfflineAssetContext()
@@ -303,7 +303,7 @@ extension DoriAPI.Card.${property} {
     }
 }
 % end
-extension DoriAPI.Card.Card {
+extension DoriAPI.Cards.Card {
     @inlinable
     public var sdImageURL: URL {
         .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/characters/livesd/\(self.sdResourceName)_rip/sdchara.png")!.respectOfflineAssetContext()
@@ -336,7 +336,7 @@ extension DoriAPI.Card.Card {
     }
 }
 
-extension DoriAPI.Comic.Comic {
+extension DoriAPI.Comics.Comic {
     private func idForURL() -> String {
         var id = String(self.id)
         var fixFlag = false
@@ -415,7 +415,7 @@ extension DoriAPI.Comic.Comic {
     properties = ["PreviewCostume", "Costume"]
 }%
 % for property in properties:
-extension DoriAPI.Costume.${property} {
+extension DoriAPI.Costumes.${property} {
     @inlinable
     public var thumbImageURL: URL {
         let groupID = String(Int(Double(self.id) / 50))
@@ -438,7 +438,7 @@ extension DoriAPI.Costume.${property} {
 }
 % end
 
-extension DoriAPI.Degree.Degree {
+extension DoriAPI.Degrees.Degree {
     @inlinable
     public var baseImageURL: URL {
         let locale = self.degreeName.availableLocale()!
@@ -458,7 +458,7 @@ extension DoriAPI.Degree.Degree {
     properties = ["PreviewGacha", "Gacha"]
 }%
 % for property in properties:
-extension DoriAPI.Gacha.${property} {
+extension DoriAPI.Gachas.${property} {
     @inlinable
     public var bannerImageURL: URL {
         if !bannerAssetBundleName.isEmpty {
@@ -515,7 +515,7 @@ extension DoriAPI.Gacha.${property} {
     }
 }
 % end
-extension DoriAPI.Gacha.Gacha.PaymentMethod.Method {
+extension DoriAPI.Gachas.Gacha.PaymentMethod.Method {
     public var iconImageURL: URL? {
         switch self {
         case .free: nil
@@ -546,7 +546,7 @@ extension DoriAPI.Gacha.Gacha.PaymentMethod.Method {
     properties = ["PreviewCampaign", "Campaign"]
 }%
 % for property in properties:
-extension DoriAPI.LoginCampaign.${property} {
+extension DoriAPI.LoginCampaigns.${property} {
     @inlinable
     public var backgroundImageURL: URL {
         let locale = self.publishedAt.availableLocale()!
@@ -563,7 +563,7 @@ extension DoriAPI.LoginCampaign.${property} {
 }
 % end
 
-extension DoriAPI.Song.DifficultyType {
+extension DoriAPI.Songs.DifficultyType {
     @inlinable
     public var color: Color {
         switch self {
@@ -591,7 +591,7 @@ extension DoriAPI.Song.DifficultyType {
     properties = ["PreviewSong", "Song"]
 }%
 % for property in properties:
-extension DoriAPI.Song.${property} {
+extension DoriAPI.Songs.${property} {
     @inlinable
     public var jacketImageURL: URL {
         let jacketID = Int(ceil(Double(self.id) / 10) * 10)

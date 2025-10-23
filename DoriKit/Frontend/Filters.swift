@@ -198,13 +198,13 @@ extension DoriFrontend.Filter {
     public typealias Attribute = DoriAPI.Attribute
     public typealias Rarity = Int
     public typealias Server = DoriAPI.Locale
-    public typealias CardType = DoriAPI.Card.CardType
-    public typealias EventType = DoriAPI.Event.EventType
-    public typealias GachaType = DoriAPI.Gacha.GachaType
-    public typealias SongType = DoriAPI.Song.SongTag
-    public typealias ComicType = DoriAPI.Comic.Comic.ComicType
+    public typealias CardType = DoriAPI.Cards.CardType
+    public typealias EventType = DoriAPI.Events.EventType
+    public typealias GachaType = DoriAPI.Gachas.GachaType
+    public typealias SongType = DoriAPI.Songs.SongTag
+    public typealias ComicType = DoriAPI.Comics.Comic.ComicType
     public typealias Level = Int
-    public typealias Skill = DoriAPI.Skill.Skill
+    public typealias Skill = DoriAPI.Skills.Skill
     
     public enum Band: Int, Sendable, CaseIterable, Hashable, Codable {
         case poppinParty = 1

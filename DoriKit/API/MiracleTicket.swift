@@ -17,7 +17,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about miracle tickets in Bandori.
-    public enum MiracleTicket {
+    public enum MiracleTickets {
         public static func all() async -> [MiracleTicket]? {
             // Response example:
             // {
@@ -93,7 +93,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.MiracleTicket {
+extension DoriAPI.MiracleTickets {
     public struct MiracleTicket: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var name: DoriAPI.LocalizedData<String>

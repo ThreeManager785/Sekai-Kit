@@ -17,7 +17,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about comics in Bandori.
-    public enum Comic {
+    public enum Comics {
         /// Get all comics in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -88,7 +88,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Comic {
+extension DoriAPI.Comics {
     /// Represent general data of a comic
     public struct Comic: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of comic.

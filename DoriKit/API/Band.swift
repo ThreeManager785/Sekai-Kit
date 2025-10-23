@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about band in Bandori.
-    public enum Band {
+    public enum Bands {
         /// Get all main bands in Bandori.
         ///
         /// *Main bands* means bands that have their own chapters in the game,
@@ -114,7 +114,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Band {
+extension DoriAPI.Bands {
     /// Represent a band.
     public struct Band: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of band.

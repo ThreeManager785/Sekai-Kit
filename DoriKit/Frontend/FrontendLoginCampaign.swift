@@ -16,17 +16,17 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about login campaigns in Bandori.
-    public enum LoginCampaign {
+    public enum LoginCampaigns {
         /// List all login campaigns.
         ///
         /// - Returns: All login campaigns, nil if failed to fetch.
         public static func list() async -> [PreviewCampaign]? {
-            guard let campaigns = await DoriAPI.LoginCampaign.all() else { return nil }
+            guard let campaigns = await DoriAPI.LoginCampaigns.all() else { return nil }
             return campaigns
         }
     }
 }
 
-extension DoriFrontend.LoginCampaign {
-    public typealias PreviewCampaign = DoriAPI.LoginCampaign.PreviewCampaign
+extension DoriFrontend.LoginCampaigns {
+    public typealias PreviewCampaign = DoriAPI.LoginCampaigns.PreviewCampaign
 }

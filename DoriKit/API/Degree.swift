@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about degree in Bandori.
-    public enum Degree {
+    public enum Degrees {
         /// Get all degrees in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -107,7 +107,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Degree {
+extension DoriAPI.Degrees {
     /// Represent information of a degree.
     public struct Degree: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of degree.

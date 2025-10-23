@@ -16,15 +16,15 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about gacha in Bandori.
-    public enum Gacha {
+    public enum Gachas {
         /// List all gacha.
         ///
         /// - Returns: All gacha, nil if failed to fetch.
         public static func list() async -> [PreviewGacha]? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Gacha.all()
+                await DoriAPI.Gachas.all()
             } _: {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             }
             guard let gacha = groupResult.0 else { return nil }
             guard let cards = groupResult.1 else { return nil }
@@ -41,11 +41,11 @@ extension DoriFrontend {
         ///     with related events and cards information.
         public static func extendedInformation(of id: Int) async -> ExtendedGacha? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Gacha.detail(of: id)
+                await DoriAPI.Gachas.detail(of: id)
             } _: {
-                await DoriAPI.Event.all()
+                await DoriAPI.Events.all()
             } _: {
-                await DoriAPI.Card.all()
+                await DoriAPI.Cards.all()
             }
             guard let gacha = groupResult.0 else { return nil }
             guard let events = groupResult.1 else { return nil }
@@ -60,7 +60,7 @@ extension DoriFrontend {
                             } else {
                                 nil
                             }
-                        }.reduce(into: [Int: [DoriAPI.Card.PreviewCard]]()) { partialResult, pair in
+                        }.reduce(into: [Int: [DoriAPI.Cards.PreviewCard]]()) { partialResult, pair in
                             if var value = partialResult[pair.key] {
                                 value.append(pair.value)
                                 partialResult.updateValue(value, forKey: pair.key)
@@ -84,9 +84,9 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.Gacha {
-    public typealias PreviewGacha = DoriAPI.Gacha.PreviewGacha
-    public typealias Gacha = DoriAPI.Gacha.Gacha
+extension DoriFrontend.Gachas {
+    public typealias PreviewGacha = DoriAPI.Gachas.PreviewGacha
+    public typealias Gacha = DoriAPI.Gachas.Gacha
     
     /// Represent extended gacha.
     public struct ExtendedGacha: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -95,21 +95,21 @@ extension DoriFrontend.Gacha {
         /// The base gacha information.
         public var gacha: Gacha
         /// The events that introduces this gacha.
-        public var events: [DoriAPI.Event.PreviewEvent]
+        public var events: [DoriAPI.Events.PreviewEvent]
         /// The pick-up cards in this gacha.
-        public var pickupCards: [DoriAPI.Card.PreviewCard]
+        public var pickupCards: [DoriAPI.Cards.PreviewCard]
         /// All cards in this gacha.
         ///
         /// This dictionary has a type of `[Int: [PreviewCard]]`,
         /// which means `[Rarity: [CardInfo]]`.
-        public var cardDetails: [Int: [DoriAPI.Card.PreviewCard]]
+        public var cardDetails: [Int: [DoriAPI.Cards.PreviewCard]]
     }
 }
 
-extension DoriFrontend.Gacha.ExtendedGacha {
+extension DoriFrontend.Gachas.ExtendedGacha {
     @inlinable
     public init?(id: Int) async {
-        if let gacha = await DoriFrontend.Gacha.extendedInformation(of: id) {
+        if let gacha = await DoriFrontend.Gachas.extendedInformation(of: id) {
             self = gacha
         } else {
             return nil

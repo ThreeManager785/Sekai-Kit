@@ -29,10 +29,10 @@ extension DoriFrontend {
     }
     
     public struct _FilterCache {
-        fileprivate var cardsList: [DoriAPI.Card.PreviewCard]?
-        fileprivate var cardsDict: [Int: DoriAPI.Card.PreviewCard] = [:]
-        fileprivate var bandsList: [DoriAPI.Band.Band]?
-        fileprivate var charactersList: [DoriAPI.Character.PreviewCharacter]?
+        fileprivate var cardsList: [DoriAPI.Cards.PreviewCard]?
+        fileprivate var cardsDict: [Int: DoriAPI.Cards.PreviewCard] = [:]
+        fileprivate var bandsList: [DoriAPI.Bands.Band]?
+        fileprivate var charactersList: [DoriAPI.Characters.PreviewCharacter]?
     }
 }
 
@@ -62,7 +62,7 @@ internal final class FilterCacheManager: Sendable {
     nonisolated(unsafe) private var allCache = DoriFrontend._FilterCache()
     private let lock = NSLock()
     
-    internal func writeCardCache(_ cardsList: [DoriAPI.Card.PreviewCard]?) {
+    internal func writeCardCache(_ cardsList: [DoriAPI.Cards.PreviewCard]?) {
         lock.lock()
         defer { lock.unlock() }
         if cardsList != nil {
@@ -76,7 +76,7 @@ internal final class FilterCacheManager: Sendable {
         }
     }
     
-    internal func writeBandsList(_ bandsList: [DoriAPI.Band.Band]?) {
+    internal func writeBandsList(_ bandsList: [DoriAPI.Bands.Band]?) {
         lock.lock()
         defer { lock.unlock() }
         if bandsList != nil {
@@ -84,7 +84,7 @@ internal final class FilterCacheManager: Sendable {
         }
     }
     
-    internal func writeCharactersList(_ charactersList: [DoriAPI.Character.PreviewCharacter]?) {
+    internal func writeCharactersList(_ charactersList: [DoriAPI.Characters.PreviewCharacter]?) {
         lock.lock()
         defer { lock.unlock() }
         if charactersList != nil {
@@ -107,7 +107,7 @@ internal final class FilterCacheManager: Sendable {
 
 // MARK: extension PreviewEvent
 // Attribute, Character, Server, Timeline Status, Event Type
-extension DoriAPI.Event.PreviewEvent: DoriFrontend.Filterable {
+extension DoriAPI.Events.PreviewEvent: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.attribute, .character, .characterRequiresMatchAll, .server, .timelineStatus, .eventType]
@@ -154,7 +154,7 @@ extension DoriAPI.Event.PreviewEvent: DoriFrontend.Filterable {
 // MARK: extension PreviewGacha
 // Attribute, Character, Server, Timeline Status, Gacha Type
 // Filter Cache Required
-extension DoriAPI.Gacha.PreviewGacha: DoriFrontend.Filterable {
+extension DoriAPI.Gachas.PreviewGacha: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.attribute, .character, .characterRequiresMatchAll, .server, .timelineStatus, .gachaType]
@@ -210,7 +210,7 @@ extension DoriAPI.Gacha.PreviewGacha: DoriFrontend.Filterable {
 
 // MARK: extension PreviewCard
 // Attribute, Rarity, Character, Server, Availability, Card Type, Skill
-extension DoriFrontend.Card.PreviewCard: DoriFrontend.Filterable {
+extension DoriFrontend.Cards.PreviewCard: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.attribute, .rarity, .character, .server, .released, .cardType, .skill]
@@ -250,7 +250,7 @@ extension DoriFrontend.Card.PreviewCard: DoriFrontend.Filterable {
 
 // MARK: extension CardWithBand
 // Band, Attribute, Rarity, Character, Server, Availability, Card Type, Skill
-extension DoriFrontend.Card.CardWithBand: DoriFrontend.Filterable {
+extension DoriFrontend.Cards.CardWithBand: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.band, .attribute, .rarity, .character, .server, .released, .cardType, .skill]
@@ -292,7 +292,7 @@ extension DoriFrontend.Card.CardWithBand: DoriFrontend.Filterable {
 
 // MARK: extension PreviewSong
 // Band, Server, Timeline Status, Song Type, Level
-extension DoriAPI.Song.PreviewSong: DoriFrontend.Filterable {
+extension DoriAPI.Songs.PreviewSong: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.band, .bandMatchesOthers, .server, .songAvailability, .songType, .level]
@@ -338,7 +338,7 @@ extension DoriAPI.Song.PreviewSong: DoriFrontend.Filterable {
 
 // MARK: extension PreivewCampaign
 // Server, Timeline Status, Login Campaign Type
-extension DoriAPI.LoginCampaign.PreviewCampaign: DoriFrontend.Filterable {
+extension DoriAPI.LoginCampaigns.PreviewCampaign: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.server, .timelineStatus, .loginCampaignType]
@@ -380,7 +380,7 @@ extension DoriAPI.LoginCampaign.PreviewCampaign: DoriFrontend.Filterable {
 
 // MARK: extension Comic
 // Character, Server, Comic Type
-extension DoriAPI.Comic.Comic: DoriFrontend.Filterable {
+extension DoriAPI.Comics.Comic: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.character, .characterRequiresMatchAll, .server, .comicType]
@@ -402,7 +402,7 @@ extension DoriAPI.Comic.Comic: DoriFrontend.Filterable {
 // MARK: extension PreviewCostume
 // Band, Character, Server, Availability
 // Filter Cache Required
-extension DoriFrontend.Costume.PreviewCostume: DoriFrontend.Filterable {
+extension DoriFrontend.Costumes.PreviewCostume: DoriFrontend.Filterable {
     @inlinable
     public static var applicableFilteringKeys: [DoriFrontend.Filter.Key] {
         [.band, .character, .server, .released]

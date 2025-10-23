@@ -64,7 +64,7 @@
 		8C2CCD4F2E3E67B30014189F /* RichContentRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CCD4E2E3E67AC0014189F /* RichContentRendering.swift */; };
 		8C2CCD512E3F0D850014189F /* PagedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CCD502E3F0D820014189F /* PagedContent.swift */; };
 		8C2EE3AC2E704A3400EDDD0D /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2EE3AA2E70498800EDDD0D /* libgit2.a */; };
-		8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift */; };
+		8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */; };
 		8C3264042E3B760100081F4F /* PreCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264032E3B75FF00081F4F /* PreCache.swift */; };
 		8C3264062E3C69C900081F4F /* FrontendGacha.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264052E3C69C000081F4F /* FrontendGacha.swift */; };
 		8C32F31C2E8D61F0002D183A /* NetworkCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C32F31B2E8D61E9002D183A /* NetworkCache.swift */; };
@@ -163,6 +163,7 @@
 		E924ABA02E99F9F0003BF482 /* BashTools.swift in Sources */ = {isa = PBXBuildFile; fileRef = E924AB9F2E99F9EC003BF482 /* BashTools.swift */; };
 		E924ABA42E9A0672003BF482 /* FileDistribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = E924ABA32E9A0647003BF482 /* FileDistribution.swift */; };
 		E935FF072E9CA6C900A1ECD1 /* InfoDetermination.swift in Sources */ = {isa = PBXBuildFile; fileRef = E935FF062E9CA6BE00A1ECD1 /* InfoDetermination.swift */; };
+		E949A5732EAA1E65007441A6 /* DriverTitleDescribable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E949A5722EAA1E5A007441A6 /* DriverTitleDescribable.swift */; };
 		E9A67EB42E72AF160047E6BA /* Sorter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A67EB32E72AF160047E6BA /* Sorter.swift */; };
 		E9EFF2B82E61BEAB00991940 /* MatchedFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EFF2B72E61BEA800991940 /* MatchedFilters.swift */; };
 /* End PBXBuildFile section */
@@ -284,7 +285,7 @@
 		8C2CCD4E2E3E67AC0014189F /* RichContentRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichContentRendering.swift; sourceTree = "<group>"; };
 		8C2CCD502E3F0D820014189F /* PagedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContent.swift; sourceTree = "<group>"; };
 		8C2EE3AA2E70498800EDDD0D /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgit2.a; path = "../../../Library/Developer/Xcode/DerivedData/Greatdori-aghqtexjlhuxqfcowlzrriajcttj/Build/Products/Debug/libgit2.a"; sourceTree = "<group>"; };
-		8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverCommonProtocol.swift; sourceTree = "<group>"; };
+		8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = DriverCommonProtocol.swift.gyb; sourceTree = "<group>"; };
 		8C3264032E3B75FF00081F4F /* PreCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreCache.swift; sourceTree = "<group>"; };
 		8C3264052E3C69C000081F4F /* FrontendGacha.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendGacha.swift; sourceTree = "<group>"; };
 		8C32F31B2E8D61E9002D183A /* NetworkCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCache.swift; sourceTree = "<group>"; };
@@ -393,6 +394,7 @@
 		E924ABA22E99FB07003BF482 /* Apple-Sample-Code-License.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "Apple-Sample-Code-License.pdf"; sourceTree = "<group>"; };
 		E924ABA32E9A0647003BF482 /* FileDistribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDistribution.swift; sourceTree = "<group>"; };
 		E935FF062E9CA6BE00A1ECD1 /* InfoDetermination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoDetermination.swift; sourceTree = "<group>"; };
+		E949A5722EAA1E5A007441A6 /* DriverTitleDescribable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverTitleDescribable.swift; sourceTree = "<group>"; };
 		E9A67EB32E72AF160047E6BA /* Sorter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sorter.swift; sourceTree = "<group>"; };
 		E9EFF2B72E61BEA800991940 /* MatchedFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchedFilters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -720,7 +722,8 @@
 			isa = PBXGroup;
 			children = (
 				8C7B4A032E7AA37A00EE0C89 /* DriverTopLevelTypes.swift.gyb */,
-				8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift */,
+				8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */,
+				E949A5722EAA1E5A007441A6 /* DriverTitleDescribable.swift */,
 			);
 			path = Driver;
 			sourceTree = "<group>";
@@ -1487,7 +1490,7 @@
 				8C7B4A042E7AA38200EE0C89 /* DriverTopLevelTypes.swift.gyb in Sources */,
 				8C78559B2E48C94D000EA06E /* FrontendComic.swift in Sources */,
 				8C2CCD512E3F0D850014189F /* PagedContent.swift in Sources */,
-				8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift in Sources */,
+				8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift.gyb in Sources */,
 				8C7855DC2E4A6BFA000EA06E /* FrontendMiracleTicket.swift in Sources */,
 				8C923D952E307227003AFC0A /* TaskGroup.swift.gyb in Sources */,
 				8C923D9B2E3138E3003AFC0A /* Post.swift in Sources */,
@@ -1520,6 +1523,7 @@
 				8C923D9F2E313C0B003AFC0A /* Filters.swift in Sources */,
 				8CD13FC12E2FE2BF00673E15 /* NetworkRequest.swift in Sources */,
 				8C923D972E30A1BC003AFC0A /* LocalizedStrings.swift in Sources */,
+				E949A5732EAA1E65007441A6 /* DriverTitleDescribable.swift in Sources */,
 				8CD13FE72E300D2300673E15 /* FrontendNews.swift.gyb in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

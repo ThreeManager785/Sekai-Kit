@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about gacha in Bandori.
-    public enum Gacha {
+    public enum Gachas {
         /// Get all gacha in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -341,7 +341,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Gacha {
+extension DoriAPI.Gachas {
     /// Represent simplified data of gacha.
     public struct PreviewGacha: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of gacha.
@@ -533,8 +533,8 @@ extension DoriAPI.Gacha {
     }
 }
 
-extension DoriAPI.Gacha.PreviewGacha {
-    public init(_ full: DoriAPI.Gacha.Gacha) {
+extension DoriAPI.Gachas.PreviewGacha {
+    public init(_ full: DoriAPI.Gachas.Gacha) {
         self.init(
             id: full.id,
             resourceName: full.resourceName,
@@ -547,10 +547,10 @@ extension DoriAPI.Gacha.PreviewGacha {
         )
     }
 }
-extension DoriAPI.Gacha.Gacha {
+extension DoriAPI.Gachas.Gacha {
     @inlinable
     public init?(id: Int) async {
-        if let gacha = await DoriAPI.Gacha.detail(of: id) {
+        if let gacha = await DoriAPI.Gachas.detail(of: id) {
             self = gacha
         } else {
             return nil
@@ -558,7 +558,7 @@ extension DoriAPI.Gacha.Gacha {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Gacha.PreviewGacha) async {
+    public init?(preview: DoriAPI.Gachas.PreviewGacha) async {
         await self.init(id: preview.id)
     }
 }

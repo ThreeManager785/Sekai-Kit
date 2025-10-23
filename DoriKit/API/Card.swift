@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about card in Bandori.
-    public enum Card {
+    public enum Cards {
         /// Get all cards in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -412,7 +412,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Card {
+extension DoriAPI.Cards {
     /// Represent simplified data of a card.
     public struct PreviewCard: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of card.
@@ -654,8 +654,8 @@ extension DoriAPI.Card {
     }
 }
 
-extension DoriAPI.Card.PreviewCard {
-    public init(_ full: DoriAPI.Card.Card) {
+extension DoriAPI.Cards.PreviewCard {
+    public init(_ full: DoriAPI.Cards.Card) {
         self.init(
             id: full.id,
             characterID: full.characterID,
@@ -671,10 +671,10 @@ extension DoriAPI.Card.PreviewCard {
         )
     }
 }
-extension DoriAPI.Card.Card {
+extension DoriAPI.Cards.Card {
     @inlinable
     public init?(id: Int) async {
-        if let card = await DoriAPI.Card.detail(of: id) {
+        if let card = await DoriAPI.Cards.detail(of: id) {
             self = card
         } else {
             return nil
@@ -682,12 +682,12 @@ extension DoriAPI.Card.Card {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Card.PreviewCard) async {
+    public init?(preview: DoriAPI.Cards.PreviewCard) async {
         await self.init(id: preview.id)
     }
 }
 
-extension DoriAPI.Card.Stat: AdditiveArithmetic {
+extension DoriAPI.Cards.Stat: AdditiveArithmetic {
     public static let zero: Self = .init(performance: 0, technique: 0, visual: 0)
     
     @_transparent
@@ -727,7 +727,7 @@ extension DoriAPI.Card.Stat: AdditiveArithmetic {
         a = a * b
     }
 }
-extension DoriAPI.Card.CardStat {
+extension DoriAPI.Cards.CardStat {
     /// The minimum level of a card.
     @inlinable
     public var minimumLevel: Int? {
@@ -747,13 +747,13 @@ extension DoriAPI.Card.CardStat {
     
     /// Calculate a card stat where the card has minimum level.
     @inlinable
-    public func forMinimumLevel() -> DoriAPI.Card.Stat? {
+    public func forMinimumLevel() -> DoriAPI.Cards.Stat? {
         guard let level = minimumLevel else { return nil }
         return self[.level(level)]![0]
     }
     /// Calculate a card stat where the card has maximum level.
     @inlinable
-    public func forMaximumLevel() -> DoriAPI.Card.Stat? {
+    public func forMaximumLevel() -> DoriAPI.Cards.Stat? {
         guard let level = maximumLevel else { return nil }
         return self[.level(level)]![0]
     }
@@ -789,14 +789,14 @@ extension DoriAPI.Card.CardStat {
         masterRank: Int,
         viewedStoryCount: Int,
         trained: Bool
-    ) -> DoriAPI.Card.Stat? {
+    ) -> DoriAPI.Cards.Stat? {
         guard let minimumLevel, let maximumLevel else { return nil }
         guard minimumLevel...maximumLevel ~= level else { return nil }
         guard 1...5 ~= rarity else { return nil }
         guard 0...4 ~= masterRank else { return nil }
         guard 0...2 ~= viewedStoryCount else { return nil }
         
-        var result = DoriAPI.Card.Stat(performance: 50, technique: 50, visual: 50) * rarity * masterRank
+        var result = DoriAPI.Cards.Stat(performance: 50, technique: 50, visual: 50) * rarity * masterRank
         if let baseStats = self[.level(level)]?[0] {
             result.performance += baseStats.performance
             result.technique += baseStats.technique
@@ -834,7 +834,7 @@ extension DoriAPI.Card.CardStat {
     ///   so you have to pass it as an argument when calculating.
     /// - Returns: Calculated stat, nil if failed to calculate.
     @inlinable
-    public func maximumValue(rarity: Int) -> DoriAPI.Card.Stat? {
+    public func maximumValue(rarity: Int) -> DoriAPI.Cards.Stat? {
         guard let maximumLevel else { return nil }
         return calculated(
             level: maximumLevel,

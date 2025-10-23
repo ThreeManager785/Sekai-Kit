@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about character in Bandori.
-    public enum Character {
+    public enum Characters {
         /// Get all characters in Bandori.
         ///
         /// The results have guaranteed sorting by ID.
@@ -386,7 +386,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Character {
+extension DoriAPI.Characters {
     /// Represent simplified data of a character.
     public struct PreviewCharacter: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of character.
@@ -633,8 +633,8 @@ extension DoriAPI.Character {
     }
 }
 
-extension DoriAPI.Character.PreviewCharacter {
-    public init(_ full: DoriAPI.Character.Character) {
+extension DoriAPI.Characters.PreviewCharacter {
+    public init(_ full: DoriAPI.Characters.Character) {
         self.init(
             id: full.id,
             characterType: full.characterType,
@@ -645,8 +645,8 @@ extension DoriAPI.Character.PreviewCharacter {
         )
     }
 }
-extension DoriAPI.Character.BirthdayCharacter {
-    public init?(_ full: DoriAPI.Character.Character) {
+extension DoriAPI.Characters.BirthdayCharacter {
+    public init?(_ full: DoriAPI.Characters.Character) {
         if let birthday = full.profile?.birthday {
             self.init(
                 id: full.id,
@@ -659,10 +659,10 @@ extension DoriAPI.Character.BirthdayCharacter {
         }
     }
 }
-extension DoriAPI.Character.Character {
+extension DoriAPI.Characters.Character {
     @inlinable
     public init?(id: Int) async {
-        if let character = await DoriAPI.Character.detail(of: id) {
+        if let character = await DoriAPI.Characters.detail(of: id) {
             self = character
         } else {
             return nil
@@ -670,11 +670,11 @@ extension DoriAPI.Character.Character {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Character.PreviewCharacter) async {
+    public init?(preview: DoriAPI.Characters.PreviewCharacter) async {
         await self.init(id: preview.id)
     }
     @inlinable
-    public init?(preview: DoriAPI.Character.BirthdayCharacter) async {
+    public init?(preview: DoriAPI.Characters.BirthdayCharacter) async {
         await self.init(id: preview.id)
     }
 }
