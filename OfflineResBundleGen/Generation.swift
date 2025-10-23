@@ -30,14 +30,14 @@ func generate(to output: URL) async throws {
 }
 
 func generateLocale(_ locale: DoriAPI.Locale, to output: URL, startTime: TimeInterval = CFAbsoluteTimeGetCurrent()) async throws {
-    let info = await retryUntilNonNil { await DoriAPI.Asset.info(in: locale) }
+    let info = await retryUntilNonNil { await DoriAPI.Assets.info(in: locale) }
     var finishedCount = 0
     try await generateFromInfo(info, in: locale, to: output, finished: &finishedCount, total: fileCount(of: info), startTime: startTime)
     await LimitedTaskQueue.shared.waitUntilAllFinished()
 }
 
 private func generateFromInfo(
-    _ info: DoriAPI.Asset.AssetList,
+    _ info: DoriAPI.Assets.AssetList,
     in locale: DoriAPI.Locale,
     to output: URL,
     finished: inout Int,
@@ -52,7 +52,7 @@ private func generateFromInfo(
             LimitedTaskQueue.shared.addTask {
                 var contents: [String]!
                 for i in 0..<5 {
-                    if let result = await DoriAPI.Asset._contentsOf(_path + name, in: locale) {
+                    if let result = await DoriAPI.Assets._contentsOf(_path + name, in: locale) {
                         contents = result
                         break
                     } else if i == 4 {
@@ -101,7 +101,7 @@ private func generateFromInfo(
     }
 }
 
-private func fileCount(of info: DoriAPI.Asset.AssetList) -> Int {
+private func fileCount(of info: DoriAPI.Assets.AssetList) -> Int {
     var result = 0
     for (_, child) in info {
         switch child {
