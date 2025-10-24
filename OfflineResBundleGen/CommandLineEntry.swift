@@ -89,7 +89,13 @@ struct CommandLineEntry: AsyncParsableCommand {
 
 func debugProcess(output: URL, token: String?, lastID: Int?) async {
     do {
-        try await updateAssets(in: output, withToken: token, lastID: lastID)
+        let note = await DoriAPI.News.Item(id: 8563)!.content
+        print("[$][DEBUG] Note #8563 gotten.")
+        let allPendingAssets = getDatasInAseetPatchNotes(from: note)
+        print("[$][DEBUG] Assets gotten with total of \(allPendingAssets.count) item(s).")
+        print("[$][DEBUG] Start Update")
+        await updateLocale(datas: allPendingAssets, forLocale: .jp, to: output, withToken: token ?? "", lastIDs: (lastID!, 8563))
+        print("[$][DEBUG] All Update Finished")
     } catch {
         print("updateAssets failure: \(error)")
     }

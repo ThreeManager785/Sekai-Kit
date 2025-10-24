@@ -143,3 +143,10 @@ func analyzePathBranch(_ path: String) -> String {
         return false
     }
 }
+
+func printCurrentTime() {
+    var dateFormatter = DateFormatter()
+    dateFormatter.dateStyle = .full
+    dateFormatter.timeStyle = .full
+    print("[$][Time] It's now \(dateFormatter.string(from: Date.now))")
+}

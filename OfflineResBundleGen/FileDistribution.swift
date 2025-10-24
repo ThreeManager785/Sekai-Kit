@@ -147,7 +147,7 @@ echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Directory set to \#(destinat
 
 git config user.name "Togawa Sakiko"
 git config user.email "sakiko@darock.top"
-git remote set-url origin https://x-access-token:\#(token)@github.com/Greatdori/Greatdori-OfflineResBundle.git
+\#(!token.isEmpty ? "git remote set-url origin https://x-access-token:\(token)@github.com/Greatdori/Greatdori-OfflineResBundle.git" : "")
 
 echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Github user verification set."
 
@@ -157,7 +157,7 @@ echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Checked out."
 
 git add .
 git commit -m "Auto update \#(locale.rawValue)/\#(branch) ($(date +"%Y-%m-%d")) (#\#(lastIDs.1 ?? -1))" || true
-for i in {1..10}; do git push && break; done
+for i in {1..10}; do git push \#(!token.isEmpty ? "origin" : "ssh") && break; done
 
 echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Commited & Pushed."
 """#
