@@ -14,6 +14,7 @@
 
 import SwiftUI
 import Foundation
+internal import Alamofire
 
 extension DoriFrontend {
     /// Request and fetch data about songs in Bandori.
@@ -264,6 +265,23 @@ extension DoriFrontend {
                 metaFever: metaFever
             )
         }
+        
+        public static func _allMatches() async -> [DoriAPI.Songs.PreviewSong: _SongMatchResult]? {
+            await withCheckedContinuation { continuation in
+                AF.request("https://kashi.greatdori.com/MappedSongs.plist").response { response in
+                    if let data = response.data {
+                        let decoder = PropertyListDecoder()
+                        if let result = try? decoder.decode([DoriAPI.Songs.PreviewSong: _SongMatchResult].self, from: data) {
+                            continuation.resume(returning: result)
+                        } else {
+                            continuation.resume(returning: nil)
+                        }
+                    } else {
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -386,6 +404,36 @@ extension DoriFrontend.Songs {
                 public var color: Color
                 public var text: DoriAPI.LocalizedData<String>
             }
+        }
+    }
+}
+
+extension DoriFrontend.Songs {
+    public enum _SongMatchResult: Sendable, Hashable, DoriCache.Cacheable {
+        case some([MatchItem])
+        case none(String)
+        
+        public struct MatchItem: Sendable, Hashable, DoriCache.Cacheable {
+            public let confidence: Float
+            public let matchOffset: TimeInterval
+            public let predictedCurrentMatchOffset: TimeInterval
+            public let frequencySkew: Float
+            public let timeRanges: [Range<TimeInterval>]
+            public let frequencySkewRanges: [Range<Float>]
+            public let title: String?
+            public let subtitle: String?
+            public let artist: String?
+            public let artworkURL: URL?
+            public let videoURL: URL?
+            public let genres: [String]
+            public let explicitContent: Bool
+            public let creationDate: Date?
+            public let isrc: String?
+            public let id: UUID
+            public let appleMusicURL: URL?
+            public let appleMusicID: String?
+            public let webURL: URL?
+            public let shazamID: String?
         }
     }
 }
