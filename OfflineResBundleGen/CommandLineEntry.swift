@@ -94,7 +94,122 @@ func debugProcess(output: URL, token: String?, lastID: Int?) async {
         let allPendingAssets = getDatasInAseetPatchNotes(from: note)
         print("[$][DEBUG] Assets gotten with total of \(allPendingAssets.count) item(s).")
         print("[$][DEBUG] Start Update")
-        await updateLocale(datas: allPendingAssets, forLocale: .jp, to: output, withToken: token ?? "", lastIDs: (8563, 8563))
+        
+        let locale: DoriLocale = .jp
+        let destination = output
+        let token = token ?? ""
+        
+        // I. Initiailzization
+        print("[$][Update][\(locale.rawValue)] Update process starts.")
+        var groupedDatas: [String: [String]] = [:]
+        
+        // II. Divide Data in Groups
+        for data in allPendingAssets {
+            let branch = analyzePathBranch(data)
+            groupedDatas.updateValue((groupedDatas[branch] ?? []) + [data], forKey: branch)
+        }
+        
+        groupedDatas.removeValue(forKey: "basic")
+        
+        print("[$][Update][\(locale.rawValue)] \(groupedDatas.count) branch(es) requires update.")
+        
+        // III. Handle Grouped Datas
+        for (branch, datas) in groupedDatas {
+            do {
+                // 0. Initialization
+                print("[$][Update][\(locale.rawValue)/\(branch)] Started with \(datas.count) item(s).")
+                let startTime = CFAbsoluteTimeGetCurrent()
+                var updatedItemsCount = 0
+                fflush(stdout)
+                
+                var gitBranch = "\(locale.rawValue)/\(branch)"
+                if branch == "shared" {
+                    gitBranch = branch
+                    print("[$][Update][\(locale.rawValue)/\(branch)] This is a shared branch. Git branch changed to 'shared'")
+                }
+                
+                // 1. Pull
+                let script = #"""
+echo "[%][Git Pull][\#(locale.rawValue)/\#(branch)] Pull process starts."
+
+git config --global --add safe.directory "\#(destination.absoluteString.dropURLPrefix())"
+cd "\#(destination.absoluteString.dropURLPrefix())"
+
+echo "[%][Git Pull][\#(locale.rawValue)/\#(branch)] Directory set to \#(destination.absoluteString.dropURLPrefix())."
+
+git checkout "\#(gitBranch)"
+
+echo "[%][Git Pull][\#(locale.rawValue)/\#(branch)] Checked out."
+
+# Retry git pull --rebase up to 10 times
+for i in {1..10}; do
+  if git pull --rebase; then
+    break
+  fi
+done
+
+echo "[%][Git Pull][\#(locale.rawValue)/\#(branch)] Git pulled."
+"""#
+                let (status, output) = try await runBashScript(script, commandName: "Git Pull", viewFailureAsFatalError: true)
+                print("[✓][Update][\(locale.rawValue)/\(branch)] Git pulled. Status \(status).")
+                fflush(stdout)
+                
+                // 2. Update Files
+                LimitedTaskQueue.shared.addTask {
+                    await withTaskGroup { group in
+                        for data in datas {
+                            group.addTask {
+                                await updateFile(for: data, into: destination, inLocale: locale, onUpdate: { message in
+                                    updatedItemsCount += 1
+                                    printProgressBar(
+                                        updatedItemsCount,
+                                        total: datas.count,
+                                        message: "\(message) \(formatSeconds(Int(CFAbsoluteTimeGetCurrent() - startTime)))")
+                                })
+                            }
+                        }
+                    }
+                }
+                await LimitedTaskQueue.shared.waitUntilAllFinished()
+                fflush(stdout)
+                
+                // 3. Push
+                do {
+                    let script = #"""
+echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Push script starts."
+git config --global --add safe.directory "\#(destination.absoluteString.dropURLPrefix())"
+cd "\#(destination.absoluteString.dropURLPrefix())"
+
+echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Directory set to \#(destination.absoluteString.dropURLPrefix())."
+
+git config user.name "Togawa Sakiko"
+git config user.email "sakiko@darock.top"
+\#(!token.isEmpty ? "git remote set-url origin https://x-access-token:\(token)@github.com/Greatdori/Greatdori-OfflineResBundle.git" : "")
+
+echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Github user verification set."
+
+git checkout "\#(gitBranch)"
+
+echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Checked out."
+
+git add .
+git commit -m "Auto update \#(locale.rawValue)/\#(branch) ($(date +"%Y-%m-%d")) (#\#(8563))" || true
+for i in {1..10}; do git push \#(!token.isEmpty ? "origin" : "ssh") && break; done
+
+echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Commited & Pushed."
+"""#
+                    let (status, output) = try await runBashScript(script, commandName: "Git Push", viewFailureAsFatalError: true)
+                    print("[✓][Update][\(locale.rawValue)/\(branch)] Git pushed. Status \(status).")
+                    fflush(stdout)
+                } catch {
+                    print("[×][Update][\(locale.rawValue)/\(branch)] Git push failed. Error: \(error).")
+                }
+            } catch {
+                print("[×][Update][\(locale.rawValue)/\(branch)] Git pull failed. Error: \(error).")
+            }
+        }
+        print("[$][Update][\(locale.rawValue)] Update process ended.")
+        
         print("[$][DEBUG] All Update Finished")
     } catch {
         print("updateAssets failure: \(error)")
