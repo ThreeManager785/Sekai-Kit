@@ -20,6 +20,8 @@ internal import os
 internal import SwiftyJSON
 
 /// A view that renders a Live 2D model.
+///
+/// ![Costume: This Type of Relationship is Called...](CostumeExampleImage)
 public struct Live2DView<Placeholder: View, ErrorView: View>: View {
     private var makePlaceholder: () -> Placeholder
     private var makeErrorView: () -> ErrorView

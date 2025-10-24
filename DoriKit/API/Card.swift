@@ -18,6 +18,13 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about card in Bandori.
+    ///
+    /// *Cards* are character illustrations that can be got from Gacha,
+    /// with a skill and some other information.
+    ///
+    /// ![A card illustration:
+    /// Soyo Nagasaki - This Type of Relationship is Called…
+    /// ](CardExampleImage)
     public enum Cards {
         /// Get all cards in Bandori.
         ///

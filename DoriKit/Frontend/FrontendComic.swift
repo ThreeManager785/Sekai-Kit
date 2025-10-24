@@ -16,6 +16,18 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about comics in Bandori.
+    ///
+    /// *Comics* appear randomly in the loading page of GBP.
+    /// They can also be viewed in the menu of GBP.
+    ///
+    /// A comic is either single-frame or four-frame,
+    /// use ``DoriAPI/Comics/Comic/type`` to get its type.
+    ///
+    /// You can only get all comics in one request,
+    /// to find a comic with a specific ID, use `Array.first(where:)`
+    /// to find the comic by ID.
+    ///
+    /// ![Comic: Misaki & Arisa #1 "Becoming Closer"](ComicExampleImage)
     public enum Comics {
         /// List all comics.
         ///

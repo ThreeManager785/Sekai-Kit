@@ -17,6 +17,8 @@ private import Builtin
 
 extension DoriFrontend {
     /// Request and fetch data about news in Bandori.
+    ///
+    /// The news information is provided by Bestdori.
     public enum News {
         /// List all news with a filter.
         ///

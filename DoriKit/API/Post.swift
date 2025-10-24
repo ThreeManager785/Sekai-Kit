@@ -22,11 +22,6 @@ private let placeholderURL = URL(string: "placeholder://nil")!
 
 extension DoriAPI {
     /// Request and fetch data about community posts in Bandori.
-    ///
-    /// > Beta API:
-    /// >
-    /// > This API is currently in development and is unstable.
-    /// > It is subject to change, and software implemented with this API should be tested with its stable version.
     public enum Posts {
         public static func _list(_ request: ListRequest) async -> PagedPosts? {
             let result = await requestJSON("https://bestdori.com/api/post/list", method: .post, parameters: request, encoder: JSONParameterEncoder.default)

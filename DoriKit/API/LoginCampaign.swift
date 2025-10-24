@@ -17,6 +17,17 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about login campaigns in Bandori.
+    ///
+    /// *Login campaigns* are activities that give you some items
+    /// after login.
+    ///
+    /// Many login campaigns seem like belonging to one series
+    /// but are associated separated ID in the list.
+    /// Only the login campaigns that are continuous (that is,
+    /// there're multiple rectangles for putting items) are combined in 1 ID.
+    ///
+    /// ![Background image of login campaign:
+    /// Ganso BanG Dream Chan Premiere Commemoration](LoginCampaignExampleImage)
     public enum LoginCampaigns {
         /// Get all login campaigns in Bandori.
         ///

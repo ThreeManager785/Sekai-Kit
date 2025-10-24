@@ -17,6 +17,14 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about miracle tickets in Bandori.
+    ///
+    /// *Miracle Tickets* can be used to exchange one card of your choice in GBP.
+    ///
+    /// You can only get all miracle tickets in one request,
+    /// to find a miracle ticket with a specific ID, use `Array.first(where:)`
+    /// to find the miracle ticket by ID.
+    ///
+    /// ![A miracle ticket](MiracleTicketExampleImage)
     public enum MiracleTickets {
         public static func all() async -> [MiracleTicket]? {
             // Response example:

@@ -18,6 +18,14 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about band in Bandori.
+    ///
+    /// *Bands* contains all bands you can see under a song's title in GBP,
+    /// not only those basic bands (main bands). See the documentation
+    /// of ``main()`` and ``all()`` to learn more about *main bands*
+    /// and *other bands*.
+    ///
+    /// ![Horizontally arranged band icons
+    /// from Poppin'Party to MyGO!!!!!](BandExampleImage)
     public enum Bands {
         /// Get all main bands in Bandori.
         ///

@@ -20,6 +20,20 @@ import WebKit
 
 extension DoriFrontend {
     /// Request and fetch data about costume in Bandori.
+    ///
+    /// *Costumes* are 2D and/or 3D costumes
+    /// that related to cards and characters.
+    /// A character can put on a costume in GBP
+    /// if you have the corresponding card.
+    ///
+    /// To view the Live2D of a costume, use ``Live2DView``.
+    ///
+    /// - NOTE:
+    ///     *Seasonal costumes* are not provided by methods in this namespace,
+    ///     use ``DoriAPI/Characters/detail(of:)`` to get character details,
+    ///     which contains all seaonal costumes for the character.
+    ///
+    /// ![Costume: This Type of Relationship is Called...](CostumeExampleImage)
     public enum Costumes {
         /// List all costumes.
         ///

@@ -16,6 +16,13 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about card in Bandori.
+    ///
+    /// *Cards* are character illustrations that can be got from Gacha,
+    /// with a skill and some other information.
+    ///
+    /// ![A card illustration:
+    /// Soyo Nagasaki - This Type of Relationship is Called…
+    /// ](CardExampleImage)
     public enum Cards {
         /// List all cards with related information.
         ///

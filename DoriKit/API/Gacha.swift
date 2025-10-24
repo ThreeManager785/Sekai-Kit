@@ -18,6 +18,12 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about gacha in Bandori.
+    ///
+    /// *Gacha* allow you to get random cards from it
+    /// by consuming Stars or tickets in GBP.
+    ///
+    /// ![Banner image of gacha:
+    /// Pure White Light That Dispels Dardness Gacha](GachaExampleImage)
     public enum Gachas {
         /// Get all gacha in Bandori.
         ///

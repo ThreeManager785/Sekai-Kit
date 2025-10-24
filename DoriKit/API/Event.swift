@@ -18,6 +18,11 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about events in Bandori.
+    ///
+    /// *Events* are periodic activities with new stories in GBP.
+    ///
+    /// ![Banner image of event:
+    /// Hopeful Spring Chocolate Roll Cake](EventExampleImage)
     public enum Events {
         /// Get all events in Bandori.
         ///

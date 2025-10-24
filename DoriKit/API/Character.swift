@@ -18,6 +18,18 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about character in Bandori.
+    ///
+    /// *Characters* contains all persons appear in GBP,
+    /// there are even some placeholder characters
+    /// in the list and they may subject to change.
+    ///
+    /// A character probably has a *nickname*.
+    /// GBP usually shows nickname instead of real name in its UI.
+    /// See ``Character/nickname`` for more details.
+    ///
+    /// ![Horizontally arranged key visual illustrations
+    /// of MyGO!!!!! members with their own representing colors
+    /// as background](CharacterExampleImage)
     public enum Characters {
         /// Get all characters in Bandori.
         ///

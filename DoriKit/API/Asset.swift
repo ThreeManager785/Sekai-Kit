@@ -17,6 +17,15 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about assets in Bandori.
+    ///
+    /// *Assets* are source files which GBP downloads to every players' devices.
+    ///
+    /// In the most cases, you don't find or parse data from assets,
+    /// instead, use other methods in ``DoriAPI`` or ``DoriFrontend``
+    /// to get specific data which is ready-to-use.
+    ///
+    /// - SeeAlso:
+    ///     [](https://bestdori.com/tool/explorer/asset)
     public enum Assets {
         /// Get asset information of locale.
         /// - Parameter locale: Target locale.
@@ -64,12 +73,24 @@ extension DoriAPI {
 }
 
 extension DoriAPI.Assets {
+    /// A type that represents a list of assets.
     public typealias AssetList = [String: Child]
+    
+    /// A type that represents a child in asset lists.
+    ///
+    /// The ``files(_:)`` means this child is a group of files
+    /// (generally, they are end with `_rip`). The associated `Int`
+    /// represents file count in this group.
+    /// You use ``contentsOf(_:)`` to get contents in this group.
+    ///
+    /// The ``list(_:)`` means this child is a normal folder.
     @frozen
     public enum Child: Sendable {
         case files(Int) // Int -> file count
         case list(AssetList)
     }
+    
+    /// A type that represents a path for assets.
     public struct PathDescriptor: Sendable {
         @usableFromInline
         internal var _path: String

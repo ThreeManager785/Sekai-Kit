@@ -18,6 +18,13 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about skills in Bandori.
+    ///
+    /// *Skills* are collections of effects that are applied
+    /// when playing songs in GBP, depending on the cards in your team.
+    ///
+    /// You can only get all skills in one request,
+    /// to find a skill with a specific ID, use `Array.first(where:)`
+    /// to find the skill by ID.
     public enum Skills {
         /// Get all skills in Bandori.
         ///

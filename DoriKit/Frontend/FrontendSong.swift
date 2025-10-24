@@ -18,6 +18,10 @@ internal import Alamofire
 
 extension DoriFrontend {
     /// Request and fetch data about songs in Bandori.
+    ///
+    /// *Songs* are all music with charts that can be played in GBP.
+    ///
+    /// ![Album cover of song: Wingbeat of Promise](SongExampleImage)
     public enum Songs {
         /// List all songs.
         ///

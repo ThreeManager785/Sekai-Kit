@@ -18,6 +18,16 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about degree in Bandori.
+    ///
+    /// *Degrees* are labels that can be got by participating events,
+    /// completing tasks, etc. You can choose up to 2 degrees
+    /// to show in your information page in GBP.
+    ///
+    /// You can only get all degrees in one request,
+    /// to find a degree with a specific ID, use `Array.first(where:)`
+    /// to find the degree by ID.
+    ///
+    /// ![New Staff degree](DegreeExampleImage)
     public enum Degrees {
         /// Get all degrees in Bandori.
         ///

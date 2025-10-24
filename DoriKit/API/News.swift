@@ -18,6 +18,8 @@ internal import SwiftyJSON
 
 extension DoriAPI {
     /// Request and fetch data about news in Bandori.
+    ///
+    /// The news information is provided by Bestdori.
     public enum News {
         /// Get all news about Bestdori.
         ///

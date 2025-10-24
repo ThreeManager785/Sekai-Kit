@@ -16,6 +16,11 @@ import Foundation
 
 extension DoriFrontend {
     /// Request and fetch data about events in Bandori.
+    ///
+    /// *Events* are periodic activities with new stories in GBP.
+    ///
+    /// ![Banner image of event:
+    /// Hopeful Spring Chocolate Roll Cake](EventExampleImage)
     public enum Events {
         /// Returns latest events for each locales.
         ///
