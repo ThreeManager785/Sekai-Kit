@@ -94,7 +94,7 @@ func debugProcess(output: URL, token: String?, lastID: Int?) async {
         let allPendingAssets = getDatasInAseetPatchNotes(from: note)
         print("[$][DEBUG] Assets gotten with total of \(allPendingAssets.count) item(s).")
         print("[$][DEBUG] Start Update")
-        await updateLocale(datas: allPendingAssets, forLocale: .jp, to: output, withToken: token ?? "", lastIDs: (lastID!, 8563))
+        await updateLocale(datas: allPendingAssets, forLocale: .jp, to: output, withToken: token ?? "", lastIDs: (8563, 8563))
         print("[$][DEBUG] All Update Finished")
     } catch {
         print("updateAssets failure: \(error)")
