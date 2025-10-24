@@ -341,7 +341,7 @@ private struct _Live2DNativeView: NSViewRepresentable {
             context.environment.l2dOnExpressionsUpdate?(expressions)
         }
         
-        setupWebView(webView, with: model, env: context.environment)
+        setupWebView(webView, with: model, env: context.environment, coordinator: context.coordinator)
         
         updateStoredContext(in: context)
         
@@ -392,7 +392,7 @@ private struct _Live2DNativeView: UIViewRepresentable {
             context.environment.l2dOnExpressionsUpdate?(expressions)
         }
         
-        setupWebView(webView, with: model, env: context.environment)
+        setupWebView(webView, with: model, env: context.environment, coordinator: context.coordinator)
         
         updateStoredContext(in: context)
         return webView
@@ -424,6 +424,13 @@ private class _NativeViewCoordinator: NSObject, WKScriptMessageHandler {
     }
     
     internal var currentEnvrionment: EnvironmentValues = .init()
+    internal var temporaryWebpageURL: URL?
+    
+    deinit {
+        if let url = temporaryWebpageURL {
+            try? FileManager.default.removeItem(at: url)
+        }
+    }
     
     func userContentController(
         _ userContentController: WKUserContentController,
@@ -438,7 +445,12 @@ private class _NativeViewCoordinator: NSObject, WKScriptMessageHandler {
 }
 
 @MainActor
-private func setupWebView(_ webView: WKWebView, with model: Live2DModel, env: EnvironmentValues) {
+private func setupWebView(
+    _ webView: WKWebView,
+    with model: Live2DModel,
+    env: EnvironmentValues,
+    coordinator: _NativeViewCoordinator
+) {
     func textureArrayLiteral(from preloads: [DoriCache.PreloadDescriptor<String>]) async -> String {
         var paths = [String]()
         for preload in preloads {
@@ -711,6 +723,7 @@ private func setupWebView(_ webView: WKWebView, with model: Live2DModel, env: En
         </body>
         </html>
         """.write(to: tmpFile, atomically: true, encoding: .utf8)
+        coordinator.temporaryWebpageURL = tmpFile
         webView.loadFileURL(tmpFile, allowingReadAccessTo: URL(filePath: NSHomeDirectory() + "/tmp/"))
         updateWebView(webView, fromStored: .init(model: model), toEnv: env)
     }
