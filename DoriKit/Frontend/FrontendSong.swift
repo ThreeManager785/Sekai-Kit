@@ -270,13 +270,15 @@ extension DoriFrontend {
             )
         }
         
-        public static func _allMatches() async -> [DoriAPI.Songs.PreviewSong: _SongMatchResult]? {
+        public static func _allMatches() async -> [Int: _SongMatchResult]? {
             await withCheckedContinuation { continuation in
                 AF.request("https://kashi.greatdori.com/MappedSongs.plist").response { response in
                     if let data = response.data {
                         let decoder = PropertyListDecoder()
                         if let result = try? decoder.decode([DoriAPI.Songs.PreviewSong: _SongMatchResult].self, from: data) {
-                            continuation.resume(returning: result)
+                            continuation.resume(returning: result
+                                .map { ($0.key.id, $0.value) }
+                                .reduce(into: [Int: _SongMatchResult]()) { $0.updateValue($1.1, forKey: $1.0) })
                         } else {
                             continuation.resume(returning: nil)
                         }
