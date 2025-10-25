@@ -451,3 +451,10 @@ extension DoriFrontend.Events.ExtendedEvent {
         }
     }
 }
+
+extension DoriAPI.Events.EventStory {
+    @inlinable
+    public func availability(in locale: DoriAPI.Locale) -> Bool {
+        stories.first?.title.availableInLocale(locale) ?? false
+    }
+}
