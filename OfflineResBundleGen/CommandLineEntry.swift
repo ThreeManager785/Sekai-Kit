@@ -110,6 +110,8 @@ func debugProcess(output: URL, token: String?, lastID: Int?) async {
         }
         
         groupedDatas.removeValue(forKey: "basic")
+        groupedDatas.removeValue(forKey: "movie")
+        groupedDatas.removeValue(forKey: "unsupported")
         
         print("[$][Update][\(locale.rawValue)] \(groupedDatas.count) branch(es) requires update.")
         
