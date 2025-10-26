@@ -200,6 +200,33 @@ extension DoriAPI {
             return nil
         }
         
+        /// Updates own user information.
+        ///
+        /// - Parameter information: New user information.
+        /// - Returns: `true` if the request is sent successfully, otherwise `false`.
+        ///
+        /// The new information provided overrides old information competely.
+        ///
+        /// - NOTE:
+        ///     Updating user information requires login first.
+        ///
+        /// - SeeAlso:
+        ///     Use ``withUserToken(_:_:)-45z2w`` to attach a token.
+        ///     Use ``login(_:)`` to get a token.
+        public static func updateUserInformation(_ information: NewUserInformation) async -> Bool {
+            let result = await requestJSON(
+                "https://bestdori.com/api/user",
+                method: .post,
+                parameters: information,
+                encoder: JSONParameterEncoder.default
+            )
+            if case .success(let respJSON) = result {
+                return respJSON["result"].boolValue
+            } else {
+                return false
+            }
+        }
+        
         /// Get the latest request status.
         ///
         /// Use this function to check the request status
@@ -509,6 +536,16 @@ extension DoriAPI.User {
         public var type: TitleType
         public var server: DoriAPI.Locale
         
+        public init(id: Int, type: TitleType, server: DoriAPI.Locale) {
+            self.id = id
+            self.type = type
+            self.server = server
+        }
+        @inlinable
+        public init(_ degree: DoriAPI.Degrees.Degree, server: DoriAPI.Locale) {
+            self.init(id: degree.id, type: .bandori, server: server)
+        }
+        
         public enum TitleType: String, Sendable, Hashable, DoriCache.Cacheable {
             case bandori
         }
@@ -542,6 +579,173 @@ extension DoriAPI.User {
             public var id: Int
             public var offset: Double
             public var isTrained: Bool
+        }
+    }
+    
+    public struct NewUserInformation: Sendable, Hashable, Encodable {
+        public var nickname: String
+        public var titles: [Title]
+        public var posterCard: PosterCard?
+        public var selfIntroduction: String
+        public var accounts: [GameAccount]
+        public var socialMedia: String
+        public var favoriteCharacterIDs: [Int]
+        public var favoriteCardIDs: [Int]
+        public var favoriteBandIDs: [Int]
+        public var favoriteSongIDs: [Int]
+        public var favoriteCostumeIDs: [Int]
+        
+        public init(
+            nickname: String,
+            titles: [Title],
+            posterCard: PosterCard? = nil,
+            selfIntroduction: String,
+            accounts: [GameAccount],
+            socialMedia: String,
+            favoriteCharacterIDs: [Int],
+            favoriteCardIDs: [Int],
+            favoriteBandIDs: [Int],
+            favoriteSongIDs: [Int],
+            favoriteCostumeIDs: [Int]
+        ) {
+            self.nickname = nickname
+            self.titles = titles
+            self.posterCard = posterCard
+            self.selfIntroduction = selfIntroduction
+            self.accounts = accounts
+            self.socialMedia = socialMedia
+            self.favoriteCharacterIDs = favoriteCharacterIDs
+            self.favoriteCardIDs = favoriteCardIDs
+            self.favoriteBandIDs = favoriteBandIDs
+            self.favoriteSongIDs = favoriteSongIDs
+            self.favoriteCostumeIDs = favoriteCostumeIDs
+        }
+        @inlinable
+        public init(_ information: UserInformation) {
+            self.init(
+                nickname: information.nickname,
+                titles: information.titles,
+                posterCard: information.posterCard != nil ? .init(information.posterCard!) : nil,
+                selfIntroduction: information.selfIntroduction,
+                accounts: information.accounts,
+                socialMedia: information.socialMedia,
+                favoriteCharacterIDs: information.favoriteCharacterIDs,
+                favoriteCardIDs: information.favoriteCardIDs,
+                favoriteBandIDs: information.favoriteBandIDs,
+                favoriteSongIDs: information.favoriteSongIDs,
+                favoriteCostumeIDs: information.favoriteCostumeIDs
+            )
+        }
+        
+        internal enum CodingKeys: CodingKey {
+            case nickname
+            case titles
+            case posterCard
+            case selfIntro
+            case serverIds
+            case socialMedia
+            case favCharacters
+            case favCards
+            case favBands
+            case favSongs
+            case favCostumes
+        }
+        public func encode(to encoder: any Encoder) throws {
+            struct EncodingTitle: Encodable {
+                var id: Int
+                var type: Title.TitleType
+                var server: DoriAPI.Locale
+                
+                init(_ title: Title) {
+                    self.id = title.id
+                    self.type = title.type
+                    self.server = title.server
+                }
+                
+                enum CodingKeys: CodingKey {
+                    case id
+                    case type
+                    case server
+                }
+                func encode(to encoder: any Encoder) throws {
+                    var container = encoder.container(keyedBy: CodingKeys.self)
+                    try container.encode(id, forKey: .id)
+                    try container.encode(type.rawValue, forKey: .type)
+                    try container.encode(server.rawIntValue, forKey: .server)
+                }
+            }
+            struct EncodingServerID: Encodable {
+                var server: DoriAPI.Locale
+                var uid: Int
+                
+                init(_ account: GameAccount) {
+                    self.server = account.server
+                    self.uid = account.uid
+                }
+                
+                enum CodingKeys: CodingKey {
+                    case id
+                    case server
+                }
+                func encode(to encoder: any Encoder) throws {
+                    var container = encoder.container(keyedBy: CodingKeys.self)
+                    try container.encode(uid, forKey: .id)
+                    try container.encode(server, forKey: .server)
+                }
+            }
+            
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(nickname, forKey: .nickname)
+            try container.encode(titles.map { EncodingTitle($0) }, forKey: .titles)
+            try container.encode(posterCard, forKey: .posterCard)
+            try container.encode(selfIntroduction, forKey: .selfIntro)
+            try container.encode(accounts.map { EncodingServerID($0) }, forKey: .serverIds)
+            try container.encode(socialMedia, forKey: .socialMedia)
+            try container.encode(favoriteCharacterIDs, forKey: .favCharacters)
+            try container.encode(favoriteCardIDs, forKey: .favCards)
+            try container.encode(favoriteBandIDs, forKey: .favBands)
+            try container.encode(favoriteSongIDs, forKey: .favSongs)
+            try container.encode(favoriteCostumeIDs, forKey: .favCostumes)
+        }
+        
+        public struct PosterCard: Sendable, Hashable, Encodable {
+            public var id: Int
+            public var offset: Double
+            public var isTrained: Bool
+            
+            public init(id: Int, offset: Double, isTrained: Bool) {
+                self.id = id
+                self.offset = offset
+                self.isTrained = isTrained
+            }
+            @inlinable
+            public init(_ posterCard: UserInformation.PosterCard) {
+                self.init(
+                    id: posterCard.id,
+                    offset: posterCard.offset,
+                    isTrained: posterCard.isTrained
+                )
+            }
+            @inlinable
+            public init(_ card: DoriAPI.Cards.PreviewCard, offset: Double, isTrained: Bool) {
+                self.init(id: card.id, offset: offset, isTrained: isTrained)
+            }
+            @inlinable
+            public init(_ card: DoriAPI.Cards.Card, offset: Double, isTrained: Bool) {
+                self.init(id: card.id, offset: offset, isTrained: isTrained)
+            }
+            
+            internal enum CodingKeys: CodingKey {
+                case id
+                case offset
+                case trainedArt
+            }
+            public func encode(to encoder: any Encoder) throws {
+                var container = encoder.container(keyedBy: CodingKeys.self)
+                try container.encode(id, forKey: .id)
+                try container.encode(offset, forKey: .offset)
+                try container.encode(isTrained, forKey: .trainedArt)
+            }
         }
     }
 }
@@ -593,6 +797,11 @@ extension DoriAPI.User {
     public struct GameAccount: Sendable, Hashable, DoriCache.Cacheable {
         public var server: DoriAPI.Locale
         public var uid: Int
+        
+        public init(server: DoriAPI.Locale, uid: Int) {
+            self.server = server
+            self.uid = uid
+        }
     }
     
     public struct GameAccountDetail: Sendable, Hashable, DoriCache.Cacheable {

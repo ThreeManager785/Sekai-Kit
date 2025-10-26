@@ -1,0 +1,74 @@
+//===---*- Greatdori! -*---------------------------------------------------===//
+//
+// UserInfoInits.swift.gyb
+//
+// This source file is part of the Greatdori! open source project
+//
+// Copyright (c) 2025 the Greatdori! project authors
+// Licensed under Apache License v2.0
+//
+// See https://greatdori.com/LICENSE.txt for license information
+// See https://greatdori.com/CONTRIBUTORS.txt for the list of Greatdori! project authors
+//
+//===----------------------------------------------------------------------===//
+
+import Foundation
+
+%{
+    prefixs = ["Preview", "~ID~", ""]
+    
+    def typeName(prefix: str, baseName: str) -> str:
+        if prefix == "~ID~":
+            return "[Int]"
+        else:
+            return f"[DoriAPI.{baseName}s.{prefix}{baseName}]"
+    
+    def valueExpr(name: str, idName: str, prefix: str) -> str:
+        if prefix == "~ID~":
+            return idName
+        else:
+            return f"{name}.map {{ $0.id }}"
+}%
+
+extension DoriAPI.User.NewUserInformation {
+% for charaPrefix in prefixs:
+    % for cardPrefix in prefixs:
+        % for bandPrefix in ["~ID~", ""]:
+            % for songPrefix in prefixs:
+                % for costumePrefix in prefixs:
+                    % if not (charaPrefix == cardPrefix == bandPrefix == songPrefix == costumePrefix == "~ID~"):
+    @inlinable
+    public init(
+        nickname: String,
+        titles: [DoriAPI.User.Title],
+        posterCard: PosterCard? = nil,
+        selfIntroduction: String,
+        accounts: [DoriAPI.User.GameAccount],
+        socialMedia: String,
+        favoriteCharacter${"ID" if charaPrefix == "~ID~" else ""}s: ${typeName(charaPrefix, "Character")},
+        favoriteCard${"ID" if cardPrefix == "~ID~" else ""}s: ${typeName(cardPrefix, "Card")},
+        favoriteBand${"ID" if bandPrefix == "~ID~" else ""}s: ${typeName(bandPrefix, "Band")},
+        favoriteSong${"ID" if songPrefix == "~ID~" else ""}s: ${typeName(songPrefix, "Song")},
+        favoriteCostume${"ID" if costumePrefix == "~ID~" else ""}s: ${typeName(costumePrefix, "Costume")}
+    ) {
+        self.init(
+            nickname: nickname,
+            titles: titles,
+            posterCard: posterCard,
+            selfIntroduction: selfIntroduction,
+            accounts: accounts,
+            socialMedia: socialMedia,
+            favoriteCharacterIDs: ${valueExpr("favoriteCharacters", "favoriteCharacterIDs", charaPrefix)},
+            favoriteCardIDs: ${valueExpr("favoriteCards", "favoriteCardIDs", cardPrefix)},
+            favoriteBandIDs: ${valueExpr("favoriteBands", "favoriteBandIDs", bandPrefix)},
+            favoriteSongIDs: ${valueExpr("favoriteSongs", "favoriteSongIDs", songPrefix)},
+            favoriteCostumeIDs: ${valueExpr("favoriteCostumes", "favoriteCostumeIDs", costumePrefix)}
+        )
+    }
+                    % end
+                % end
+            % end
+        % end
+    % end
+% end
+}

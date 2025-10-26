@@ -70,6 +70,7 @@
 		8C32F31C2E8D61F0002D183A /* NetworkCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C32F31B2E8D61E9002D183A /* NetworkCache.swift */; };
 		8C3D4E7A2EA671240034E831 /* FrontendPost.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3D4E792EA6711E0034E831 /* FrontendPost.swift */; };
 		8C3D684E2EA6092F0034E831 /* RichContentMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3D684D2EA6092A0034E831 /* RichContentMarkdown.swift */; };
+		8C3DEB652EAE4FF10004E1F5 /* UserInfoInits.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8C3DEB642EAE4FDF0004E1F5 /* UserInfoInits.swift.gyb */; };
 		8C4C89412E620C63007F1E9F /* CopyOnWrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */; };
 		8C4C89432E620EC9007F1E9F /* CopyOnWriteMacro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */; };
 		8C59DBCD2E6296D60021317E /* SwiftOperators in Frameworks */ = {isa = PBXBuildFile; productRef = 8C59DBCC2E6296D60021317E /* SwiftOperators */; };
@@ -294,6 +295,7 @@
 		8C32F31B2E8D61E9002D183A /* NetworkCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCache.swift; sourceTree = "<group>"; };
 		8C3D4E792EA6711E0034E831 /* FrontendPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendPost.swift; sourceTree = "<group>"; };
 		8C3D684D2EA6092A0034E831 /* RichContentMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichContentMarkdown.swift; sourceTree = "<group>"; };
+		8C3DEB642EAE4FDF0004E1F5 /* UserInfoInits.swift.gyb */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = UserInfoInits.swift.gyb; sourceTree = "<group>"; };
 		8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWrite.swift; sourceTree = "<group>"; };
 		8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWriteMacro.swift; sourceTree = "<group>"; };
 		8C59DBD42E62E3C60021317E /* macos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = macos.json; sourceTree = "<group>"; };
@@ -821,6 +823,7 @@
 				8C7855D92E4A698D000EA06E /* MiracleTicket.swift */,
 				8C9474402E345BE9003A90B4 /* Misc.swift */,
 				8CEA20D62EACCF62009D41C5 /* User.swift */,
+				8C3DEB642EAE4FDF0004E1F5 /* UserInfoInits.swift.gyb */,
 				8CD13FAA2E2FE2BF00673E15 /* Resource.swift.gyb */,
 				8C923D962E30A1B8003AFC0A /* LocalizedStrings.swift */,
 			);
@@ -1472,6 +1475,7 @@
 				8C9474432E348D1F003A90B4 /* FrontendMisc.swift in Sources */,
 				8C3D684E2EA6092F0034E831 /* RichContentMarkdown.swift in Sources */,
 				8C7F6B9A2E593AFE0040C206 /* DoriOfflineAsset.swift in Sources */,
+				8C3DEB652EAE4FF10004E1F5 /* UserInfoInits.swift.gyb in Sources */,
 				8CD13FBD2E2FE2BF00673E15 /* DoriFrontend.swift in Sources */,
 				8C9474412E345BED003A90B4 /* Misc.swift in Sources */,
 				8C923D7A2E3046D0003AFC0A /* FrontendCharacter.swift in Sources */,
