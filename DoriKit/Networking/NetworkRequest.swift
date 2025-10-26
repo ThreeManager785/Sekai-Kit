@@ -24,99 +24,16 @@ internal func requestJSON(
     interceptor: RequestInterceptor? = nil,
     requestModifier: Session.RequestModifier? = nil
 ) async -> Result<JSON, Void> {
-    switch offlineAssetResult(for: convertible) {
-    case .delegated(let data):
-        if let data {
-            let task = Task.detached(priority: .userInitiated) { () -> Result<JSON, Void> in
-                do {
-                    let json = try JSON(data: data)
-                    return .success(json)
-                } catch {
-                    return .failure(())
-                }
-            }
-            return await task.value
-        } else {
-            return .failure(())
-        }
-    case .useDefault:
-        break
-    }
-    
-    // Preload
-    if let url = try? convertible.asURL(),
-       let data = await DoriCache._dataFromPreloaded(url),
-       let json = try? JSON(data: data) {
-        return .success(json)
-    }
-    
-    if DoriCache.preferCachedNetworkSource,
-       let url = try? convertible.asURL(),
-       let cache = await NetworkCache.shared.getCache(for: url),
-       abs(Date.now.timeIntervalSince1970 - cache.dateUpdated.timeIntervalSince1970) < 60 * 60 {
-        if let json = (try? JSON(data: cache.data)) {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                AF.request(
-                    convertible,
-                    method: method,
-                    parameters: parameters,
-                    encoding: encoding,
-                    interceptor: interceptor,
-                    requestModifier: requestModifier
-                ).responseData { response in
-                    if let data = response.data {
-                        Task.detached(priority: .userInitiated) {
-                            if (try? JSON(data: data)) != nil {
-                                await NetworkCache.shared.updateCache(.init(data: data), for: url)
-                            }
-                        }
-                    }
-                }
-            }
-            DoriCache._finishedLoadSource?(url, cache.data)
-            return .success(json)
-        } else {
-            await NetworkCache.shared.removeCache(for: url)
-        }
-    }
-    
-    let request = AF.request(
-        convertible,
-        method: method,
-        parameters: parameters,
-        encoding: encoding,
-        interceptor: interceptor,
-        requestModifier: requestModifier
-    )
-    return await withTaskCancellationHandler {
-        await withCheckedContinuation { continuation in
-            // !!!: Receive all task locals here
-            let preferCachedNetworkSource = DoriCache.preferCachedNetworkSource
-            let finishedLoadSource = DoriCache._finishedLoadSource
-            request.responseData { response in
-                let data = response.data
-                if data != nil {
-                    Task.detached(priority: .userInitiated) {
-                        do {
-                            let json = try JSON(data: data!)
-                            continuation.resume(returning: .success(json))
-                            if let url = try? convertible.asURL() {
-                                finishedLoadSource?(url, data!)
-                                if preferCachedNetworkSource {
-                                    await NetworkCache.shared.updateCache(.init(data: data!), for: url)
-                                }
-                            }
-                        } catch {
-                            continuation.resume(returning: .failure(()))
-                        }
-                    }
-                } else {
-                    continuation.resume(returning: .failure(()))
-                }
-            }
-        }
-    } onCancel: {
-        request.cancel()
+    await _requestJSON(convertible) {
+        AF.request(
+            convertible,
+            method: method,
+            parameters: parameters,
+            encoding: encoding,
+            headers: _getThreadHeaders(),
+            interceptor: interceptor,
+            requestModifier: requestModifier
+        )
     }
 }
 internal func requestJSON<Parameters: Encodable & Sendable>(
@@ -126,6 +43,38 @@ internal func requestJSON<Parameters: Encodable & Sendable>(
     encoder: any ParameterEncoder = URLEncodedFormParameterEncoder.default,
     interceptor: RequestInterceptor? = nil,
     requestModifier: Session.RequestModifier? = nil
+) async -> Result<JSON, Void> {
+    await _requestJSON(convertible) {
+        AF.request(
+            convertible,
+            method: method,
+            parameters: parameters,
+            encoder: encoder,
+            headers: _getThreadHeaders(),
+            interceptor: interceptor,
+            requestModifier: requestModifier
+        )
+    }
+}
+
+private func _getThreadHeaders() -> HTTPHeaders {
+    var result = AF.sessionConfiguration.headers
+    
+    if let userToken = DoriFrontend.User._currentUserToken {
+        var cookie = result["Cookie"] ?? ""
+        if !cookie.isEmpty {
+            cookie += "; "
+        }
+        cookie += "token=\(userToken._value)"
+        result.update(name: "Cookie", value: cookie)
+    }
+    
+    return result
+}
+
+private func _requestJSON(
+    _ convertible: URLConvertible,
+    makeRequest: sending @escaping () -> DataRequest
 ) async -> Result<JSON, Void> {
     switch offlineAssetResult(for: convertible) {
     case .delegated(let data):
@@ -159,14 +108,7 @@ internal func requestJSON<Parameters: Encodable & Sendable>(
        abs(Date.now.timeIntervalSince1970 - cache.dateUpdated.timeIntervalSince1970) < 60 * 60 {
         if let json = (try? JSON(data: cache.data)) {
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) {
-                AF.request(
-                    convertible,
-                    method: method,
-                    parameters: parameters,
-                    encoder: encoder,
-                    interceptor: interceptor,
-                    requestModifier: requestModifier
-                ).responseData { response in
+                makeRequest().responseData { response in
                     if let data = response.data {
                         Task.detached(priority: .userInitiated) {
                             if (try? JSON(data: data)) != nil {
@@ -183,14 +125,7 @@ internal func requestJSON<Parameters: Encodable & Sendable>(
         }
     }
     
-    let request = AF.request(
-        convertible,
-        method: method,
-        parameters: parameters,
-        encoder: encoder,
-        interceptor: interceptor,
-        requestModifier: requestModifier
-    )
+    let request = makeRequest()
     return await withTaskCancellationHandler {
         await withCheckedContinuation { continuation in
             // !!!: Receive all task locals here
@@ -204,7 +139,7 @@ internal func requestJSON<Parameters: Encodable & Sendable>(
                             let json = try JSON(data: data!)
                             continuation.resume(returning: .success(json))
                             if let url = try? convertible.asURL() {
-                                DoriCache._finishedLoadSource?(url, data!)
+                                finishedLoadSource?(url, data!)
                                 if preferCachedNetworkSource {
                                     await NetworkCache.shared.updateCache(.init(data: data!), for: url)
                                 }

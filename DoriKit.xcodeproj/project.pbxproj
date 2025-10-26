@@ -158,6 +158,8 @@
 		8CE186B02E536138009C1C87 /* DoriKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C0C99912E296A8C00549B5C /* DoriKit.framework */; };
 		8CE186B12E536138009C1C87 /* DoriKit.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 8C0C99912E296A8C00549B5C /* DoriKit.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		8CEA20D52EACC0C1009D41C5 /* NetworkConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEA20D42EACC0BB009D41C5 /* NetworkConfig.swift */; };
+		8CEA20D72EACCF64009D41C5 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEA20D62EACCF62009D41C5 /* User.swift */; };
+		8CEA306F2EAD027E009D41C5 /* FrontendUser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEA306E2EAD0279009D41C5 /* FrontendUser.swift */; };
 		8CEC182B2E9947EE00C26B4A /* NewsMarkdown.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CEC182A2E9947EA00C26B4A /* NewsMarkdown.swift */; };
 		8CFEF5BF2E4DD5F00017FF66 /* FrontendLoginCampaign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CFEF5BE2E4DD5E60017FF66 /* FrontendLoginCampaign.swift */; };
 		E924AB9E2E99EB17003BF482 /* NewsParse.swift in Sources */ = {isa = PBXBuildFile; fileRef = E924AB9D2E99EB14003BF482 /* NewsParse.swift */; };
@@ -389,6 +391,8 @@
 		8CE186A82E5352D1009C1C87 /* CommandLineEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineEntry.swift; sourceTree = "<group>"; };
 		8CE186AE2E535DDD009C1C87 /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
 		8CEA20D42EACC0BB009D41C5 /* NetworkConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkConfig.swift; sourceTree = "<group>"; };
+		8CEA20D62EACCF62009D41C5 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
+		8CEA306E2EAD0279009D41C5 /* FrontendUser.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendUser.swift; sourceTree = "<group>"; };
 		8CEC182A2E9947EA00C26B4A /* NewsMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsMarkdown.swift; sourceTree = "<group>"; };
 		8CFEF5BE2E4DD5E60017FF66 /* FrontendLoginCampaign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendLoginCampaign.swift; sourceTree = "<group>"; };
 		E924AB9D2E99EB14003BF482 /* NewsParse.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsParse.swift; sourceTree = "<group>"; };
@@ -816,6 +820,7 @@
 				8CD13FAC2E2FE2BF00673E15 /* Song.swift */,
 				8C7855D92E4A698D000EA06E /* MiracleTicket.swift */,
 				8C9474402E345BE9003A90B4 /* Misc.swift */,
+				8CEA20D62EACCF62009D41C5 /* User.swift */,
 				8CD13FAA2E2FE2BF00673E15 /* Resource.swift.gyb */,
 				8C923D962E30A1B8003AFC0A /* LocalizedStrings.swift */,
 			);
@@ -843,6 +848,7 @@
 				8CB4D46B2E43049E0085D57A /* FrontendSong.swift */,
 				8C7855DB2E4A6BEC000EA06E /* FrontendMiracleTicket.swift */,
 				8C9474422E348D1A003A90B4 /* FrontendMisc.swift */,
+				8CEA306E2EAD0279009D41C5 /* FrontendUser.swift */,
 			);
 			path = Frontend;
 			sourceTree = "<group>";
@@ -1480,6 +1486,7 @@
 				8C2CCD472E3E07AC0014189F /* DoriEmoji.swift in Sources */,
 				8C94744A2E35AB84003A90B4 /* DoriCache.swift in Sources */,
 				8CBC1BD32E32B898004023F7 /* InMemoryCaches.swift in Sources */,
+				8CEA20D72EACCF64009D41C5 /* User.swift in Sources */,
 				8CD13FC52E2FE2BF00673E15 /* Color+.swift in Sources */,
 				8CB76C862E60171E00229F6F /* Macros.swift in Sources */,
 				E9A67EB42E72AF160047E6BA /* Sorter.swift in Sources */,
@@ -1510,6 +1517,7 @@
 				8C2B9D222E93800C00D003D1 /* Live2DView.swift in Sources */,
 				8C7855972E48A811000EA06E /* LoginCampaign.swift in Sources */,
 				8CBC1BDB2E334246004023F7 /* Searching.swift in Sources */,
+				8CEA306F2EAD027E009D41C5 /* FrontendUser.swift in Sources */,
 				8CD13FB52E2FE2BF00673E15 /* Gacha.swift in Sources */,
 				8CD13FB62E2FE2BF00673E15 /* News.swift in Sources */,
 				8C3264062E3C69C900081F4F /* FrontendGacha.swift in Sources */,

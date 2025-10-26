@@ -146,3 +146,17 @@ extension Date {
         self.init(timeIntervalSince1970: interval / 1000)
     }
 }
+
+extension Date {
+    internal init?(httpDate dateString: String) {
+        let formatter = DateFormatter()
+        formatter.locale = .init(identifier: "en_US_POSIX")
+        formatter.dateFormat = "EEE, dd MMM yyyy HH:mm:ss zzz"
+        formatter.timeZone = .init(secondsFromGMT: 0)
+        if let date = formatter.date(from: dateString) {
+            self = date
+        } else {
+            return nil
+        }
+    }
+}
