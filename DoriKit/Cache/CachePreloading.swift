@@ -77,6 +77,55 @@ extension DoriCache {
         }
     }
     
+    /// Preloads a resource for later usage.
+    ///
+    /// - Parameter closure: A closure that returns the resource needed.
+    /// - Returns: A descriptor for this preloading.
+    ///
+    /// You can get resource in any method in this closure, and return a result.
+    /// The closure provided will be performed quickly
+    /// after calling this function.
+    ///
+    /// You need to keep the reference of the returned descriptor.
+    /// If it loses reference, the preloading task will be cancelled.
+    ///
+    /// When you need the resource, use the ``PreloadDescriptor/value``
+    /// variable of descriptor to get the resource.
+    /// This variable gives you the resource immediately
+    /// if it has already finished preloading, or it will wait
+    /// until the resource becomes available.
+    ///
+    /// ```swift
+    /// let preload = DoriCache.preload {
+    ///     return await getMyResource()
+    /// }
+    ///
+    /// // Do something another...
+    ///
+    /// doSomething(withResource: await preload.value)
+    /// ```
+    ///
+    /// When working with DoriKit networking, you can use
+    /// ``withPreloaded(_:isolation:operation:)``
+    /// to provide descriptors for all requests in a closure.
+    ///
+    /// ```swift
+    /// let preloadCharacters = DoriCache.preload {
+    ///     await DoriAPI.Characters.all()
+    /// }
+    /// let preloadBands = DoriCache.preload {
+    ///     await DoriAPI.Bands.main()
+    /// }
+    ///
+    /// // Do something another...
+    ///
+    /// DoriCache.withPreloaded(preloadCharacters, preloadBands) {
+    ///     // The two requests below are actually started
+    ///     // when you call `DoriCache.preload` before.
+    ///     let characters = await DoriAPI.Characters.all()
+    ///     let bands = await DoriAPI.Bands.main()
+    /// }
+    /// ```
     public static func preload<T: Sendable>(_ closure: sending @escaping () async -> T?) -> PreloadDescriptor<T> {
         let ptrSourceURL = UnsafeMutablePointer<URL?>.allocate(capacity: 1)
         unsafe ptrSourceURL.initialize(to: nil)

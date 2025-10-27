@@ -241,6 +241,42 @@ public typealias PreCache = DoriCache.PreCache
 public typealias CachePromise = DoriCache.Promise
 public typealias CacheTrait = DoriCache.CacheTrait
 
+/// Get result with automatic cache.
+///
+/// - Parameters:
+///   - id: A unique identifier for cache.
+///   - trait: Trait of data being cached, see ``CacheTrait`` for more details.
+///   - invocation: A closure that returns a result that can be cached.
+/// - Returns: A ``Promise`` for result.
+///
+/// Call this function with an identifier to get a promise for result,
+/// then register an `onUpdate` closure for receiving new data:
+/// ```swift
+/// withDoriCache(id: "CacheID") {
+///     await DoriAPI.Character.Character(id: 39)
+/// }.onUpdate {
+///     let myFavoriteCharacter = $0
+/// }
+/// ```
+///
+/// The `onUpdate` closure registered to a promise may be called more than once
+/// (we call this *return twice*).
+///
+/// If a cache is available on disk, the promise will be update immediately,
+/// which allows you to get data faster. Then if `invocation` returns a result
+/// other than `nil`, the promise will be update again with the latest data from `invocation`.
+///
+/// If a cache is available on disk but `invocation` returns `nil`, the promise
+/// will be update only once with data from cache, and cache on disk won't be update.
+/// If cache is unavailable and `invocation` returns `nil`, the promise will be updated
+/// with `nil`.
+///
+/// The mechanism above implies the promise will be update **at least once**
+/// and may **more than once**.
+///
+/// - Note:
+///     You can use the same ID in different places if the result types aren't same.
+///     Caches with the same ID but different types will be stored separately.
 @inline(__always)
 public func withDoriCache<Result: Sendable & DoriCacheable>(
     id: String,
@@ -252,6 +288,55 @@ public func withDoriCache<Result: Sendable & DoriCacheable>(
 
 public typealias PreloadDescriptor = DoriCache.PreloadDescriptor
 
+/// Preloads a resource for later usage.
+///
+/// - Parameter closure: A closure that returns the resource needed.
+/// - Returns: A descriptor for this preloading.
+///
+/// You can get resource in any method in this closure, and return a result.
+/// The closure provided will be performed quickly
+/// after calling this function.
+///
+/// You need to keep the reference of the returned descriptor.
+/// If it loses reference, the preloading task will be cancelled.
+///
+/// When you need the resource, use the ``PreloadDescriptor/value``
+/// variable of descriptor to get the resource.
+/// This variable gives you the resource immediately
+/// if it has already finished preloading, or it will wait
+/// until the resource becomes available.
+///
+/// ```swift
+/// let preload = preload {
+///     return await getMyResource()
+/// }
+///
+/// // Do something another...
+///
+/// doSomething(withResource: await preload.value)
+/// ```
+///
+/// When working with DoriKit networking, you can use
+/// ``withPreloaded(_:isolation:operation:)``
+/// to provide descriptors for all requests in a closure.
+///
+/// ```swift
+/// let preloadCharacters = preload {
+///     await Character.all()
+/// }
+/// let preloadBands = preload {
+///     await Band.main()
+/// }
+///
+/// // Do something another...
+///
+/// withPreloaded(preloadCharacters, preloadBands) {
+///     // The two requests below are actually started
+///     // when you call `preload` before.
+///     let characters = await Character.all()
+///     let bands = await Band.main()
+/// }
+/// ```
 @inline(__always)
 public func preload<T: Sendable>(_ closure: sending @escaping () async -> T?) -> PreloadDescriptor<T> {
     DoriCache.preload(closure)

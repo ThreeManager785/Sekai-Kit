@@ -21,6 +21,10 @@ internal import SwiftyJSON
 
 /// A view that renders a Live 2D model.
 ///
+/// You can optionally specify a placeholder view and an error view,
+/// which will be shown when the Live 2D is loading
+/// and some errors occurred during loading, respectively.
+///
 /// ![Costume: This Type of Relationship is Called...](CostumeExampleImage)
 public struct Live2DView<Placeholder: View, ErrorView: View>: View {
     private var makePlaceholder: () -> Placeholder
