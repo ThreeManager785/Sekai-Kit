@@ -49,6 +49,7 @@ struct CommandLineEntry: AsyncParsableCommand {
         } else if locale == .doriResource {
             try await generateDoriResource(to: output)
         } else if locale == .strandMain {
+            // Update All Assets (does not include API).
             await updateAssets(in: output, withToken: token, lastID: lastID)
         } else if locale == .debug {
             print("[$][DEBUG] Start Debug Process")

@@ -15,6 +15,7 @@
 import DoriKit
 import Foundation
 
+// Strand Main
 func updateAssets(in destination: URL, withToken token: String?, lastID givenLastID: Int? = nil) async {
     print("[$][Main] Main starts.")
     guard token != nil else {
@@ -69,10 +70,13 @@ func updateLocale(datas: [String], forLocale locale: DoriLocale, to destination:
     var groupedDatas: [String: [String]] = [:]
     
     // II. Divide Data in Groups
+    // [Locale: [String]]
     for data in datas {
         let branch = analyzePathBranch(data)
         groupedDatas.updateValue((groupedDatas[branch] ?? []) + [data], forKey: branch)
     }
+    
+    // [Branch: [String]]
     
     print("[$][Update][\(locale.rawValue)] \(groupedDatas.count) branch(es) requires update.")
     
@@ -87,6 +91,8 @@ func updateLocale(datas: [String], forLocale locale: DoriLocale, to destination:
             
             var gitBranch = "\(locale.rawValue)/\(branch)"
             if branch == "shared" {
+                // jp/basic
+                // jp/shared → shared
                 gitBranch = branch
                 print("[$][Update][\(locale.rawValue)/\(branch)] This is a shared branch. Git branch changed to 'shared'")
             }

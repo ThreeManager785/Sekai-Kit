@@ -131,7 +131,7 @@ func clipPathForPrinting(_ path: String, reserve: Int = 0) -> String {
         return path
     } else {
         var result = path
-        while result.count > width - 13 - reserve {
+        while !result.isEmpty && result.count > width - 13 - reserve {
             result.removeLast()
         }
         return result + "..."

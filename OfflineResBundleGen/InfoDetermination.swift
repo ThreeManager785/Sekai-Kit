@@ -120,6 +120,29 @@ func analyzePathBranch(_ path: String) -> String {
     ]
     let sharedPaths = [
         "FIXME: SHARED PATH"
+        /*
+         - biography （需要核实)
+         - bg
+         - character（需要进一步研究，故事assets存在本地化）
+         - deco
+         - live2d
+         - sdchara
+         - stage_challenge所有
+         - thumb/areaitem/group00000_rip
+         - thumb/chara
+         - thumb/common_rip
+         - thumb/costume
+         - thumb/eventbadge_rip
+         - thumb/exchangeicon_rip
+         - thumb/limitedskin_rip
+         - thumb/liveskinlane_rip
+         - thumb/material_rip
+         - thumb/photostudio/bg_rip
+         - thumb/parameter_rip
+         - thumb/potential_level_rip
+         - ui/character_kv_atlas_rip
+         - ui/character_kv_image
+         */
     ]
     
     if pathMatchesPrefix(path, prefixs: unavailablePaths) {
