@@ -58,6 +58,18 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
             errorView: errorView
         )
     }
+    @inlinable
+    public init(
+        costume: DoriAPI.Characters.SeasonCostume,
+        placeholder: @escaping () -> Placeholder = { EmptyView() },
+        errorView: @escaping () -> ErrorView = { Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow) }
+    ) {
+        self.init(
+            resourceURL: costume.live2dResourceFileURL,
+            placeholder: placeholder,
+            errorView: errorView
+        )
+    }
     public init(
         resourceURL: URL,
         placeholder: @escaping () -> Placeholder = { EmptyView() },

@@ -272,7 +272,8 @@ extension DoriAPI {
                                             costumeType: .init(rawValue: $0.1["costumeType"].stringValue) ?? .casual,
                                             seasonCostumeType: .init(rawValue: $0.1["seasonCostumeType"].stringValue) ?? .casualSpring,
                                             sdAssetBundleName: $0.1["sdAssetBundleName"].stringValue,
-                                            live2dAssetBundleName: $0.1["live2dAssetBundleName"].stringValue
+                                            live2dAssetBundleName: $0.1["live2dAssetBundleName"].stringValue,
+                                            seasonType: $0.1["seasonType"].stringValue
                                         )
                                     }
                                 }.reversed(),
@@ -627,6 +628,7 @@ extension DoriAPI.Characters {
         public var sdAssetBundleName: String
         /// Name of Live 2D asset bundle, used for combination of resource URLs.
         public var live2dAssetBundleName: String
+        public var seasonType: String
         
         public enum CostumeType: String, Sendable, Hashable, DoriCache.Cacheable {
             case casual = "CASUAL"

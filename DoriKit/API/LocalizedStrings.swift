@@ -57,6 +57,11 @@ extension DoriAPI.Characters.Character.Profile.Part {
         }
     }
 }
+extension DoriAPI.Characters.SeasonCostume.SeasonCostumeType {
+    public var localizedString: String {
+        NSLocalizedString("seasonal\(self.rawValue)", bundle: #bundle, comment: "")
+    }
+}
 
 extension DoriAPI.Events.EventType {
     @inline(never)

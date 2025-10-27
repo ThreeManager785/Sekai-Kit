@@ -437,6 +437,12 @@ extension DoriAPI.Costumes.${property} {
     }
 }
 % end
+extension DoriAPI.Characters.SeasonCostume {
+    @inlinable
+    public var live2dResourceFileURL: URL {
+        .init(string: "https://bestdori.com/assets/jp/live2d/chara/\(self.live2dAssetBundleName)_rip/buildData.asset")!.respectOfflineAssetContext()
+    }
+}
 
 extension DoriAPI.Degrees.Degree {
     @inlinable

@@ -141,6 +141,7 @@ public typealias Character = DoriAPI.Characters.Character
 public typealias PreviewCharacter = DoriAPI.Characters.PreviewCharacter
 public typealias BirthdayCharacter = DoriAPI.Characters.BirthdayCharacter
 public typealias CategorizedCharacters = DoriFrontend.Characters.CategorizedCharacters
+public typealias SeasonCostume = DoriAPI.Characters.SeasonCostume
 
 extension Character {
     @inlinable
