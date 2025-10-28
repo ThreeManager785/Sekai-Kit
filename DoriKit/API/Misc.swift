@@ -107,6 +107,12 @@ extension DoriAPI {
                 let task = Task.detached(priority: .userInitiated) {
                     var result = [BandStory]()
                     for (key, value) in respJSON {
+                        // There are some duplicated stories in the list,
+                        // and we must filter them out.
+                        // The source code of Bestdori! says:
+                        // ... && void 0 !== a.chapterNumber ...
+                        // so we also check it in this way
+                        guard value["chapterNumber"].int != nil else { continue }
                         result.append(.init(
                             id: Int(key) ?? 0,
                             bandID: value["bandId"].intValue,

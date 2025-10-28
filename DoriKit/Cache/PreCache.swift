@@ -39,6 +39,7 @@ extension DoriCache {
         #if DORIKIT_ENABLE_PRECACHE
         let decoder = PropertyListDecoder()
         let result = try! decoder.decode(PreCache.self, from: Data(contentsOf: #bundle.url(forResource: "PreCache", withExtension: "cache")!))
+        //           ~~~^ If it traps here, re-generate you pre-cache!
         return result
         #else
         .init(bands: [], mainBands: [], characters: [], birthdayCharacters: [], categorizedCharacters: [:], characterDetails: [:])
