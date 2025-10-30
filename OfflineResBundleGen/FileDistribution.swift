@@ -184,7 +184,7 @@ echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Commited & Pushed."
 func updateFile(for inputtedPath: String, into destination: URL, inLocale locale: DoriLocale, onUpdate: @escaping (String) -> Void) async {
     let path = inputtedPath.hasPrefix("/") ? inputtedPath : "/\(inputtedPath)"
     
-    let contents = await DoriAPI.Assets._contentsOf(path, in: locale)
+    let contents = await _DoriAPI.Assets._contentsOf(path, in: locale)
     if let contents {
         let fileContainerURL = destination.appending(path: "\(locale.rawValue)\(path)_rip")
         if !FileManager.default.fileExists(atPath: fileContainerURL.path(percentEncoded: false)) {

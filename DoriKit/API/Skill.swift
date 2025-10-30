@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about skills in Bandori.
     ///
     /// *Skills* are collections of effects that are applied
@@ -135,7 +135,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Skills {
+extension _DoriAPI.Skills {
     /// Represent a skill of card.
     public struct Skill: Sendable, Identifiable, Equatable, Hashable, DoriCache.Cacheable {
         /// A unique ID of skill.
@@ -161,7 +161,7 @@ extension DoriAPI.Skills {
         /// - SeeAlso:
         ///     - ``description``
         ///     - ``DoriAPI/LocalizedData/map(_:)``
-        public var simpleDescription: DoriAPI.LocalizedData<String>
+        public var simpleDescription: _DoriAPI.LocalizedData<String>
         /// Localized description of skill.
         ///
         /// Description is a full descriptive text for skill.
@@ -180,7 +180,7 @@ extension DoriAPI.Skills {
         ///     use ``replacedDescription(with:)`` to let DoriKit do this,
         ///     which is more stable. ``maximumDescription`` calculates arguments
         ///     automatically for maximum level of the skill and returns you description for maximum level.
-        public var description: DoriAPI.LocalizedData<String>
+        public var description: _DoriAPI.LocalizedData<String>
         /// Durations of skill.
         ///
         /// Duration values in this array have sorted by level and guarantee there're 5 elements,
@@ -278,8 +278,8 @@ extension DoriAPI.Skills {
     }
 }
 
-extension DoriAPI.Skills.Skill {
-    public func replacedDescription(with replacement: (String, String?)) -> DoriAPI.LocalizedData<String> {
+extension _DoriAPI.Skills.Skill {
+    public func replacedDescription(with replacement: (String, String?)) -> _DoriAPI.LocalizedData<String> {
         let description = self.description
         return description.map { desc in
             guard var desc, desc.contains("{0}") else { return desc }
@@ -295,7 +295,7 @@ extension DoriAPI.Skills.Skill {
         }
     }
     
-    public var maximumDescription: DoriAPI.LocalizedData<String> {
+    public var maximumDescription: _DoriAPI.LocalizedData<String> {
         self.replacedDescription(
             with: (
                 String(self.duration.last ?? 0),

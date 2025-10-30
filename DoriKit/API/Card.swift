@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about card in Bandori.
     ///
     /// *Cards* are character illustrations that can be got from Gacha,
@@ -419,7 +419,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Cards {
+extension _DoriAPI.Cards {
     /// Represent simplified data of a card.
     public struct PreviewCard: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of card.
@@ -429,7 +429,7 @@ extension DoriAPI.Cards {
         /// Rarity of card, 1...5.
         public var rarity: Int
         /// Attribute of card.
-        public var attribute: DoriAPI.Attribute
+        public var attribute: _DoriAPI.Attribute
         /// The maximum level of card.
         public var levelLimit: Int
         /// Name of resource set, used for combination of resource URLs.
@@ -438,9 +438,9 @@ extension DoriAPI.Cards {
         ///
         /// The same *prefix* can be associated to different cards with different characters,
         /// so it's called `prefix` instead of *title*.
-        public var prefix: DoriAPI.LocalizedData<String>
+        public var prefix: _DoriAPI.LocalizedData<String>
         /// Localized release date of card.
-        public var releasedAt: DoriAPI.LocalizedData<Date>
+        public var releasedAt: _DoriAPI.LocalizedData<Date>
         /// ID of skill associated to this card.
         public var skillID: Int
         /// Type of card.
@@ -458,7 +458,7 @@ extension DoriAPI.Cards {
         /// Rarity of card, 1...5.
         public var rarity: Int
         /// Attribute of card.
-        public var attribute: DoriAPI.Attribute
+        public var attribute: _DoriAPI.Attribute
         /// The maximum level of card.
         public var levelLimit: Int
         /// Name of resource set, used for combination of resource URLs.
@@ -472,20 +472,20 @@ extension DoriAPI.Cards {
         /// ID of associated costume to this card.
         public var costumeID: Int
         /// A localized text which shows when players get this card from gacha.
-        public var gachaText: DoriAPI.LocalizedData<String>
+        public var gachaText: _DoriAPI.LocalizedData<String>
         /// Localized title of card.
         ///
         /// The same *prefix* can be associated to different cards with different characters,
         /// so it's called `prefix` instead of *title*.
-        public var prefix: DoriAPI.LocalizedData<String>
+        public var prefix: _DoriAPI.LocalizedData<String>
         /// Localized release date of card.
-        public var releasedAt: DoriAPI.LocalizedData<Date>
+        public var releasedAt: _DoriAPI.LocalizedData<Date>
         /// Localized skill name.
-        public var skillName: DoriAPI.LocalizedData<String>
+        public var skillName: _DoriAPI.LocalizedData<String>
         /// ID of skill associated to this card.
         public var skillID: Int
         /// Localized source of this card.
-        public var source: DoriAPI.LocalizedData<Set<CardSource>>
+        public var source: _DoriAPI.LocalizedData<Set<CardSource>>
         /// Type of card.
         public var type: CardType
         /// Animation metadata of card, if available.
@@ -497,18 +497,18 @@ extension DoriAPI.Cards {
             id: Int,
             characterID: Int,
             rarity: Int,
-            attribute: DoriAPI.Attribute,
+            attribute: _DoriAPI.Attribute,
             levelLimit: Int,
             resourceSetName: String,
             sdResourceName: String,
             episodes: [CardEpisode],
             costumeID: Int,
-            gachaText: DoriAPI.LocalizedData<String>,
-            prefix: DoriAPI.LocalizedData<String>,
-            releasedAt: DoriAPI.LocalizedData<Date>,
-            skillName: DoriAPI.LocalizedData<String>,
+            gachaText: _DoriAPI.LocalizedData<String>,
+            prefix: _DoriAPI.LocalizedData<String>,
+            releasedAt: _DoriAPI.LocalizedData<Date>,
+            skillName: _DoriAPI.LocalizedData<String>,
             skillID: Int,
-            source: DoriAPI.LocalizedData<Set<CardSource>>,
+            source: _DoriAPI.LocalizedData<Set<CardSource>>,
             type: CardType,
             animation: Animation?,
             stat: CardStat
@@ -581,7 +581,7 @@ extension DoriAPI.Cards {
         public var releaseLevel: Int
         public var costs: [Resource]
         public var rewards: [Resource]
-        public var title: DoriAPI.LocalizedData<String>
+        public var title: _DoriAPI.LocalizedData<String>
         public var characterID: Int
         
         @frozen
@@ -661,8 +661,8 @@ extension DoriAPI.Cards {
     }
 }
 
-extension DoriAPI.Cards.PreviewCard {
-    public init(_ full: DoriAPI.Cards.Card) {
+extension _DoriAPI.Cards.PreviewCard {
+    public init(_ full: _DoriAPI.Cards.Card) {
         self.init(
             id: full.id,
             characterID: full.characterID,
@@ -678,10 +678,10 @@ extension DoriAPI.Cards.PreviewCard {
         )
     }
 }
-extension DoriAPI.Cards.Card {
+extension _DoriAPI.Cards.Card {
     @inlinable
     public init?(id: Int) async {
-        if let card = await DoriAPI.Cards.detail(of: id) {
+        if let card = await _DoriAPI.Cards.detail(of: id) {
             self = card
         } else {
             return nil
@@ -689,12 +689,12 @@ extension DoriAPI.Cards.Card {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Cards.PreviewCard) async {
+    public init?(preview: _DoriAPI.Cards.PreviewCard) async {
         await self.init(id: preview.id)
     }
 }
 
-extension DoriAPI.Cards.Stat: AdditiveArithmetic {
+extension _DoriAPI.Cards.Stat: AdditiveArithmetic {
     public static let zero: Self = .init(performance: 0, technique: 0, visual: 0)
     
     @_transparent
@@ -734,7 +734,7 @@ extension DoriAPI.Cards.Stat: AdditiveArithmetic {
         a = a * b
     }
 }
-extension DoriAPI.Cards.CardStat {
+extension _DoriAPI.Cards.CardStat {
     /// The minimum level of a card.
     @inlinable
     public var minimumLevel: Int? {
@@ -754,13 +754,13 @@ extension DoriAPI.Cards.CardStat {
     
     /// Calculate a card stat where the card has minimum level.
     @inlinable
-    public func forMinimumLevel() -> DoriAPI.Cards.Stat? {
+    public func forMinimumLevel() -> _DoriAPI.Cards.Stat? {
         guard let level = minimumLevel else { return nil }
         return self[.level(level)]![0]
     }
     /// Calculate a card stat where the card has maximum level.
     @inlinable
-    public func forMaximumLevel() -> DoriAPI.Cards.Stat? {
+    public func forMaximumLevel() -> _DoriAPI.Cards.Stat? {
         guard let level = maximumLevel else { return nil }
         return self[.level(level)]![0]
     }
@@ -796,14 +796,14 @@ extension DoriAPI.Cards.CardStat {
         masterRank: Int,
         viewedStoryCount: Int,
         trained: Bool
-    ) -> DoriAPI.Cards.Stat? {
+    ) -> _DoriAPI.Cards.Stat? {
         guard let minimumLevel, let maximumLevel else { return nil }
         guard minimumLevel...maximumLevel ~= level else { return nil }
         guard 1...5 ~= rarity else { return nil }
         guard 0...4 ~= masterRank else { return nil }
         guard 0...2 ~= viewedStoryCount else { return nil }
         
-        var result = DoriAPI.Cards.Stat(performance: 50, technique: 50, visual: 50) * rarity * masterRank
+        var result = _DoriAPI.Cards.Stat(performance: 50, technique: 50, visual: 50) * rarity * masterRank
         if let baseStats = self[.level(level)]?[0] {
             result.performance += baseStats.performance
             result.technique += baseStats.technique
@@ -841,7 +841,7 @@ extension DoriAPI.Cards.CardStat {
     ///   so you have to pass it as an argument when calculating.
     /// - Returns: Calculated stat, nil if failed to calculate.
     @inlinable
-    public func maximumValue(rarity: Int) -> DoriAPI.Cards.Stat? {
+    public func maximumValue(rarity: Int) -> _DoriAPI.Cards.Stat? {
         guard let maximumLevel else { return nil }
         return calculated(
             level: maximumLevel,

@@ -14,7 +14,7 @@
 
 import Foundation
 
-extension DoriAPI.Constellation {
+extension _DoriAPI.Constellation {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -34,14 +34,14 @@ extension DoriAPI.Constellation {
     }
 }
 
-extension DoriAPI.Cards.CardType {
+extension _DoriAPI.Cards.CardType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("card" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
 
-extension DoriAPI.Characters.Character.Profile.Part {
+extension _DoriAPI.Characters.Character.Profile.Part {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -57,26 +57,26 @@ extension DoriAPI.Characters.Character.Profile.Part {
         }
     }
 }
-extension DoriAPI.Characters.SeasonCostume.SeasonCostumeType {
+extension _DoriAPI.Characters.SeasonCostume.SeasonCostumeType {
     public var localizedString: String {
         NSLocalizedString("seasonal\(self.rawValue)", bundle: #bundle, comment: "")
     }
 }
 
-extension DoriAPI.Events.EventType {
+extension _DoriAPI.Events.EventType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("event" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
 
-extension DoriAPI.Gachas.GachaType {
+extension _DoriAPI.Gachas.GachaType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("gacha" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
-extension DoriAPI.Gachas.Gacha.PaymentMethod.Method {
+extension _DoriAPI.Gachas.Gacha.PaymentMethod.Method {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -90,7 +90,7 @@ extension DoriAPI.Gachas.Gacha.PaymentMethod.Method {
         }
     }
 }
-extension DoriAPI.Gachas.Gacha.PaymentMethod.Behavior {
+extension _DoriAPI.Gachas.Gacha.PaymentMethod.Behavior {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -104,7 +104,7 @@ extension DoriAPI.Gachas.Gacha.PaymentMethod.Behavior {
     }
 }
 
-extension DoriAPI.LoginCampaigns.CampaignType {
+extension _DoriAPI.LoginCampaigns.CampaignType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("login" + self.rawValue, bundle: #bundle, comment: "")
@@ -112,7 +112,7 @@ extension DoriAPI.LoginCampaigns.CampaignType {
 }
 
 #if HAS_BINARY_RESOURCE_BUNDLES
-extension DoriAPI.Posts.Post.StoryMetadata.AgeRating {
+extension _DoriAPI.Posts.Post.StoryMetadata.AgeRating {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -125,7 +125,7 @@ extension DoriAPI.Posts.Post.StoryMetadata.AgeRating {
 }
 #endif
 
-extension DoriAPI.Songs.SongTag {
+extension _DoriAPI.Songs.SongTag {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("tag" + self.rawValue, bundle: #bundle, comment: "")

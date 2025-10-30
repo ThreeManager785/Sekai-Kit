@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about band in Bandori.
     ///
     /// *Bands* contains all bands you can see under a song's title in GBP,
@@ -122,12 +122,12 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Bands {
+extension _DoriAPI.Bands {
     /// Represent a band.
     public struct Band: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of band.
         public var id: Int
         /// Localized name of band.
-        public var bandName: DoriAPI.LocalizedData<String>
+        public var bandName: _DoriAPI.LocalizedData<String>
     }
 }

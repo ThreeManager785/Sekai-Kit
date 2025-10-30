@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about degree in Bandori.
     ///
     /// *Degrees* are labels that can be got by participating events,
@@ -117,21 +117,21 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Degrees {
+extension _DoriAPI.Degrees {
     /// Represent information of a degree.
     public struct Degree: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of degree.
         public var id: Int
         /// Localized type of degree.
-        public var degreeType: DoriAPI.LocalizedData<DegreeType>
+        public var degreeType: _DoriAPI.LocalizedData<DegreeType>
         /// Localized icon image name, used for combination of resource URLs.
-        public var iconImageName: DoriAPI.LocalizedData<String>
+        public var iconImageName: _DoriAPI.LocalizedData<String>
         /// Localized base image name, used for combination of resource URLs.
-        public var baseImageName: DoriAPI.LocalizedData<String>
+        public var baseImageName: _DoriAPI.LocalizedData<String>
         /// Localized rank of degree.
-        public var rank: DoriAPI.LocalizedData<String>
+        public var rank: _DoriAPI.LocalizedData<String>
         /// Localized name of degree.
-        public var degreeName: DoriAPI.LocalizedData<String>
+        public var degreeName: _DoriAPI.LocalizedData<String>
         
         /// Represent type of degrees
         public enum DegreeType: String, Sendable, DoriCache.Cacheable {

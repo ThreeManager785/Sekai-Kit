@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about songs in Bandori.
     ///
     /// *Songs* are all music with charts that can be played in GBP.
@@ -67,12 +67,12 @@ extension DoriAPI {
                     var result = [PreviewSong]()
                     for (key, value) in respJSON {
                         let notes = value["notes"].map {
-                            (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                            (key: _DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                              value: $0.1.intValue)
                         }.reduce(into: [DifficultyType: Int]()) { $0.updateValue($1.value, forKey: $1.key) }
                         
                         let bpm = value["bpm"].map {
-                            (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                            (key: _DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                              value: $0.1.map {
                                 BPM(bpm: $0.1["bpm"].intValue, start: $0.1["start"].doubleValue, end: $0.1["end"].doubleValue)
                             })
@@ -313,12 +313,12 @@ extension DoriAPI {
                     // The compiler is unable to type-check this expression in reasonable time;
                     // try breaking up the expression into distinct sub-expressions 😇
                     let notes = respJSON["notes"].map {
-                        (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                        (key: _DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                          value: $0.1.intValue)
                     }.reduce(into: [DifficultyType: Int]()) { $0.updateValue($1.value, forKey: $1.key) }
                     
                     let bpm = respJSON["bpm"].map {
-                        (key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                        (key: _DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
                          value: $0.1.map {
                             BPM(bpm: $0.1["bpm"].intValue, start: $0.1["start"].doubleValue, end: $0.1["end"].doubleValue)
                         })
@@ -414,7 +414,7 @@ extension DoriAPI {
                             kr: respJSON["description"][4].string
                         ),
                         difficulty: respJSON["difficulty"].map {
-                            var publishedAt: DoriAPI.LocalizedData<Date>?
+                            var publishedAt: _DoriAPI.LocalizedData<Date>?
                             if $0.1["publishedAt"].exists() {
                                 publishedAt = .init(
                                     jp: .init(apiTimeInterval: $0.1["publishedAt"][0].string),
@@ -425,8 +425,8 @@ extension DoriAPI {
                                 )
                             }
                             return (
-                                key: DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
-                                value: DoriAPI.Songs.Song.Difficulty(
+                                key: _DoriAPI.Songs.DifficultyType(rawValue: Int($0.0)!) ?? .easy,
+                                value: _DoriAPI.Songs.Song.Difficulty(
                                     playLevel: $0.1["playLevel"].intValue,
                                     publishedAt: publishedAt,
                                     notesQuantity: $0.1["notesQuantity"].intValue,
@@ -438,7 +438,7 @@ extension DoriAPI {
                                     multiLiveScoreMap: $0.1["multiLiveScoreMap"].map {
                                         (
                                             key: Int($0.0)!,
-                                            value: DoriAPI.Songs.Song.Difficulty.MultiLiveScore(
+                                            value: _DoriAPI.Songs.Song.Difficulty.MultiLiveScore(
                                                 musicID: $0.1["musicId"].intValue,
                                                 musicDifficulty: $0.1["musicDifficulty"].stringValue,
                                                 multiLiveDifficultyID: $0.1["multiLiveDifficultyID"].intValue,
@@ -563,7 +563,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Songs {
+extension _DoriAPI.Songs {
     /// Represent simplified data of a song.
     public struct PreviewSong: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of song.
@@ -575,11 +575,11 @@ extension DoriAPI.Songs {
         /// Name of jacket image bundle, used for combination of resource URLs.
         public var jacketImage: [String]
         /// Localized title of music.
-        public var musicTitle: DoriAPI.LocalizedData<String>
+        public var musicTitle: _DoriAPI.LocalizedData<String>
         /// Localized publish date of song.
-        public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Localized close date of song.
-        public var closedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var closedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Difficulties of song.
         public var difficulty: [DifficultyType: Difficulty] // {Index: {Difficulty}...}(JSON) -> ~(Swift)
         /// Length of song, in seconds.
@@ -596,9 +596,9 @@ extension DoriAPI.Songs {
             tag: SongTag,
             bandID: Int,
             jacketImage: [String],
-            musicTitle: DoriAPI.LocalizedData<String>,
-            publishedAt: DoriAPI.LocalizedData<Date>,
-            closedAt: DoriAPI.LocalizedData<Date>,
+            musicTitle: _DoriAPI.LocalizedData<String>,
+            publishedAt: _DoriAPI.LocalizedData<Date>,
+            closedAt: _DoriAPI.LocalizedData<Date>,
             difficulty: [DifficultyType : Difficulty],
             length: Double,
             notes: [DifficultyType : Int],
@@ -621,9 +621,9 @@ extension DoriAPI.Songs {
         
         public struct Difficulty: Sendable, Hashable, DoriCache.Cacheable {
             public var playLevel: Int
-            public var publishedAt: DoriAPI.LocalizedData<Date>? // String(JSON) -> Date(Swift)
+            public var publishedAt: _DoriAPI.LocalizedData<Date>? // String(JSON) -> Date(Swift)
             
-            internal init(playLevel: Int, publishedAt: DoriAPI.LocalizedData<Date>?) {
+            internal init(playLevel: Int, publishedAt: _DoriAPI.LocalizedData<Date>?) {
                 self.playLevel = playLevel
                 self.publishedAt = publishedAt
             }
@@ -645,16 +645,16 @@ extension DoriAPI.Songs {
         public var achievements: [Achievement]
         public var jacketImage: [String]
         public var seq: Int
-        public var musicTitle: DoriAPI.LocalizedData<String>
-        public var ruby: DoriAPI.LocalizedData<String>
-        public var phonetic: DoriAPI.LocalizedData<String>
-        public var lyricist: DoriAPI.LocalizedData<String>
-        public var composer: DoriAPI.LocalizedData<String>
-        public var arranger: DoriAPI.LocalizedData<String>
-        public var howToGet: DoriAPI.LocalizedData<String>
-        public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var closedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var description: DoriAPI.LocalizedData<String>
+        public var musicTitle: _DoriAPI.LocalizedData<String>
+        public var ruby: _DoriAPI.LocalizedData<String>
+        public var phonetic: _DoriAPI.LocalizedData<String>
+        public var lyricist: _DoriAPI.LocalizedData<String>
+        public var composer: _DoriAPI.LocalizedData<String>
+        public var arranger: _DoriAPI.LocalizedData<String>
+        public var howToGet: _DoriAPI.LocalizedData<String>
+        public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var closedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var description: _DoriAPI.LocalizedData<String>
         public var difficulty: [DifficultyType: Difficulty] // {Index: {Difficulty}...}(JSON) -> ~(Swift)
         public var length: Double
         public var notes: [DifficultyType: Int]
@@ -670,16 +670,16 @@ extension DoriAPI.Songs {
             achievements: [Achievement],
             jacketImage: [String],
             seq: Int,
-            musicTitle: DoriAPI.LocalizedData<String>,
-            ruby: DoriAPI.LocalizedData<String>,
-            phonetic: DoriAPI.LocalizedData<String>,
-            lyricist: DoriAPI.LocalizedData<String>,
-            composer: DoriAPI.LocalizedData<String>,
-            arranger: DoriAPI.LocalizedData<String>,
-            howToGet: DoriAPI.LocalizedData<String>,
-            publishedAt: DoriAPI.LocalizedData<Date>,
-            closedAt: DoriAPI.LocalizedData<Date>,
-            description: DoriAPI.LocalizedData<String>,
+            musicTitle: _DoriAPI.LocalizedData<String>,
+            ruby: _DoriAPI.LocalizedData<String>,
+            phonetic: _DoriAPI.LocalizedData<String>,
+            lyricist: _DoriAPI.LocalizedData<String>,
+            composer: _DoriAPI.LocalizedData<String>,
+            arranger: _DoriAPI.LocalizedData<String>,
+            howToGet: _DoriAPI.LocalizedData<String>,
+            publishedAt: _DoriAPI.LocalizedData<Date>,
+            closedAt: _DoriAPI.LocalizedData<Date>,
+            description: _DoriAPI.LocalizedData<String>,
             difficulty: [DifficultyType : Difficulty],
             length: Double,
             notes: [DifficultyType : Int],
@@ -714,7 +714,7 @@ extension DoriAPI.Songs {
         public struct Achievement: Sendable, Hashable, DoriCache.Cacheable {
             public var musicID: Int
             public var achievementType: AchievementType
-            public var reward: DoriAPI.Item
+            public var reward: _DoriAPI.Item
             
             public enum AchievementType: String, Sendable, Hashable, DoriCache.Cacheable {
                 case comboEasy = "combo_easy"
@@ -739,7 +739,7 @@ extension DoriAPI.Songs {
         
         public struct Difficulty: Sendable, Hashable, DoriCache.Cacheable {
             public var playLevel: Int
-            public var publishedAt: DoriAPI.LocalizedData<Date>? // String(JSON) -> Date(Swift)
+            public var publishedAt: _DoriAPI.LocalizedData<Date>? // String(JSON) -> Date(Swift)
             public var notesQuantity: Int
             public var scoreC: Int
             public var scoreB: Int
@@ -750,7 +750,7 @@ extension DoriAPI.Songs {
             
             internal init(
                 playLevel: Int,
-                publishedAt: DoriAPI.LocalizedData<Date>?,
+                publishedAt: _DoriAPI.LocalizedData<Date>?,
                 notesQuantity: Int,
                 scoreC: Int,
                 scoreB: Int,
@@ -831,7 +831,7 @@ extension DoriAPI.Songs {
     }
     
     public struct MusicVideoMetadata: Sendable, Hashable, DoriCache.Cacheable {
-        public var startAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var startAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
     }
     
     public enum Chart: Sendable, Hashable, DoriCache.Cacheable {
@@ -890,7 +890,7 @@ extension DoriAPI.Songs {
     }
 }
 
-extension DoriAPI.Songs.DifficultyType {
+extension _DoriAPI.Songs.DifficultyType {
     internal init?(rawStringValue name: String) {
         switch name {
         case "easy": self = .easy
@@ -913,8 +913,8 @@ extension DoriAPI.Songs.DifficultyType {
     }
 }
 
-extension DoriAPI.Songs.PreviewSong {
-    public init(_ full: DoriAPI.Songs.Song) {
+extension _DoriAPI.Songs.PreviewSong {
+    public init(_ full: _DoriAPI.Songs.Song) {
         self.init(
             id: full.id,
             tag: full.tag,
@@ -936,10 +936,10 @@ extension DoriAPI.Songs.PreviewSong {
         )
     }
 }
-extension DoriAPI.Songs.Song {
+extension _DoriAPI.Songs.Song {
     @inlinable
     public init?(id: Int) async {
-        if let song = await DoriAPI.Songs.detail(of: id) {
+        if let song = await _DoriAPI.Songs.detail(of: id) {
             self = song
         } else {
             return nil
@@ -947,7 +947,7 @@ extension DoriAPI.Songs.Song {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Songs.PreviewSong) async {
+    public init?(preview: _DoriAPI.Songs.PreviewSong) async {
         await self.init(id: preview.id)
     }
 }

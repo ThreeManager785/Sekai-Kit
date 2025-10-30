@@ -15,7 +15,7 @@
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about miracle tickets in Bandori.
     ///
     /// *Miracle Tickets* can be used to exchange one card of your choice in GBP.
@@ -101,12 +101,12 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.MiracleTickets {
+extension _DoriAPI.MiracleTickets {
     public struct MiracleTicket: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
-        public var name: DoriAPI.LocalizedData<String>
-        public var ids: DoriAPI.LocalizedData<[Int]>
-        public var exchangeStartAt: DoriAPI.LocalizedData<Date>
-        public var exchangeEndAt: DoriAPI.LocalizedData<Date>
+        public var name: _DoriAPI.LocalizedData<String>
+        public var ids: _DoriAPI.LocalizedData<[Int]>
+        public var exchangeStartAt: _DoriAPI.LocalizedData<Date>
+        public var exchangeEndAt: _DoriAPI.LocalizedData<Date>
     }
 }

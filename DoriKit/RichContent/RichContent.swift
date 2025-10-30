@@ -74,11 +74,11 @@ extension RichContentGroup {
         }
     }
     @usableFromInline
-    internal init(_ newsContent: [DoriAPI.News.Item.Content]) {
+    internal init(_ newsContent: [_DoriAPI.News.Item.Content]) {
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .medium
         dateFormatter.timeStyle = .short
-        func parseSection(_ section: [DoriAPI.News.Item.Content.ContentDataSection], ul: Bool = false) -> Self {
+        func parseSection(_ section: [_DoriAPI.News.Item.Content.ContentDataSection], ul: Bool = false) -> Self {
             var result = Self()
             for data in section {
                 switch data {

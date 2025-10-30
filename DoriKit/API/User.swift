@@ -16,7 +16,7 @@ import Foundation
 internal import Alamofire
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about users in Bestdori.
     ///
     /// You use the Bestdori account to join the community.
@@ -289,7 +289,7 @@ extension DoriAPI {
         ///     Use ``withUserToken(_:_:)-45z2w`` to attach a token.
         ///     Use ``login(_:)`` to get a token.
         public static func requestPrepareLinkGameAccount(
-            locale: DoriAPI.Locale,
+            locale: _DoriAPI.Locale,
             uid: Int
         ) async -> Bool {
             let result = await requestJSON(
@@ -458,7 +458,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.User {
+extension _DoriAPI.User {
     public struct LoginCredential: Sendable, Hashable, Codable {
         public var username: String
         public var password: String
@@ -483,7 +483,7 @@ extension DoriAPI.User {
     }
 }
 
-extension DoriAPI.User {
+extension _DoriAPI.User {
     public struct SignupForm: Sendable, Hashable, Codable {
         public var username: String
         public var password: String
@@ -512,7 +512,7 @@ extension DoriAPI.User {
     }
 }
 
-extension DoriAPI.User {
+extension _DoriAPI.User {
     public struct Token: Sendable, Hashable {
         internal let _value: String
         
@@ -530,19 +530,19 @@ extension DoriAPI.User {
     }
 }
 
-extension DoriAPI.User {
+extension _DoriAPI.User {
     public struct Title: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var type: TitleType
-        public var server: DoriAPI.Locale
+        public var server: _DoriAPI.Locale
         
-        public init(id: Int, type: TitleType, server: DoriAPI.Locale) {
+        public init(id: Int, type: TitleType, server: _DoriAPI.Locale) {
             self.id = id
             self.type = type
             self.server = server
         }
         @inlinable
-        public init(_ degree: DoriAPI.Degrees.Degree, server: DoriAPI.Locale) {
+        public init(_ degree: _DoriAPI.Degrees.Degree, server: _DoriAPI.Locale) {
             self.init(id: degree.id, type: .bandori, server: server)
         }
         
@@ -654,7 +654,7 @@ extension DoriAPI.User {
             struct EncodingTitle: Encodable {
                 var id: Int
                 var type: Title.TitleType
-                var server: DoriAPI.Locale
+                var server: _DoriAPI.Locale
                 
                 init(_ title: Title) {
                     self.id = title.id
@@ -675,7 +675,7 @@ extension DoriAPI.User {
                 }
             }
             struct EncodingServerID: Encodable {
-                var server: DoriAPI.Locale
+                var server: _DoriAPI.Locale
                 var uid: Int
                 
                 init(_ account: GameAccount) {
@@ -727,11 +727,11 @@ extension DoriAPI.User {
                 )
             }
             @inlinable
-            public init(_ card: DoriAPI.Cards.PreviewCard, offset: Double, isTrained: Bool) {
+            public init(_ card: _DoriAPI.Cards.PreviewCard, offset: Double, isTrained: Bool) {
                 self.init(id: card.id, offset: offset, isTrained: isTrained)
             }
             @inlinable
-            public init(_ card: DoriAPI.Cards.Card, offset: Double, isTrained: Bool) {
+            public init(_ card: _DoriAPI.Cards.Card, offset: Double, isTrained: Bool) {
                 self.init(id: card.id, offset: offset, isTrained: isTrained)
             }
             
@@ -750,13 +750,13 @@ extension DoriAPI.User {
     }
 }
 
-extension DoriAPI.User {
+extension _DoriAPI.User {
     public struct RequestStatus: Sendable, Hashable, DoriCache.Cacheable {
         public var status: Status
         public var uid: Int
         public var type: RequestType
         public var code: String?
-        public var server: DoriAPI.Locale // Int(JSON) -> ~(Swift)
+        public var server: _DoriAPI.Locale // Int(JSON) -> ~(Swift)
         public var linkResult: Bool?
         
         internal init(
@@ -764,7 +764,7 @@ extension DoriAPI.User {
             uid: Int,
             type: RequestType,
             code: String?,
-            server: DoriAPI.Locale,
+            server: _DoriAPI.Locale,
             linkResult: Bool?
         ) {
             self.status = status
@@ -793,19 +793,19 @@ extension DoriAPI.User {
     }
 }
 
-extension DoriAPI.User {
+extension _DoriAPI.User {
     public struct GameAccount: Sendable, Hashable, DoriCache.Cacheable {
-        public var server: DoriAPI.Locale
+        public var server: _DoriAPI.Locale
         public var uid: Int
         
-        public init(server: DoriAPI.Locale, uid: Int) {
+        public init(server: _DoriAPI.Locale, uid: Int) {
             self.server = server
             self.uid = uid
         }
     }
     
     public struct GameAccountDetail: Sendable, Hashable, DoriCache.Cacheable {
-        public var server: DoriAPI.Locale
+        public var server: _DoriAPI.Locale
         public var uid: Int
         public var rank: Int
         public var clearCount: Int

@@ -14,7 +14,7 @@
 
 import Foundation
 
-extension DoriFrontend {
+extension _DoriFrontend {
     /// Request and fetch data about comics in Bandori.
     ///
     /// *Comics* appear randomly in the loading page of GBP.
@@ -33,20 +33,20 @@ extension DoriFrontend {
         ///
         /// - Returns: All comics, nil if failed to fetch.
         public static func list() async -> [Comic]? {
-            guard let comics = await DoriAPI.Comics.all() else { return nil }
+            guard let comics = await _DoriAPI.Comics.all() else { return nil }
             return comics
         }
     }
 }
 
-extension DoriFrontend.Comics {
-    public typealias Comic = DoriAPI.Comics.Comic
+extension _DoriFrontend.Comics {
+    public typealias Comic = _DoriAPI.Comics.Comic
 }
 
-extension DoriAPI.Comics.Comic {
+extension _DoriAPI.Comics.Comic {
     @inlinable
     public init?(id: Int) async {
-        guard let all = await DoriAPI.Comics.all() else { return nil }
+        guard let all = await _DoriAPI.Comics.all() else { return nil }
         if let comic = all.first(where: { $0.id == id }) {
             self = comic
         } else {
@@ -55,7 +55,7 @@ extension DoriAPI.Comics.Comic {
     }
 }
 
-extension DoriAPI.Comics.Comic {
+extension _DoriAPI.Comics.Comic {
     /// Type of a ``DoriAPI/Comic/Comic``.
     @frozen
     public enum ComicType: String, CaseIterable, Hashable, Codable {

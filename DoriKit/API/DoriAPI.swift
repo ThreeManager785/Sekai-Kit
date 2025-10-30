@@ -18,7 +18,7 @@ import Foundation
 ///
 /// Each methods in ``DoriAPI`` fetches raw data from Bestdori API directly,
 /// makes them Swifty and return them.
-public final class DoriAPI {
+public final class _DoriAPI {
     private init() {}
     
     @usableFromInline
@@ -67,10 +67,10 @@ public final class DoriAPI {
         @inlinable
         public static var secondaryLocale: Self {
             _read {
-                yield DoriAPI.secondaryLocale
+                yield _DoriAPI.secondaryLocale
             }
             _modify {
-                yield &DoriAPI.secondaryLocale
+                yield &_DoriAPI.secondaryLocale
             }
         }
         
@@ -218,7 +218,7 @@ public final class DoriAPI {
     }
 }
 
-extension DoriAPI.Locale {
+extension _DoriAPI.Locale {
     internal init?(rawIntValue value: Int) {
         switch value {
         case 0: self = .jp
@@ -251,12 +251,12 @@ extension DoriAPI.Locale {
     }
 }
 
-extension DoriAPI.LocalizedData: Sendable where T: Sendable {}
-extension DoriAPI.LocalizedData: Equatable where T: Equatable {}
-extension DoriAPI.LocalizedData: Hashable where T: Hashable {}
-extension DoriAPI.LocalizedData: DoriCache.Cacheable, Codable where T: DoriCache.Cacheable {}
+extension _DoriAPI.LocalizedData: Sendable where T: Sendable {}
+extension _DoriAPI.LocalizedData: Equatable where T: Equatable {}
+extension _DoriAPI.LocalizedData: Hashable where T: Hashable {}
+extension _DoriAPI.LocalizedData: DoriCache.Cacheable, Codable where T: DoriCache.Cacheable {}
 
-extension DoriAPI.LocalizedData {
+extension _DoriAPI.LocalizedData {
     /// Returns localized data containing the results of mapping the given closure
     /// over each locales.
     ///
@@ -266,9 +266,9 @@ extension DoriAPI.LocalizedData {
     /// - Returns: Localized data containing the transformed elements of this
     ///   sequence.
     @inlinable
-    public func map<R, E>(_ transform: (T?) throws(E) -> R?) throws(E) -> DoriAPI.LocalizedData<R> {
-        var result = DoriAPI.LocalizedData<R>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
-        for locale in DoriAPI.Locale.allCases {
+    public func map<R, E>(_ transform: (T?) throws(E) -> R?) throws(E) -> _DoriAPI.LocalizedData<R> {
+        var result = _DoriAPI.LocalizedData<R>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
+        for locale in _DoriAPI.Locale.allCases {
             result._set(try transform(self.forLocale(locale)), forLocale: locale)
         }
         return result
@@ -302,7 +302,7 @@ extension DoriAPI.LocalizedData {
         _ transform: (T?) throws -> ElementOfResult?
     ) rethrows -> [ElementOfResult] {
         var result: [ElementOfResult] = []
-        for locale in DoriAPI.Locale.allCases {
+        for locale in _DoriAPI.Locale.allCases {
             if let newElement = try transform(self.forLocale(locale)) {
                 result.append(newElement)
             }
@@ -310,13 +310,13 @@ extension DoriAPI.LocalizedData {
         return result
     }
 }
-extension DoriAPI.LocalizedData {
+extension _DoriAPI.LocalizedData {
     @inlinable
     public var isEmpty: Bool {
         self.jp == nil && self.en == nil && self.tw == nil && self.cn == nil && self.kr == nil
     }
 }
-extension DoriAPI.LocalizedData where T: Collection {
+extension _DoriAPI.LocalizedData where T: Collection {
     @inlinable
     public var isValueEmpty: Bool {
         self.jp?.isEmpty != false

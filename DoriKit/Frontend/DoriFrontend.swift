@@ -18,6 +18,6 @@ import Foundation
 ///
 /// Each methods in DoriFrontend may get data from ``DoriAPI``,
 /// process it, then return data which is easy to use.
-public final class DoriFrontend {
+public final class _DoriFrontend {
     private init() {}
 }

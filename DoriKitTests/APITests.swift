@@ -24,13 +24,13 @@ import SwiftyJSON
 private struct APITests {
     init() {
         // We set _preferredLocale directly to prevent it being stored.
-        DoriAPI._preferredLocale = .init(rawValue: ProcessInfo.processInfo.environment["DORIKIT_TESTING_PREFERRED_LOCALE"]!)!
+        _DoriAPI._preferredLocale = .init(rawValue: ProcessInfo.processInfo.environment["DORIKIT_TESTING_PREFERRED_LOCALE"]!)!
     }
     
     @Test
     func testDataLocalization() async throws {
-        var data = DoriAPI.LocalizedData<Int>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
-        let allLocales = DoriAPI.Locale.allCases
+        var data = _DoriAPI.LocalizedData<Int>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
+        let allLocales = _DoriAPI.Locale.allCases
         for locale in allLocales {
             #expect(data.forLocale(locale) == nil)
             #expect(!data.availableInLocale(locale))
@@ -40,11 +40,11 @@ private struct APITests {
         #expect(data.forPreferredLocale(allowsFallback: true) == nil)
         #expect(!data.availableInPreferredLocale())
         #expect(data.availableLocale(prefer: nil) == nil)
-        data._set(42, forLocale: DoriAPI.preferredLocale)
+        data._set(42, forLocale: _DoriAPI.preferredLocale)
         #expect(data.forPreferredLocale(allowsFallback: false) != nil)
         #expect(data.forPreferredLocale(allowsFallback: true) != nil)
         #expect(data.availableInPreferredLocale())
-        #expect(data.availableLocale(prefer: nil) == DoriAPI.preferredLocale)
+        #expect(data.availableLocale(prefer: nil) == _DoriAPI.preferredLocale)
         
         data = data.map({ _ in 42 })
         for locale in allLocales {
@@ -54,7 +54,7 @@ private struct APITests {
     
     @Test
     func testBand() async throws {
-        var bands = try #require(await DoriAPI.Band.all())
+        var bands = try #require(await _DoriAPI.Band.all())
         #expect(!bands.isEmpty)
         for band in bands {
             #expect(band.id > 0, .init(band))
@@ -69,7 +69,7 @@ private struct APITests {
             #expect(findExtraKeys(in: value, comparedTo: band).isEmpty, .init(value))
         }
         
-        bands = try #require(await DoriAPI.Band.main())
+        bands = try #require(await _DoriAPI.Band.main())
         #expect(!bands.isEmpty)
         for band in bands {
             #expect(band.id > 0, .init(band))
@@ -80,7 +80,7 @@ private struct APITests {
     @Test
     func testCard() async throws {
         // -- Testing preview cards --
-        let cards = try #require(await DoriAPI.Card.all())
+        let cards = try #require(await _DoriAPI.Card.all())
         #expect(!cards.isEmpty)
         
         let cardIDs = cards.map { $0.id }
@@ -118,7 +118,7 @@ private struct APITests {
         
         // -- Testing card details --
         let testingCardID = 2125 // Why 2125? I like it 😋
-        let card = try #require(await DoriAPI.Card.detail(of: testingCardID))
+        let card = try #require(await _DoriAPI.Card.detail(of: testingCardID))
         respJSON = try #require(await retryableRequestJSON("https://bestdori.com/api/cards/\(testingCardID).json"))
         #expect(findExtraKeys(in: respJSON, comparedTo: card).isEmpty, .init(respJSON))
         #expect(card.id == testingCardID, .init(card))
@@ -146,7 +146,7 @@ private struct APITests {
     @Test
     func testCharacter() async throws {
         // -- Testing preview characters --
-        let characters = try #require(await DoriAPI.Character.all())
+        let characters = try #require(await _DoriAPI.Character.all())
         #expect(!characters.isEmpty)
         
         let characterIDs = characters.map { $0.id }
@@ -165,7 +165,7 @@ private struct APITests {
         }
         
         // -- Testing birthday characters --
-        let bdayCharacters = try #require(await DoriAPI.Character.allBirthday())
+        let bdayCharacters = try #require(await _DoriAPI.Character.allBirthday())
         #expect(!bdayCharacters.isEmpty)
         
         let bdayCharaIDs = bdayCharacters.map { $0.id }
@@ -186,7 +186,7 @@ private struct APITests {
         
         // -- Testing character details --
         let testingCharacterID = 39
-        let character = try #require(await DoriAPI.Character.detail(of: 39))
+        let character = try #require(await _DoriAPI.Character.detail(of: 39))
         respJSON = try #require(await retryableRequestJSON("https://bestdori.com/api/characters/\(testingCharacterID).json"))
         #expect(findExtraKeys(in: respJSON, comparedTo: character, exceptions: ["seasonCostumeListMap", "colorCode"]).isEmpty, .init(respJSON))
         #expect(character.id == testingCharacterID, .init(character))
@@ -197,7 +197,7 @@ private struct APITests {
     @Test
     func testCostume() async throws {
         // -- Testing preview costumes --
-        let costumes = try #require(await DoriAPI.Costume.all())
+        let costumes = try #require(await _DoriAPI.Costume.all())
         #expect(!costumes.isEmpty)
         
         let costumeIDs = costumes.map { $0.id }
@@ -220,7 +220,7 @@ private struct APITests {
         
         // -- Testing costume details --
         let testingCostumeID = 2120
-        let costume = try #require(await DoriAPI.Costume.detail(of: testingCostumeID))
+        let costume = try #require(await _DoriAPI.Costume.detail(of: testingCostumeID))
         respJSON = try #require(await retryableRequestJSON("https://bestdori.com/api/costumes/\(testingCostumeID).json"))
         #expect(findExtraKeys(in: respJSON, comparedTo: costume).isEmpty, .init(respJSON))
         #expect(costume.id == testingCostumeID, .init(costume))
@@ -234,7 +234,7 @@ private struct APITests {
     @Test
     func testEvent() async throws {
         // -- Testing preview events --
-        let events = try #require(await DoriAPI.Event.all())
+        let events = try #require(await _DoriAPI.Event.all())
         #expect(!events.isEmpty)
         
         let eventIDs = events.map { $0.id }
@@ -258,7 +258,7 @@ private struct APITests {
         
         // -- Testing event details --
         let testingEventID = 235
-        let event = try #require(await DoriAPI.Event.detail(of: testingEventID))
+        let event = try #require(await _DoriAPI.Event.detail(of: testingEventID))
         respJSON = try #require(await retryableRequestJSON("https://bestdori.com/api/events/\(testingEventID).json"))
         #expect(findExtraKeys(in: respJSON, comparedTo: event, exceptions: ["enableFlag"]).isEmpty, .init(respJSON))
         #expect(event.id > 0, .init(event))

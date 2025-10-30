@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about costume in Bandori.
     ///
     /// *Costumes* are 2D and/or 3D costumes
@@ -157,7 +157,7 @@ extension DoriAPI {
     }
 }
     
-extension DoriAPI.Costumes {
+extension _DoriAPI.Costumes {
     /// Represent simplified data of a costume.
     public struct PreviewCostume: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of costume.
@@ -167,9 +167,9 @@ extension DoriAPI.Costumes {
         /// Name of asset bundle, used for combination of resource URLs.
         public var assetBundleName: String
         /// Localized description of costume.
-        public var description: DoriAPI.LocalizedData<String>
+        public var description: _DoriAPI.LocalizedData<String>
         /// Localized published date of costume.
-        public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
     }
     
     /// Represent detailed data of a costume.
@@ -183,18 +183,18 @@ extension DoriAPI.Costumes {
         /// Name of super deformed resource bundle, used for combination of resource URLs.
         public var sdResourceName: String
         /// Localized description of costume.
-        public var description: DoriAPI.LocalizedData<String>
+        public var description: _DoriAPI.LocalizedData<String>
         /// Localized "how to get" text of costume.
-        public var howToGet: DoriAPI.LocalizedData<String>
+        public var howToGet: _DoriAPI.LocalizedData<String>
         /// Localized published date of costume.
-        public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// IDs of related cards to this costume.
         public var cards: [Int]
     }
 }
 
-extension DoriAPI.Costumes.PreviewCostume {
-    public init(_ full: DoriAPI.Costumes.Costume) {
+extension _DoriAPI.Costumes.PreviewCostume {
+    public init(_ full: _DoriAPI.Costumes.Costume) {
         self.init(
             id: full.id,
             characterID: full.characterID,
@@ -204,10 +204,10 @@ extension DoriAPI.Costumes.PreviewCostume {
         )
     }
 }
-extension DoriAPI.Costumes.Costume {
+extension _DoriAPI.Costumes.Costume {
     @inlinable
     public init?(id: Int) async {
-        if let costume = await DoriAPI.Costumes.detail(of: id) {
+        if let costume = await _DoriAPI.Costumes.detail(of: id) {
             self = costume
         } else {
             return nil
@@ -215,7 +215,7 @@ extension DoriAPI.Costumes.Costume {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.Costumes.PreviewCostume) async {
+    public init?(preview: _DoriAPI.Costumes.PreviewCostume) async {
         await self.init(id: preview.id)
     }
 }

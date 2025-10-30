@@ -15,7 +15,7 @@
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about assets in Bandori.
     ///
     /// *Assets* are source files which GBP downloads to every players' devices.
@@ -72,7 +72,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Assets {
+extension _DoriAPI.Assets {
     /// A type that represents a list of assets.
     public typealias AssetList = [String: Child]
     
@@ -95,9 +95,9 @@ extension DoriAPI.Assets {
         @usableFromInline
         internal var _path: String
         
-        public var locale: DoriAPI.Locale
+        public var locale: _DoriAPI.Locale
         
-        public init(locale: DoriAPI.Locale) {
+        public init(locale: _DoriAPI.Locale) {
             self._path = "/"
             self.locale = locale
         }
@@ -124,13 +124,13 @@ extension DoriAPI.Assets {
     }
 }
 
-extension DoriAPI.Assets.AssetList {
+extension _DoriAPI.Assets.AssetList {
     @inlinable
-    public func access(_ key: String) -> DoriAPI.Assets.Child? {
+    public func access(_ key: String) -> _DoriAPI.Assets.Child? {
         self[key]
     }
     @inlinable
-    public func access(_ key: String, updatingPath descriptor: inout DoriAPI.Assets.PathDescriptor) -> DoriAPI.Assets.Child? {
+    public func access(_ key: String, updatingPath descriptor: inout _DoriAPI.Assets.PathDescriptor) -> _DoriAPI.Assets.Child? {
         descriptor._path += "\(key)/"
         return self[key]
     }

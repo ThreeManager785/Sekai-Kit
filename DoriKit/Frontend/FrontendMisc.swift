@@ -14,7 +14,7 @@
 
 import Foundation
 
-extension DoriFrontend {
+extension _DoriFrontend {
     /// Other uncatogorized requests in Bandori.
     public enum Misc {
         /// Returns a list of items with related information from given items.
@@ -24,11 +24,11 @@ extension DoriFrontend {
         public static func extendedItems<T>(
             from items: T
         ) async -> [ExtendedItem]? where T: RandomAccessCollection, T.Element == Item {
-            guard let texts = await DoriAPI.Misc.itemTexts() else { return nil }
+            guard let texts = await _DoriAPI.Misc.itemTexts() else { return nil }
             
             var result = [ExtendedItem]()
             for item in items {
-                var text: DoriAPI.Misc.ItemText?
+                var text: _DoriAPI.Misc.ItemText?
                 switch item.type {
                 case .item, .practiceTicket, .liveBoostRecoveryItem, .gachaTicket, .miracleTicket:
                     // These types of items are included in itemTexts result,
@@ -91,15 +91,15 @@ extension DoriFrontend {
             return result
         }
         
-        public static func extendedPlayerProfile(of id: Int, in locale: DoriAPI.Locale) async -> ExtendedPlayerProfile? {
+        public static func extendedPlayerProfile(of id: Int, in locale: _DoriAPI.Locale) async -> ExtendedPlayerProfile? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Misc.playerProfile(of: id, in: locale)
+                await _DoriAPI.Misc.playerProfile(of: id, in: locale)
             } _: {
-                await DoriAPI.Degrees.all()
+                await _DoriAPI.Degrees.all()
             } _: {
-                await DoriAPI.Cards.all()
+                await _DoriAPI.Cards.all()
             } _: {
-                await DoriAPI.Songs.all()
+                await _DoriAPI.Songs.all()
             }
             guard let profile = groupResult.0 else { return nil }
             guard let degrees = groupResult.1 else { return nil }
@@ -146,35 +146,35 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend {
-    public typealias Item = DoriAPI.Item
+extension _DoriFrontend {
+    public typealias Item = _DoriAPI.Item
     
     public struct ExtendedItem: Identifiable, Hashable, DoriCache.Cacheable {
         public var item: Item
-        public var text: DoriAPI.Misc.ItemText?
+        public var text: _DoriAPI.Misc.ItemText?
         
         public var id: String {
             item.id
         }
         
-        internal init(item: Item, text: DoriAPI.Misc.ItemText?) {
+        internal init(item: Item, text: _DoriAPI.Misc.ItemText?) {
             self.item = item
             self.text = text
         }
     }
 }
 
-extension DoriFrontend.Misc {
+extension _DoriFrontend.Misc {
     public struct ExtendedPlayerProfile: Sendable, Hashable, DoriCache.Cacheable {
-        public var profile: DoriAPI.Misc.PlayerProfile
-        public var degrees: [DoriAPI.Degrees.Degree]
-        public var keyVisualCard: DoriAPI.Cards.PreviewCard
-        public var mainDeckCards: [DoriAPI.Cards.PreviewCard]
-        public var songs: [DoriAPI.Songs.PreviewSong]
+        public var profile: _DoriAPI.Misc.PlayerProfile
+        public var degrees: [_DoriAPI.Degrees.Degree]
+        public var keyVisualCard: _DoriAPI.Cards.PreviewCard
+        public var mainDeckCards: [_DoriAPI.Cards.PreviewCard]
+        public var songs: [_DoriAPI.Songs.PreviewSong]
     }
 }
 
-extension DoriAPI.Misc.StoryAsset {
+extension _DoriAPI.Misc.StoryAsset {
     /// Textual transcript of story.
     public var transcript: [Transcript] {
         var result = [Transcript]()

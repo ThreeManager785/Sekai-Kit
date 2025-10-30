@@ -20,7 +20,7 @@ internal import SwiftyJSON
 
 private let placeholderURL = URL(string: "placeholder://nil")!
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about community posts in Bandori.
     public enum Posts {
         public static func _list(_ request: ListRequest) async -> PagedPosts? {
@@ -150,7 +150,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Posts {
+extension _DoriAPI.Posts {
     public struct Post: Identifiable, Sendable, Hashable {
         public var id: Int
         public var categoryName: Category
@@ -174,7 +174,7 @@ extension DoriAPI.Posts {
             public struct Title: Sendable, Identifiable, Hashable {
                 public var id: Int
                 public var type: String
-                public var server: DoriAPI.Locale // Int(JSON) -> Locale(Swift)
+                public var server: _DoriAPI.Locale // Int(JSON) -> Locale(Swift)
             }
         }
         public enum Tag: Sendable, Hashable {
@@ -240,7 +240,7 @@ extension DoriAPI.Posts {
         public struct ChartMetadata: Sendable, Hashable {
             public var song: Song
             public var artist: String
-            public var difficulty: DoriAPI.Songs.DifficultyType // Int(JSON) -> ~(Swift)
+            public var difficulty: _DoriAPI.Songs.DifficultyType // Int(JSON) -> ~(Swift)
             public var level: Int
             
             public enum Song: Sendable, Hashable {

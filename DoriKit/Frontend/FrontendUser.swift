@@ -15,15 +15,15 @@
 import Foundation
 internal import Security
 
-extension DoriFrontend {
+extension _DoriFrontend {
     public enum User {
         
     }
 }
 
-extension DoriFrontend.User {
-    public typealias LoginCredential = DoriAPI.User.LoginCredential
-    public typealias Token = DoriAPI.User.Token
+extension _DoriFrontend.User {
+    public typealias LoginCredential = _DoriAPI.User.LoginCredential
+    public typealias Token = _DoriAPI.User.Token
     
     /// Manages users' credential safely.
     ///
@@ -135,7 +135,7 @@ extension DoriFrontend.User {
         
         public func renewToken(_ token: consuming Token) async -> Token {
             if let username, let password {
-                (try? await DoriAPI.User.login(
+                (try? await _DoriAPI.User.login(
                     .init(username: username, password: password)
                 )) ?? copy token
             } else {
@@ -145,7 +145,7 @@ extension DoriFrontend.User {
     }
 }
 
-extension DoriFrontend.User {
+extension _DoriFrontend.User {
     @TaskLocal internal static var _currentUserToken: Token?
 }
 
@@ -156,10 +156,10 @@ extension DoriFrontend.User {
 ///   - body: A closure with all requests attached `token`.
 /// - Returns: Result of provided closure.
 public func withUserToken<R>(
-    _ token: DoriFrontend.User.Token?,
+    _ token: _DoriFrontend.User.Token?,
     _ body: () throws -> R
 ) rethrows -> R {
-    try DoriFrontend.User.$_currentUserToken.withValue(token, operation: body)
+    try _DoriFrontend.User.$_currentUserToken.withValue(token, operation: body)
 }
 
 /// Configures requests occuring in closure to attach a user token.
@@ -169,8 +169,8 @@ public func withUserToken<R>(
 ///   - body: A closure with all requests attached `token`.
 /// - Returns: Result of provided closure.
 public func withUserToken<R>(
-    _ token: DoriFrontend.User.Token?,
+    _ token: _DoriFrontend.User.Token?,
     _ body: () async throws -> R
 ) async rethrows -> R {
-    try await DoriFrontend.User.$_currentUserToken.withValue(token, operation: body)
+    try await _DoriFrontend.User.$_currentUserToken.withValue(token, operation: body)
 }

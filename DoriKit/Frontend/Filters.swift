@@ -16,7 +16,7 @@ import Foundation
 internal import os
 internal import CryptoKit
 
-extension DoriFrontend {
+extension _DoriFrontend {
     /// Filter results that match the requirements.
     ///
     /// You don't filter some items you need from a full result, instead,
@@ -194,17 +194,17 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.Filter {
-    public typealias Attribute = DoriAPI.Attribute
+extension _DoriFrontend.Filter {
+    public typealias Attribute = _DoriAPI.Attribute
     public typealias Rarity = Int
-    public typealias Server = DoriAPI.Locale
-    public typealias CardType = DoriAPI.Cards.CardType
-    public typealias EventType = DoriAPI.Events.EventType
-    public typealias GachaType = DoriAPI.Gachas.GachaType
-    public typealias SongType = DoriAPI.Songs.SongTag
-    public typealias ComicType = DoriAPI.Comics.Comic.ComicType
+    public typealias Server = _DoriAPI.Locale
+    public typealias CardType = _DoriAPI.Cards.CardType
+    public typealias EventType = _DoriAPI.Events.EventType
+    public typealias GachaType = _DoriAPI.Gachas.GachaType
+    public typealias SongType = _DoriAPI.Songs.SongTag
+    public typealias ComicType = _DoriAPI.Comics.Comic.ComicType
     public typealias Level = Int
-    public typealias Skill = DoriAPI.Skills.Skill
+    public typealias Skill = _DoriAPI.Skills.Skill
     
     public enum Band: Int, Sendable, CaseIterable, Hashable, Codable {
         case poppinParty = 1
@@ -394,22 +394,22 @@ extension DoriFrontend.Filter {
     }
 }
 
-extension DoriFrontend.Filter.Key: Identifiable {
+extension _DoriFrontend.Filter.Key: Identifiable {
     public var id: Int { self.rawValue }
 }
-extension Set<DoriFrontend.Filter.Key> {
+extension Set<_DoriFrontend.Filter.Key> {
     @inlinable
-    public func sorted() -> [DoriFrontend.Filter.Key] {
+    public func sorted() -> [_DoriFrontend.Filter.Key] {
         self.sorted { $0.rawValue < $1.rawValue }
     }
 }
-extension Array<DoriFrontend.Filter.Key> {
+extension Array<_DoriFrontend.Filter.Key> {
     @inlinable
-    public func sorted() -> [DoriFrontend.Filter.Key] {
+    public func sorted() -> [_DoriFrontend.Filter.Key] {
         self.sorted { $0.rawValue < $1.rawValue }
     }
 }
-extension DoriFrontend.Filter.Key {
+extension _DoriFrontend.Filter.Key {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -435,13 +435,13 @@ extension DoriFrontend.Filter.Key {
     }
 }
 
-extension DoriFrontend.Filter.Key: Comparable {
+extension _DoriFrontend.Filter.Key: Comparable {
     @inlinable
-    public static func < (lhs: DoriFrontend.Filter.Key, rhs: DoriFrontend.Filter.Key) -> Bool {
+    public static func < (lhs: _DoriFrontend.Filter.Key, rhs: _DoriFrontend.Filter.Key) -> Bool {
         lhs.rawValue < rhs.rawValue
     }
 }
-extension DoriFrontend.Filter: MutableCollection {
+extension _DoriFrontend.Filter: MutableCollection {
     public typealias Element = AnyHashable
     
     @inlinable
@@ -540,7 +540,7 @@ extension DoriFrontend.Filter: MutableCollection {
     }
 }
 
-extension DoriFrontend.Filter {
+extension _DoriFrontend.Filter {
     @_typeEraser(_AnySelectable)
     public protocol _Selectable: Hashable {
         var selectorText: String { get }
@@ -570,14 +570,14 @@ extension DoriFrontend.Filter {
         public var selectorImageURL: URL? { _selectorImageURL }
     }
 }
-extension DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter._Selectable {
     public var selectorImageURL: URL? { nil }
     
-    public func isEqual(to selectable: any DoriFrontend.Filter._Selectable) -> Bool {
+    public func isEqual(to selectable: any _DoriFrontend.Filter._Selectable) -> Bool {
         self.selectorText == selectable.selectorText
     }
 }
-extension DoriFrontend.Filter.Band: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.Band: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.name
     }
@@ -589,7 +589,7 @@ extension DoriFrontend.Filter.Band: DoriFrontend.Filter._Selectable {
         }
     }
 }
-extension DoriFrontend.Filter.Attribute: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.Attribute: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.rawValue.uppercased()
     }
@@ -597,7 +597,7 @@ extension DoriFrontend.Filter.Attribute: DoriFrontend.Filter._Selectable {
         .init(string: "https://bestdori.com/res/icon/\(self.rawValue).svg")!
     }
 }
-extension DoriFrontend.Filter.Rarity: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.Rarity: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         String(self)
     }
@@ -605,7 +605,7 @@ extension DoriFrontend.Filter.Rarity: DoriFrontend.Filter._Selectable {
         .init(string: "https://bestdori.com/res/icon/star_\(self).png")!
     }
 }
-extension DoriFrontend.Filter.Character: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.Character: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.name
     }
@@ -613,13 +613,13 @@ extension DoriFrontend.Filter.Character: DoriFrontend.Filter._Selectable {
         .init(string: "https://bestdori.com/res/icon/chara_icon_\(self.rawValue).png")!
     }
 }
-extension Bool: DoriFrontend.Filter._Selectable {
+extension Bool: _DoriFrontend.Filter._Selectable {
     @inline(never)
     public var selectorText: String {
         self ? String(localized: "FILTER_MATCH_ALL", bundle: #bundle) : String(localized: "FILTER_MATCH_ANY", bundle: #bundle)
     }
 }
-extension DoriFrontend.Filter.Server: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.Server: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.rawValue.uppercased()
     }
@@ -627,48 +627,48 @@ extension DoriFrontend.Filter.Server: DoriFrontend.Filter._Selectable {
         self.iconImageURL
     }
 }
-extension DoriFrontend.Filter.ReleaseStatus: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.ReleaseStatus: _DoriFrontend.Filter._Selectable {
     @inline(never)
     public var selectorText: String {
         self.boolValue ? String(localized: "FILTER_RELEASED_YES", bundle: #bundle) : String(localized: "FILTER_RELEASED_NO", bundle: #bundle)
     }
 }
-extension DoriFrontend.Filter.CardType: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.CardType: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.localizedString
     }
 }
-extension DoriFrontend.Filter.EventType: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.EventType: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.localizedString
     }
 }
-extension DoriFrontend.Filter.GachaType: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.GachaType: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.localizedString
     }
 }
-extension DoriFrontend.Filter.SongType: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.SongType: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.localizedString
     }
 }
-extension DoriFrontend.Filter.LoginCampaignType: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.LoginCampaignType: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.localizedString
     }
 }
-extension DoriFrontend.Filter.ComicType: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.ComicType: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.localizedString
     }
 }
-extension DoriFrontend.Filter.Skill: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.Skill: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.maximumDescription.forPreferredLocale() ?? ""
     }
 }
-extension Optional<DoriFrontend.Filter.Skill>: DoriFrontend.Filter._Selectable {
+extension Optional<_DoriFrontend.Filter.Skill>: _DoriFrontend.Filter._Selectable {
     @inline(never)
     public var selectorText: String {
         if let skill = self {
@@ -678,12 +678,12 @@ extension Optional<DoriFrontend.Filter.Skill>: DoriFrontend.Filter._Selectable {
         }
     }
 }
-extension DoriFrontend.Filter.TimelineStatus: DoriFrontend.Filter._Selectable {
+extension _DoriFrontend.Filter.TimelineStatus: _DoriFrontend.Filter._Selectable {
     public var selectorText: String {
         self.localizedString
     }
 }
-extension DoriFrontend.Filter.Key {
+extension _DoriFrontend.Filter.Key {
     /// Get a selector for key.
     ///
     /// You use `type` of selector to check whether this key should be treat as single or multiple selection,
@@ -725,82 +725,82 @@ extension DoriFrontend.Filter.Key {
     ///
     /// - SeeAlso:
     ///     See ``SelectorItem`` to learn more about `items`.
-    public var selector: (type: SelectionType, items: [SelectorItem<DoriFrontend.Filter._AnySelectable>]) {
+    public var selector: (type: SelectionType, items: [SelectorItem<_DoriFrontend.Filter._AnySelectable>]) {
         switch self {
         case .band:
-            (.multiple, DoriFrontend.Filter.Band.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.Band.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .bandMatchesOthers:
             (.single, [false, true].map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .attribute:
-            (.multiple, DoriFrontend.Filter.Attribute.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.Attribute.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .rarity:
             (.multiple, (1...5).map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .character:
-            (.multiple, DoriFrontend.Filter.Character.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.Character.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .characterRequiresMatchAll:
             (.single, [false, true].map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .server:
-            (.multiple, DoriFrontend.Filter.Server.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.Server.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .released:
-            (.multiple, [DoriFrontend.Filter.ReleaseStatus.released, .notReleased].map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, [_DoriFrontend.Filter.ReleaseStatus.released, .notReleased].map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .cardType:
-            (.multiple, DoriFrontend.Filter.CardType.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.CardType.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .eventType:
-            (.multiple, DoriFrontend.Filter.EventType.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.EventType.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .gachaType:
-            (.multiple, DoriFrontend.Filter.GachaType.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.GachaType.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .songType:
-            (.multiple, DoriFrontend.Filter.SongType.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.SongType.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .loginCampaignType:
-            (.multiple, DoriFrontend.Filter.LoginCampaignType.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.LoginCampaignType.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .comicType:
-            (.multiple, DoriFrontend.Filter.ComicType.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.ComicType.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .level:
             (.single, InMemoryCache.skills?.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             } ?? [])
         case .skill:
             (.single, InMemoryCache.skills?.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             } ?? [])
         case .timelineStatus:
-            (.multiple, DoriFrontend.Filter.TimelineStatus.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0))
+            (.multiple, _DoriFrontend.Filter.TimelineStatus.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .songAvailability:
-            (.multiple, DoriFrontend.Filter.TimelineStatus.allCases.map {
-                SelectorItem(DoriFrontend.Filter._AnySelectable($0, selectorText: [
-                    DoriFrontend.Filter.TimelineStatus.upcoming: String(localized: "SONG_AVAILABILITY_UPCOMING", bundle: #bundle),
-                    DoriFrontend.Filter.TimelineStatus.ongoing: String(localized: "SONGS_AVAILABILITY_AVAILABLE", bundle: #bundle),
-                    DoriFrontend.Filter.TimelineStatus.ended: String(localized: "SONG_AVAILABILITY_REMOVED", bundle: #bundle)
+            (.multiple, _DoriFrontend.Filter.TimelineStatus.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0, selectorText: [
+                    _DoriFrontend.Filter.TimelineStatus.upcoming: String(localized: "SONG_AVAILABILITY_UPCOMING", bundle: #bundle),
+                    _DoriFrontend.Filter.TimelineStatus.ongoing: String(localized: "SONGS_AVAILABILITY_AVAILABLE", bundle: #bundle),
+                    _DoriFrontend.Filter.TimelineStatus.ended: String(localized: "SONG_AVAILABILITY_REMOVED", bundle: #bundle)
                 ][$0]!))
             }.reversed())
         }
@@ -813,7 +813,7 @@ extension DoriFrontend.Filter.Key {
     ///
     /// - SeeAlso:
     ///     Use ``text`` and ``imageURL`` to get related description for an item.
-    public struct SelectorItem<T: DoriFrontend.Filter._Selectable> {
+    public struct SelectorItem<T: _DoriFrontend.Filter._Selectable> {
         public let item: T
         
         internal init(_ item: T) {
@@ -834,11 +834,11 @@ extension DoriFrontend.Filter.Key {
         case multiple
     }
 }
-extension DoriFrontend.Filter.Key.SelectorItem: Equatable where T: Equatable {}
-extension DoriFrontend.Filter.Key.SelectorItem: Hashable where T: Hashable {}
+extension _DoriFrontend.Filter.Key.SelectorItem: Equatable where T: Equatable {}
+extension _DoriFrontend.Filter.Key.SelectorItem: Hashable where T: Hashable {}
 
-extension DoriFrontend.Filter.Band {
-    internal func asFullBand() -> DoriFrontend.Filter.FullBand {
-        return DoriFrontend.Filter.FullBand(rawValue: self.rawValue)!
+extension _DoriFrontend.Filter.Band {
+    internal func asFullBand() -> _DoriFrontend.Filter.FullBand {
+        return _DoriFrontend.Filter.FullBand(rawValue: self.rawValue)!
     }
 }

@@ -76,7 +76,7 @@ struct CommandLineEntry: AsyncParsableCommand {
         case debug
         case strandMain
         
-        var apiLocale: DoriAPI.Locale {
+        var apiLocale: _DoriAPI.Locale {
             switch self {
             case .en: .en
             case .tw: .tw
@@ -90,7 +90,7 @@ struct CommandLineEntry: AsyncParsableCommand {
 
 func debugProcess(output: URL, token: String?, lastID: Int?) async {
     do {
-        let note = await DoriAPI.News.Item(id: 8563)!.content
+        let note = await _DoriAPI.News.Item(id: 8563)!.content
         print("[$][DEBUG] Note #8563 gotten.")
         let allPendingAssets = getDatasInAseetPatchNotes(from: note)
         print("[$][DEBUG] Assets gotten with total of \(allPendingAssets.count) item(s).")

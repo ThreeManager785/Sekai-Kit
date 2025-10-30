@@ -18,7 +18,7 @@ import Foundation
 import WebKit
 #endif
 
-extension DoriFrontend {
+extension _DoriFrontend {
     /// Request and fetch data about costume in Bandori.
     ///
     /// *Costumes* are 2D and/or 3D costumes
@@ -40,9 +40,9 @@ extension DoriFrontend {
         /// - Returns: All costumes, nil if failed to fetch.
         public static func list(filter: Filter = .init()) async -> [PreviewCostume]? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Costumes.all()
+                await _DoriAPI.Costumes.all()
             } _: {
-                await DoriAPI.Characters.all()
+                await _DoriAPI.Characters.all()
             }
             guard let costumes = groupResult.0 else { return nil }
             guard let characters = groupResult.1 else { return nil }
@@ -59,13 +59,13 @@ extension DoriFrontend {
         ///     with related character and band.
         public static func extendedInformation(of id: Int) async -> ExtendedCostume? {
             let groupResult = await withTasksResult {
-                await DoriAPI.Costumes.detail(of: id)
+                await _DoriAPI.Costumes.detail(of: id)
             } _: {
-                await DoriAPI.Characters.all()
+                await _DoriAPI.Characters.all()
             } _: {
-                await DoriAPI.Bands.all()
+                await _DoriAPI.Bands.all()
             } _: {
-                await DoriAPI.Cards.all()
+                await _DoriAPI.Cards.all()
             }
             guard let costume = groupResult.0 else { return nil }
             guard let characters = groupResult.1 else { return nil }
@@ -117,20 +117,20 @@ extension DoriFrontend {
     }
 }
 
-extension DoriFrontend.Costumes {
-    public typealias PreviewCostume = DoriAPI.Costumes.PreviewCostume
-    public typealias Costume = DoriAPI.Costumes.Costume
+extension _DoriFrontend.Costumes {
+    public typealias PreviewCostume = _DoriAPI.Costumes.PreviewCostume
+    public typealias Costume = _DoriAPI.Costumes.Costume
     
     /// Represent an extended costume.
     public struct ExtendedCostume: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// The base costume information.
         public var costume: Costume
         /// The character who takes this costume.
-        public var character: DoriAPI.Characters.PreviewCharacter
+        public var character: _DoriAPI.Characters.PreviewCharacter
         /// The band that the character taking this costume belongs to.
-        public var band: DoriAPI.Bands.Band
+        public var band: _DoriAPI.Bands.Band
         /// The cards of the character who takes this costume.
-        public var cards: [DoriAPI.Cards.PreviewCard]
+        public var cards: [_DoriAPI.Cards.PreviewCard]
         
         /// A unique ID of costume.
         @inlinable
@@ -140,10 +140,10 @@ extension DoriFrontend.Costumes {
     }
 }
 
-extension DoriFrontend.Costumes.ExtendedCostume {
+extension _DoriFrontend.Costumes.ExtendedCostume {
     @inlinable
     public init?(id: Int) async {
-        if let costume = await DoriFrontend.Costumes.extendedInformation(of: id) {
+        if let costume = await _DoriFrontend.Costumes.extendedInformation(of: id) {
             self = costume
         } else {
             return nil

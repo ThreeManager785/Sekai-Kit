@@ -20,18 +20,18 @@ import Foundation
 ////    FileManager.default.
 //}
 
-func getRecentAssetPatchNotes(lastID: Int) async -> [DoriFrontend.News.ListItem]? {
-    let allNews = await DoriFrontend.News.list(filter: .patchNote)
+func getRecentAssetPatchNotes(lastID: Int) async -> [_DoriFrontend.News.ListItem]? {
+    let allNews = await _DoriFrontend.News.list(filter: .patchNote)
     guard allNews != nil else { return nil }
     let assetPatchNotes = allNews!.filter { $0.tags.contains("Asset") }.sorted(by: { $0.relatedID > $1.relatedID })
     return Array(assetPatchNotes.prefix(while: { $0.relatedID > lastID }))
     // If last time's lastest news is #3417, then next time #3417 should not be checked. So use > not >=.
 }
 
-func getDatasInAseetPatchNotes(from patchNoteContents: [DoriAPI.News.Item.Content]) -> [String] {
+func getDatasInAseetPatchNotes(from patchNoteContents: [_DoriAPI.News.Item.Content]) -> [String] {
     var result: [String] = []
     
-    func traverseSection(_ section: DoriAPI.News.Item.Content.ContentDataSection) {
+    func traverseSection(_ section: _DoriAPI.News.Item.Content.ContentDataSection) {
         switch section {
         case .link(_, let data, _):
             result.append(data)
@@ -46,7 +46,7 @@ func getDatasInAseetPatchNotes(from patchNoteContents: [DoriAPI.News.Item.Conten
         }
     }
     
-    func traverseContent(_ content: DoriAPI.News.Item.Content) {
+    func traverseContent(_ content: _DoriAPI.News.Item.Content) {
         switch content {
         case .content(let sections):
             for section in sections {
@@ -75,7 +75,7 @@ func searchForAssetUpdate(lastID: Int) async -> [DoriLocale: Set<String>]? {
         }
         
         for note in recentNotes {
-            let completePassage = await DoriAPI.News.Item(id: note.relatedID)
+            let completePassage = await _DoriAPI.News.Item(id: note.relatedID)
             if let completePassage {
                 let datas = getDatasInAseetPatchNotes(from: completePassage.content)
                 if let passageLocale = completePassage.locale {

@@ -15,28 +15,28 @@
 import SwiftUI
 import Foundation
 
-extension DoriFrontend {
+extension _DoriFrontend {
     /// A type that can be searched when in a collection.
     public protocol Searchable: Identifiable {
         var _searchStrings: [String] { get }
-        var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] { get }
+        var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] { get }
         var _searchIntegers: [Int] { get }
-        var _searchLocales: [DoriAPI.Locale] { get }
-        var _searchBands: [DoriAPI.Bands.Band] { get }
-        var _searchAttributes: [DoriAPI.Attribute] { get }
+        var _searchLocales: [_DoriAPI.Locale] { get }
+        var _searchBands: [_DoriAPI.Bands.Band] { get }
+        var _searchAttributes: [_DoriAPI.Attribute] { get }
     }
 }
 
-extension DoriFrontend.Searchable {
+extension _DoriFrontend.Searchable {
     public var _searchStrings: [String] { [] }
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] { [] }
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] { [] }
     public var _searchIntegers: [Int] { [] }
-    public var _searchLocales: [DoriAPI.Locale] { [] }
-    public var _searchBands: [DoriAPI.Bands.Band] { [] }
-    public var _searchAttributes: [DoriAPI.Attribute] { [] }
+    public var _searchLocales: [_DoriAPI.Locale] { [] }
+    public var _searchBands: [_DoriAPI.Bands.Band] { [] }
+    public var _searchAttributes: [_DoriAPI.Attribute] { [] }
 }
 
-extension Array where Element: DoriFrontend.Searchable {
+extension Array where Element: _DoriFrontend.Searchable {
     /// Returns a new array which is filtered by given keyword.
     ///
     /// - Parameter keyword: Keyword for searching
@@ -58,7 +58,7 @@ extension Array where Element: DoriFrontend.Searchable {
                     }
                 }
                 for localizedString in item._searchLocalizedStrings {
-                    for locale in DoriAPI.Locale.allCases {
+                    for locale in _DoriAPI.Locale.allCases {
                         if localizedString.forLocale(locale)?.lowercased().contains(token) == true {
                             continue tokenLoop
                         }
@@ -116,7 +116,7 @@ extension Array where Element: DoriFrontend.Searchable {
                         }
                     }
                 }
-                let server: DoriAPI.Locale? = switch token {
+                let server: _DoriAPI.Locale? = switch token {
                 case "japan", "japanese", "jp": .jp
                 case "worldwide", "english", "ww", "en": .en
                 case "taiwan", "tw": .tw
@@ -157,7 +157,7 @@ extension Array where Element: DoriFrontend.Searchable {
                         continue tokenLoop
                     }
                 }
-                let attribute: DoriAPI.Attribute? = switch token {
+                let attribute: _DoriAPI.Attribute? = switch token {
                 case "powerful", "power", "red", "パワフル", "红", "紅": .powerful
                 case "pure", "green", "ピュア", "绿", "綠": .pure
                 case "cool", "blue", "クール", "蓝", "藍": .cool
@@ -183,33 +183,33 @@ extension Array where Element: DoriFrontend.Searchable {
     }
 }
 
-extension DoriAPI.Cards.PreviewCard: DoriFrontend.Searchable {
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
+extension _DoriAPI.Cards.PreviewCard: _DoriFrontend.Searchable {
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] {
         [self.prefix]
     }
     public var _searchIntegers: [Int] {
         [self.rarity]
     }
-    public var _searchLocales: [DoriAPI.Locale] {
-        var result = [DoriAPI.Locale]()
-        for locale in DoriAPI.Locale.allCases {
+    public var _searchLocales: [_DoriAPI.Locale] {
+        var result = [_DoriAPI.Locale]()
+        for locale in _DoriAPI.Locale.allCases {
             if self.releasedAt.availableInLocale(locale) {
                 result.append(locale)
             }
         }
         return result
     }
-    public var _searchAttributes: [DoriAPI.Attribute] {
+    public var _searchAttributes: [_DoriAPI.Attribute] {
         [self.attribute]
     }
 }
-extension DoriAPI.Comics.Comic: DoriFrontend.Searchable {
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
+extension _DoriAPI.Comics.Comic: _DoriFrontend.Searchable {
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] {
         [self.title, self.subTitle]
     }
-    public var _searchLocales: [DoriAPI.Locale] {
-        var result = [DoriAPI.Locale]()
-        for locale in DoriAPI.Locale.allCases {
+    public var _searchLocales: [_DoriAPI.Locale] {
+        var result = [_DoriAPI.Locale]()
+        for locale in _DoriAPI.Locale.allCases {
             if self.title.availableInLocale(locale) {
                 result.append(locale)
             }
@@ -217,13 +217,13 @@ extension DoriAPI.Comics.Comic: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.Costumes.PreviewCostume: DoriFrontend.Searchable {
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
+extension _DoriAPI.Costumes.PreviewCostume: _DoriFrontend.Searchable {
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] {
         [self.description]
     }
-    public var _searchLocales: [DoriAPI.Locale] {
-        var result = [DoriAPI.Locale]()
-        for locale in DoriAPI.Locale.allCases {
+    public var _searchLocales: [_DoriAPI.Locale] {
+        var result = [_DoriAPI.Locale]()
+        for locale in _DoriAPI.Locale.allCases {
             if self.publishedAt.availableInLocale(locale) {
                 result.append(locale)
             }
@@ -231,36 +231,36 @@ extension DoriAPI.Costumes.PreviewCostume: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.Events.PreviewEvent: DoriFrontend.Searchable {
+extension _DoriAPI.Events.PreviewEvent: _DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.eventType.localizedString]
     }
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] {
         [self.eventName]
     }
-    public var _searchLocales: [DoriAPI.Locale] {
-        var result = [DoriAPI.Locale]()
-        for locale in DoriAPI.Locale.allCases {
+    public var _searchLocales: [_DoriAPI.Locale] {
+        var result = [_DoriAPI.Locale]()
+        for locale in _DoriAPI.Locale.allCases {
             if self.startAt.availableInLocale(locale) {
                 result.append(locale)
             }
         }
         return result
     }
-    public var _searchAttributes: [DoriAPI.Attribute] {
+    public var _searchAttributes: [_DoriAPI.Attribute] {
         self.attributes.map { $0.attribute }
     }
 }
-extension DoriAPI.Gachas.PreviewGacha: DoriFrontend.Searchable {
+extension _DoriAPI.Gachas.PreviewGacha: _DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.type.localizedString]
     }
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] {
         [self.gachaName]
     }
-    public var _searchLocales: [DoriAPI.Locale] {
-        var result = [DoriAPI.Locale]()
-        for locale in DoriAPI.Locale.allCases {
+    public var _searchLocales: [_DoriAPI.Locale] {
+        var result = [_DoriAPI.Locale]()
+        for locale in _DoriAPI.Locale.allCases {
             if self.publishedAt.availableInLocale(locale) {
                 result.append(locale)
             }
@@ -268,16 +268,16 @@ extension DoriAPI.Gachas.PreviewGacha: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.LoginCampaigns.PreviewCampaign: DoriFrontend.Searchable {
+extension _DoriAPI.LoginCampaigns.PreviewCampaign: _DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.loginBonusType.localizedString]
     }
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] {
         [self.caption]
     }
-    public var _searchLocales: [DoriAPI.Locale] {
-        var result = [DoriAPI.Locale]()
-        for locale in DoriAPI.Locale.allCases {
+    public var _searchLocales: [_DoriAPI.Locale] {
+        var result = [_DoriAPI.Locale]()
+        for locale in _DoriAPI.Locale.allCases {
             if self.publishedAt.availableInLocale(locale) {
                 result.append(locale)
             }
@@ -285,16 +285,16 @@ extension DoriAPI.LoginCampaigns.PreviewCampaign: DoriFrontend.Searchable {
         return result
     }
 }
-extension DoriAPI.Songs.PreviewSong: DoriFrontend.Searchable {
+extension _DoriAPI.Songs.PreviewSong: _DoriFrontend.Searchable {
     public var _searchStrings: [String] {
         [self.tag.localizedString]
     }
-    public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
+    public var _searchLocalizedStrings: [_DoriAPI.LocalizedData<String>] {
         [self.musicTitle]
     }
-    public var _searchLocales: [DoriAPI.Locale] {
-        var result = [DoriAPI.Locale]()
-        for locale in DoriAPI.Locale.allCases {
+    public var _searchLocales: [_DoriAPI.Locale] {
+        var result = [_DoriAPI.Locale]()
+        for locale in _DoriAPI.Locale.allCases {
             if self.publishedAt.availableInLocale(locale) {
                 result.append(locale)
             }

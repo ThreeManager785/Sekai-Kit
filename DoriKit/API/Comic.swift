@@ -15,7 +15,7 @@
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about comics in Bandori.
     ///
     /// *Comics* appear randomly in the loading page of GBP.
@@ -100,7 +100,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.Comics {
+extension _DoriAPI.Comics {
     /// Represent general data of a comic
     public struct Comic: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of comic.
@@ -108,11 +108,11 @@ extension DoriAPI.Comics {
         /// Name of resource bundle, used for combination of resource URLs.
         public var assetBundleName: String
         /// Localized title of comic.
-        public var title: DoriAPI.LocalizedData<String>
+        public var title: _DoriAPI.LocalizedData<String>
         /// Localized subtitle of comic.
-        public var subTitle: DoriAPI.LocalizedData<String>
+        public var subTitle: _DoriAPI.LocalizedData<String>
         /// Localized date where comic is available.
-        public var publicStartAt: DoriAPI.LocalizedData<Date>
+        public var publicStartAt: _DoriAPI.LocalizedData<Date>
         /// IDs of characters related to this comic.
         public var characterIDs: [Int]
     }

@@ -15,7 +15,7 @@
 import Foundation
 internal import SwiftyJSON
 
-extension DoriAPI {
+extension _DoriAPI {
     /// Request and fetch data about login campaigns in Bandori.
     ///
     /// *Login campaigns* are activities that give you some items
@@ -214,7 +214,7 @@ extension DoriAPI {
     }
 }
 
-extension DoriAPI.LoginCampaigns {
+extension _DoriAPI.LoginCampaigns {
     /// Represent simplified data of login campaign.
     public struct PreviewCampaign: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of login campaign.
@@ -222,13 +222,13 @@ extension DoriAPI.LoginCampaigns {
         /// Type of login campaign.
         public var loginBonusType: CampaignType
         /// Name of resource bundle, used for combination of resource URLs.
-        public var assetBundleName: DoriAPI.LocalizedData<String>
+        public var assetBundleName: _DoriAPI.LocalizedData<String>
         /// Localized caption of login campaign.
-        public var caption: DoriAPI.LocalizedData<String>
+        public var caption: _DoriAPI.LocalizedData<String>
         /// Localized publish date of login campaign.
-        public var publishedAt: DoriAPI.LocalizedData<Date>
+        public var publishedAt: _DoriAPI.LocalizedData<Date>
         /// Localized close date of login campaign.
-        public var closedAt: DoriAPI.LocalizedData<Date>
+        public var closedAt: _DoriAPI.LocalizedData<Date>
     }
     
     public struct Campaign: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -237,15 +237,15 @@ extension DoriAPI.LoginCampaigns {
         /// Type of login campaign.
         public var loginBonusType: CampaignType
         /// Name of resource bundle, used for combination of resource URLs.
-        public var assetBundleName: DoriAPI.LocalizedData<String>
+        public var assetBundleName: _DoriAPI.LocalizedData<String>
         /// Localized caption of login campaign.
-        public var caption: DoriAPI.LocalizedData<String>
+        public var caption: _DoriAPI.LocalizedData<String>
         /// Localized publish date of login campaign.
-        public var publishedAt: DoriAPI.LocalizedData<Date>
+        public var publishedAt: _DoriAPI.LocalizedData<Date>
         /// Localized close date of login campaign.
-        public var closedAt: DoriAPI.LocalizedData<Date>
+        public var closedAt: _DoriAPI.LocalizedData<Date>
         /// Localized bonus details.
-        public var details: DoriAPI.LocalizedData<[Bonus]>
+        public var details: _DoriAPI.LocalizedData<[Bonus]>
         
         /// Represent a bonus detail of login campaign.
         public struct Bonus: Sendable, Hashable, DoriCache.Cacheable {
@@ -254,7 +254,7 @@ extension DoriAPI.LoginCampaigns {
             /// Relative days from start of login campaign to the bonus available.
             public var days: Int
             /// Item for this bonus.
-            public var item: DoriAPI.Item
+            public var item: _DoriAPI.Item
             public var voiceID: String?
             public var seq: Int
             public var grantType: GrantType
@@ -262,7 +262,7 @@ extension DoriAPI.LoginCampaigns {
             internal init(
                 loginBonusID: Int,
                 days: Int,
-                item: DoriAPI.Item,
+                item: _DoriAPI.Item,
                 voiceID: String?,
                 seq: Int,
                 grantType: GrantType
@@ -293,8 +293,8 @@ extension DoriAPI.LoginCampaigns {
     }
 }
 
-extension DoriAPI.LoginCampaigns.PreviewCampaign {
-    public init(_ full: DoriAPI.LoginCampaigns.Campaign) {
+extension _DoriAPI.LoginCampaigns.PreviewCampaign {
+    public init(_ full: _DoriAPI.LoginCampaigns.Campaign) {
         self.init(
             id: full.id,
             loginBonusType: full.loginBonusType,
@@ -305,10 +305,10 @@ extension DoriAPI.LoginCampaigns.PreviewCampaign {
         )
     }
 }
-extension DoriAPI.LoginCampaigns.Campaign {
+extension _DoriAPI.LoginCampaigns.Campaign {
     @inlinable
     public init?(id: Int) async {
-        if let campaign = await DoriAPI.LoginCampaigns.detail(of: id) {
+        if let campaign = await _DoriAPI.LoginCampaigns.detail(of: id) {
             self = campaign
         } else {
             return nil
@@ -316,7 +316,7 @@ extension DoriAPI.LoginCampaigns.Campaign {
     }
     
     @inlinable
-    public init?(preview: DoriAPI.LoginCampaigns.PreviewCampaign) async {
+    public init?(preview: _DoriAPI.LoginCampaigns.PreviewCampaign) async {
         await self.init(id: preview.id)
     }
 }

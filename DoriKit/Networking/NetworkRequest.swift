@@ -60,7 +60,7 @@ internal func requestJSON<Parameters: Encodable & Sendable>(
 private func _getThreadHeaders() -> HTTPHeaders {
     var result = AF.sessionConfiguration.headers
     
-    if let userToken = DoriFrontend.User._currentUserToken {
+    if let userToken = _DoriFrontend.User._currentUserToken {
         var cookie = result["Cookie"] ?? ""
         if !cookie.isEmpty {
             cookie += "; "
