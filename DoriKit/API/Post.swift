@@ -106,7 +106,8 @@ extension _DoriAPI {
                                 storyMetadata: storyMetadata,
                                 chartMetadata: chartMetadata
                             )
-                        }
+                        },
+                        _source: request
                     )
                 }
                 return await task.value
@@ -259,6 +260,8 @@ extension _DoriAPI.Posts {
         public var total: Int
         public var currentOffset: Int
         public var content: [Post]
+        
+        internal var _source: ListRequest? // For making iterator
     }
     
     public enum Category: String, Sendable, Hashable {

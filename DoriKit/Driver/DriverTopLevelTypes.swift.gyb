@@ -112,6 +112,7 @@ public typealias PreviewCard = _DoriAPI.Cards.PreviewCard
 public typealias CardType = _DoriAPI.Cards.CardType
 public typealias CardEpisode = _DoriAPI.Cards.CardEpisode
 public typealias CardStat = _DoriAPI.Cards.CardStat
+public typealias CardStatValue = _DoriAPI.Cards.Stat
 
 extension Card {
     @inlinable
@@ -171,6 +172,24 @@ extension BirthdayCharacter {
         await _DoriAPI.Characters.allBirthday()
     }
 }
+
+// MARK: Post
+
+#if HAS_BINARY_RESOURCE_BUNDLES
+
+public typealias Post = _DoriAPI.Posts.Post
+public typealias PagedPosts = _DoriAPI.Posts.PagedPosts
+public typealias PostBasicData = _DoriAPI.Posts.BasicData
+
+extension Post {
+    public var basicData: PostBasicData? {
+        get async {
+            await _DoriAPI.Posts.basicData(of: self.id)
+        }
+    }
+}
+
+#endif // HAS_BINARY_RESOURCE_BUNDLES
 
 // MARK: - Frontend
 

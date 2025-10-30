@@ -16,6 +16,51 @@
 
 import Foundation
 
+extension _DoriAPI.Posts.PagedPosts: AsyncSequence {
+    public func makeAsyncIterator() -> AsyncIterator {
+        if let request = self._source {
+            .init(count: total, request: request, currentElements: content)
+        } else {
+            preconditionFailure()
+        }
+    }
+    
+    public struct AsyncIterator: AsyncIteratorProtocol {
+        internal var position: Int
+        internal var count: Int
+        internal var request: _DoriAPI.Posts.ListRequest
+        internal var buffer: [Element]
+        
+        internal init(count: Int, request: _DoriAPI.Posts.ListRequest, currentElements: [Element]) {
+            self.position = request.offset % request.limit
+            self.count = count
+            self.request = request
+            self.buffer = currentElements
+        }
+        
+        public mutating func next() async throws -> _DoriAPI.Posts.Post? {
+            defer {
+                position += 1
+                request.offset += 1
+            }
+            if position >= buffer.count {
+                if request.offset <= request.limit {
+                    if let newList = await _DoriAPI.Posts._list(request) {
+                        buffer = newList.content
+                        count = newList.total
+                        position = 0
+                    } else {
+                        throw NSError(domain: "com.memz233.DoriKit", code: 0x0809)
+                    }
+                } else {
+                    return nil
+                }
+            }
+            return buffer[position]
+        }
+    }
+}
+
 extension _DoriAPI.Posts.Post {
     public var parent: Parent? {
         get async {
