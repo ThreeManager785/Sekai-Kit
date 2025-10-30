@@ -598,4 +598,8 @@ extension Array where Element: DoriFrontend.Sortable {
         }
         return result
     }
+    
+    mutating func sort(withDoriSorter sorter: DoriFrontend.Sorter) {
+        self = self.sorted(withDoriSorter: sorter)
+    }
 }

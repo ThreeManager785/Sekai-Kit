@@ -440,6 +440,7 @@ extension DoriFrontend.Costumes.PreviewCostume: DoriFrontend.Filterable {
 
 // MARK: extension Array
 extension Array where Element: DoriFrontend.Filterable {
+    // Terms of Art... --@ThreeManager785
     public func filter(withDoriFilter filter: DoriFrontend.Filter) -> [Element] {
         var result: [Element] = self
         guard filter.isFiltered else { return result }
@@ -532,5 +533,9 @@ extension Array where Element: DoriFrontend.Filterable {
             return element._matches(filter.level, withCache: cacheCopy) ?? true
         }
         return result
+    }
+    
+    mutating func filter(withDoriFilter filter: DoriFrontend.Filter) {
+        self = self.filter(withDoriFilter: filter)
     }
 }

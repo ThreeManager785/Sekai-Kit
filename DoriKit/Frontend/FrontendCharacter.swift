@@ -53,7 +53,9 @@ extension DoriFrontend {
                 return calendar.date(from: components)!/*.componentsRewritten(year: 2000, hour: 0, minute: 0, second: 0)*/
             }
             
-            guard let allBirthday = await DoriAPI.Characters.allBirthday() else { return nil }
+            
+            let allBirthday = await DoriAPI.Characters.allBirthday() ?? (DoriCache.PreCache.isAvailable ? DoriCache.preCache.birthdayCharacters : nil)
+            guard let allBirthday else { return nil }
             
             var todaysCalender = Calendar(identifier: .gregorian)
             todaysCalender.timeZone = timeZone

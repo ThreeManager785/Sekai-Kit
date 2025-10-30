@@ -31,6 +31,14 @@ extension DoriCache {
         public var birthdayCharacters: [DoriAPI.Characters.BirthdayCharacter]
         public var categorizedCharacters: DoriFrontend.Characters.CategorizedCharacters
         public var characterDetails: [Int: DoriAPI.Characters.Character] // [CharacterID: Detail]
+        
+        public static var isAvailable: Bool {
+#if DORIKIT_ENABLE_PRECACHE
+            true
+#else
+            false
+#endif
+        }
     }
     
     /// Get a ``PreCache``.
@@ -45,16 +53,6 @@ extension DoriCache {
         .init(bands: [], mainBands: [], characters: [], birthdayCharacters: [], categorizedCharacters: [:], characterDetails: [:])
         #endif
     }()
-    
-    /// Whether DoriKit is built with pre-cache.
-    @_transparent
-    public static var preCacheAvailability: Bool {
-        #if DORIKIT_ENABLE_PRECACHE
-        true
-        #else
-        false
-        #endif
-    }
     
     internal static func preCachedData(byID id: String) -> Any? {
         switch id {
