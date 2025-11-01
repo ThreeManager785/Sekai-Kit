@@ -18,6 +18,9 @@
       },
       "shouldTranslate" : false
     },
+    "attributes syntax is not supported" : {
+
+    },
     "BAND_NAME_AFTERGLOW" : {
       "localizations" : {
         "en" : {
@@ -2537,6 +2540,12 @@
         }
       }
     },
+    "declaration modifier is not supported" : {
+
+    },
+    "default value declaration is not supported in function parameters" : {
+
+    },
     "easy" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -3019,6 +3028,12 @@
           }
         }
       }
+    },
+    "expected identifier in enum 'case' declaration" : {
+
+    },
+    "expected member declaration block" : {
+
     },
     "expert" : {
       "extractionState" : "manual",
@@ -4906,6 +4921,9 @@
         }
       }
     },
+    "generic syntax is not supported" : {
+
+    },
     "happy" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -5340,6 +5358,12 @@
           }
         }
       }
+    },
+    "inheritance syntax is not supported" : {
+
+    },
+    "Invalid redeclaration of '%@'" : {
+
     },
     "judge" : {
       "extractionState" : "manual",
@@ -6085,6 +6109,9 @@
         }
       }
     },
+    "nesting optional type is not supported" : {
+
+    },
     "normal" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6142,6 +6169,9 @@
           }
         }
       }
+    },
+    "parameters syntax for enum case is not supported" : {
+
     },
     "performance" : {
       "extractionState" : "manual",
@@ -6229,6 +6259,9 @@
           }
         }
       }
+    },
+    "raw value for enum is not supported" : {
+
     },
     "released" : {
       "extractionState" : "manual",
@@ -6490,6 +6523,9 @@
           }
         }
       }
+    },
+    "second parameter name is unused" : {
+
     },
     "SIGNUP_ERROR_BLOCKED" : {
       "extractionState" : "manual",
@@ -7976,6 +8012,15 @@
         }
       }
     },
+    "this declaration is not supported in enum" : {
+
+    },
+    "this syntax should be type-checked by its parent node; please submit a bug report (%@)" : {
+
+    },
+    "throwing function is not supported" : {
+
+    },
     "TIMELINE_STATUS_ENDED" : {
       "localizations" : {
         "en" : {
@@ -8147,6 +8192,18 @@
         }
       }
     },
+    "unexpected ellipsis in function parameter declaration" : {
+
+    },
+    "unexpected function body declaration" : {
+
+    },
+    "unrecognized top level syntax" : {
+
+    },
+    "unsupported declaration" : {
+
+    },
     "upcoming" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -8233,6 +8290,9 @@
           }
         }
       }
+    },
+    "where clause syntax is not supported" : {
+
     }
   },
   "version" : "1.1"

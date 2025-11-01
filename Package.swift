@@ -22,7 +22,9 @@ let package = Package(
             dependencies: [
                 "Alamofire",
                 "SwiftyJSON",
-                "DoriKitMacros"
+                "DoriKitMacros",
+                .product(name: "SwiftSyntax", package: "swift-syntax"),
+                .product(name: "SwiftDiagnostics", package: "swift-syntax")
             ],
             path: "DoriKit/",
             resources: [
