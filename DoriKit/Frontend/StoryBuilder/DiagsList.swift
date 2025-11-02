@@ -162,10 +162,86 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         )
     }
     
+    static var nestingStructNotSupported: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "nesting struct declaration is not supported",
+            id: "nesting_struct_not_supported"
+        )
+    }
+    
+    static var varBindingUnexpectedID: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "expected identifier",
+            id: "variable_binding_unexpected_identifier"
+        )
+    }
+    
+    static var varAccessorNotSupported: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "variable accessor syntax is not supported",
+            id: "variable_accessor_not_supported"
+        )
+    }
+    
+    static var failedToFoldOperators: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            """
+            failed to resolve operators; \
+            please submit a bug report (\(bugReportURL))
+            """,
+            id: "failed_to_fold_operators"
+        )
+    }
+    
+    static var cannotInferTypeWithoutAnnotation: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "type could not be inferred without a type annotation",
+            id: "cannot_infer_type_without_type_annotation"
+        )
+    }
+    
     static func invalidRedeclaration(of text: String) -> some DiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "Invalid redeclaration of '\(text)'",
             id: "invalid_redeclaration"
+        )
+    }
+    
+    static func unsupportedVarSpec(_ spec: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "variable specifier '\(spec)' is not supported",
+            id: "unsupported_variable_specifier"
+        )
+    }
+    
+    static func missingStdlibType(_ typeName: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            """
+            standard library type '\(typeName)' is missing or broken; \
+            please submit a bug report (\(bugReportURL))
+            """,
+            id: "missing_stdlib_type"
+        )
+    }
+    
+    static func unsupportedOperator(_ operator: String?) -> some DiagnosticMessage {
+        if let `operator` {
+            ZeileDiagnosticMessage.error(
+                "operator '\(`operator`)' is not supported",
+                id: "unsupported_operator"
+            )
+        } else {
+            ZeileDiagnosticMessage.error(
+                "this operator is not supported",
+                id: "unsupported_operator"
+            )
+        }
+    }
+    
+    static func specTypeNotMatchToInit(specType: String, initType: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "Cannot convert value of type '\(initType)' to specified type '\(specType)'",
+            id: "specified_type_not_match_to_initializer"
         )
     }
 }
