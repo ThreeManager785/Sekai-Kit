@@ -200,6 +200,13 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         )
     }
     
+    static var invalidStaticVarDeclPosition: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "static properties may only be declared on a type",
+            id: "invalid_static_variable_declaration_position"
+        )
+    }
+    
     static func invalidRedeclaration(of text: String) -> some DiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "Invalid redeclaration of '\(text)'",
@@ -240,8 +247,85 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
     
     static func specTypeNotMatchToInit(specType: String, initType: String) -> some DiagnosticMessage {
         ZeileDiagnosticMessage.error(
-            "Cannot convert value of type '\(initType)' to specified type '\(specType)'",
+            "cannot convert value of type '\(initType)' to specified type '\(specType)'",
             id: "specified_type_not_match_to_initializer"
+        )
+    }
+    
+    static func cannotFindTypeInScope(_ typeName: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "cannot find type '\(typeName)' in scope",
+            id: "cannot_find_type_in_scope"
+        )
+    }
+    
+    static func cannotFindRefInScope(_ refName: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "cannot find '\(refName)' in scope",
+            id: "cannot_find_reference_in_scope"
+        )
+    }
+    
+    static func typeValueHasNoMember(type: String, member: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "value of type '\(type)' has no member '\(member)'",
+            id: "type_value_has_no_member"
+        )
+    }
+    
+    static func cannotCallNonFuncValue(ofType type: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "Cannot call value of non-function type '\(type)'",
+            id: "cannot_call_non-function_value"
+        )
+    }
+    
+    static func callExtraArgLabel(_ label: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "extraneous argument label '\(label):' in call",
+            id: "call_extra_argument_label"
+        )
+    }
+    
+    static func callMissingArgLabel(_ label: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "missing argument label '\(label):' in call",
+            id: "call_missing_argument_label"
+        )
+    }
+    
+    static func callIncorrectArgLabel(have: String, expected: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "incorrect argument label in call (have '\(have):', expected '\(expected):')",
+            id: "call_incorrect_argument_label"
+        )
+    }
+    
+    static func callArgTypeNotMatchToDecl(callType: String, declType: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "cannot convert value of type '\(callType)' to expected argument type '\(declType)'",
+            id: "call_argument_type_not_match_to_declaration"
+        )
+    }
+    
+    static func callAmbiguousMemberOverload(_ name: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "ambiguous reference to member \(name)",
+            id: "call_ambiguous_member_overload"
+        )
+    }
+    
+    static func callNoExactMatchToFunc(_ funcName: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "no exact matches in call to function '\(funcName)'",
+            id: "call_no_exact_match_to_function"
+        )
+    }
+    
+    static func duplicateDeclModifier(of modifier: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "'\(modifier)' cannot appear after another '\(modifier)' keyword",
+            id: "duplicate_declaration_modifier"
         )
     }
 }

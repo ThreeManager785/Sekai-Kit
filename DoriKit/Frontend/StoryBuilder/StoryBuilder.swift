@@ -13,9 +13,18 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+internal import SwiftSyntax
+internal import SwiftParser
 
 public final class DoriStoryBuilder: Sendable {
     public init() {
         
+    }
+    
+    public func buildSourceCode(_ code: String) -> [Diagnostic] {
+        let source = Parser.parse(source: code)
+        
+        let sema = SemaEvaluator([source])
+        return sema.performSema()
     }
 }

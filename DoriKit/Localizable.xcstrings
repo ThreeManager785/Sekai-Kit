@@ -4,6 +4,16 @@
     "\n" : {
       "shouldTranslate" : false
     },
+    "'%@' cannot appear after another '%@' keyword" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "'%1$@' cannot appear after another '%2$@' keyword"
+          }
+        }
+      }
+    },
     "%@" : {
       "shouldTranslate" : false
     },
@@ -17,6 +27,9 @@
         }
       },
       "shouldTranslate" : false
+    },
+    "ambiguous reference to member %@" : {
+
     },
     "attributes syntax is not supported" : {
 
@@ -273,6 +286,35 @@
           }
         }
       }
+    },
+    "Cannot call value of non-function type '%@'" : {
+
+    },
+    "cannot convert value of type '%@' to expected argument type '%@'" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "cannot convert value of type '%1$@' to expected argument type '%2$@'"
+          }
+        }
+      }
+    },
+    "cannot convert value of type '%@' to specified type '%@'" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "cannot convert value of type '%1$@' to specified type '%2$@'"
+          }
+        }
+      }
+    },
+    "cannot find '%@' in scope" : {
+
+    },
+    "cannot find type '%@' in scope" : {
+
     },
     "cardbirthday" : {
       "extractionState" : "manual",
@@ -3029,6 +3071,9 @@
         }
       }
     },
+    "expected identifier" : {
+
+    },
     "expected identifier in enum 'case' declaration" : {
 
     },
@@ -3063,6 +3108,12 @@
           }
         }
       }
+    },
+    "extraneous argument label '%@:' in call" : {
+
+    },
+    "failed to resolve operators; please submit a bug report (%@)" : {
+
     },
     "festivalresultlose" : {
       "extractionState" : "manual",
@@ -5359,6 +5410,16 @@
         }
       }
     },
+    "incorrect argument label in call (have '%@:', expected '%@:')" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "incorrect argument label in call (have '%1$@:', expected '%2$@:')"
+          }
+        }
+      }
+    },
     "inheritance syntax is not supported" : {
 
     },
@@ -5935,6 +5996,9 @@
         }
       }
     },
+    "missing argument label '%@:' in call" : {
+
+    },
     "missionalbum" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6112,6 +6176,12 @@
     "nesting optional type is not supported" : {
 
     },
+    "nesting struct declaration is not supported" : {
+
+    },
+    "no exact matches in call to function '%@'" : {
+
+    },
     "normal" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -6169,6 +6239,12 @@
           }
         }
       }
+    },
+    "operator '%@' is not supported" : {
+
+    },
+    "optional type is not supported here" : {
+
     },
     "parameters syntax for enum case is not supported" : {
 
@@ -6996,6 +7072,19 @@
           }
         }
       }
+    },
+    "standard library type '%@' is missing or broken; please submit a bug report (%@)" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "standard library type '%1$@' is missing or broken; please submit a bug report (%2$@)"
+          }
+        }
+      }
+    },
+    "static properties may only be declared on a type" : {
+
     },
     "taganime" : {
       "extractionState" : "manual",
@@ -8015,6 +8104,9 @@
     "this declaration is not supported in enum" : {
 
     },
+    "this operator is not supported" : {
+
+    },
     "this syntax should be type-checked by its parent node; please submit a bug report (%@)" : {
 
     },
@@ -8192,6 +8284,9 @@
         }
       }
     },
+    "type could not be inferred without a type annotation" : {
+
+    },
     "unexpected ellipsis in function parameter declaration" : {
 
     },
@@ -8232,6 +8327,22 @@
           }
         }
       }
+    },
+    "value of type '%@' has no member '%@'" : {
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "new",
+            "value" : "value of type '%1$@' has no member '%2$@'"
+          }
+        }
+      }
+    },
+    "variable accessor syntax is not supported" : {
+
+    },
+    "variable specifier '%@' is not supported" : {
+
     },
     "visual" : {
       "extractionState" : "manual",
