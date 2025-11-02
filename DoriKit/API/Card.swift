@@ -852,3 +852,9 @@ extension _DoriAPI.Cards.CardStat {
         )
     }
 }
+
+extension _DoriAPI.Cards.CardEpisode {
+    public func standardized() -> _DoriAPI.Story {
+        return _DoriAPI.Story(scenarioID: self.scenarioID, caption: LocalizedData(forEveryLocale: self.episodeType.rawValue), title: self.title, synopsis: LocalizedData(forEveryLocale: nil), voiceAssetBundleName: nil)
+    }
+}

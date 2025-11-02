@@ -110,6 +110,11 @@ public final class _DoriAPI {
             self.kr = kr
         }
         
+        @usableFromInline
+        internal init(forEveryLocale item: T?) {
+            self.init(jp: item, en: item, tw: item, cn: item, kr: item)
+        }
+        
         @inlinable
         public init(_jp: T?, en: T?, tw: T?, cn: T?, kr: T?) {
             self.init(jp: _jp, en: en, tw: tw, cn: cn, kr: kr)
