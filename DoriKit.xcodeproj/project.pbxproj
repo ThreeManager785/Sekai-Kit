@@ -66,6 +66,7 @@
 		8C2CFEF92EB88BDE00A8A149 /* IRGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */; };
 		8C2CFEFB2EB8901300A8A149 /* Symbolization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */; };
 		8C2CFEFD2EB8901E00A8A149 /* Mangling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */; };
+		8C2CFEFF2EB8AF5200A8A149 /* SwiftParserDiagnostics in Frameworks */ = {isa = PBXBuildFile; productRef = 8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */; };
 		8C2EE3AC2E704A3400EDDD0D /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2EE3AA2E70498800EDDD0D /* libgit2.a */; };
 		8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */; };
 		8C3264042E3B760100081F4F /* PreCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264032E3B75FF00081F4F /* PreCache.swift */; };
@@ -534,6 +535,7 @@
 				8CA8561C2EB48903001464F7 /* SwiftSyntax in Frameworks */,
 				8C0C99AE2E296F2D00549B5C /* Alamofire in Frameworks */,
 				8CA865CD2EB4E083001464F7 /* SwiftDiagnostics in Frameworks */,
+				8C2CFEFF2EB8AF5200A8A149 /* SwiftParserDiagnostics in Frameworks */,
 				8C43486A2EB73EE100067FBD /* SwiftParser in Frameworks */,
 				8C7F6BF72E594EDF0040C206 /* libgssapi_krb5.tbd in Frameworks */,
 				8C7F6BF62E594EDF0040C206 /* GSS.framework in Frameworks */,
@@ -1003,6 +1005,7 @@
 				8CA865CC2EB4E083001464F7 /* SwiftDiagnostics */,
 				8C4348672EB71E3F00067FBD /* SwiftOperators */,
 				8C4348692EB73EE100067FBD /* SwiftParser */,
+				8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */,
 			);
 			productName = DoriKit;
 			productReference = 8C0C99912E296A8C00549B5C /* DoriKit.framework */;
@@ -3279,6 +3282,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8C0C99AF2E296F3900549B5C /* XCRemoteSwiftPackageReference "SwiftyJSON" */;
 			productName = SwiftyJSON;
+		};
+		8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C8E44F92E5F6867005590F0 /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftParserDiagnostics;
 		};
 		8C4348672EB71E3F00067FBD /* SwiftOperators */ = {
 			isa = XCSwiftPackageProductDependency;

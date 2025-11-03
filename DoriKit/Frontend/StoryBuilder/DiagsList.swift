@@ -221,6 +221,13 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         )
     }
     
+    static var circularRefInExpr: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "circular reference in expression",
+            id: "circulat_reference_in_expression"
+        )
+    }
+    
     static func invalidRedeclaration(of text: String) -> some DiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "Invalid redeclaration of '\(text)'",

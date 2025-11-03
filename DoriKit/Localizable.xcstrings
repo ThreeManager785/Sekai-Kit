@@ -2050,6 +2050,9 @@
         }
       }
     },
+    "circular reference in expression" : {
+
+    },
     "combo" : {
       "extractionState" : "manual",
       "localizations" : {

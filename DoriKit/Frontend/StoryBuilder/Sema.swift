@@ -14,6 +14,7 @@
 
 internal import SwiftSyntax
 internal import SwiftOperators
+internal import SwiftParserDiagnostics
 
 internal final class SemaEvaluator {
     internal let sources: [SourceFileSyntax]
@@ -29,6 +30,8 @@ internal final class SemaEvaluator {
     internal var _resolvedTopFunctions: [FunctionDeclaration] = []
     internal var _resolvedTopVariables: [/*name*/String: /*typeName*/String] = [:]
     
+    internal var _variablesUnderTypeChecking: Set<String> = []
+    
     internal func performSema() -> [Diagnostic] {
         // Clean up
         resolvedTypeInfo.removeAll()
@@ -36,8 +39,14 @@ internal final class SemaEvaluator {
         _resolvedEnums.removeAll()
         _resolvedTopFunctions.removeAll()
         _resolvedTopVariables.removeAll()
+        _variablesUnderTypeChecking.removeAll()
         
         var diagnostics: [Diagnostic] = []
+        
+        for source in sources {
+            let parseDiags = ParseDiagnosticsGenerator.diagnostics(for: source)
+            diagnostics.append(contentsOf: parseDiags.map { .init($0) })
+        }
         
         _performTypeCheck(diags: &diagnostics)
         
@@ -404,6 +413,15 @@ extension SemaEvaluator {
                 continue
             }
             
+            let variableName = idPattern.identifier.text
+            
+            if _variablesUnderTypeChecking.contains(variableName) {
+                diags.append(.init(node: binding, message: .circularRefInExpr))
+                continue
+            }
+            _variablesUnderTypeChecking.insert(variableName)
+            defer { _variablesUnderTypeChecking.remove(variableName) }
+            
             var typeName: String?
             if let annotation = binding.typeAnnotation {
                 if let resolvedType = _resolveType(annotation.type, diags: &diags) {
@@ -431,7 +449,7 @@ extension SemaEvaluator {
             }
             
             if let typeName {
-                result.append((idPattern.identifier.text, typeName, isStatic))
+                result.append((variableName, typeName, isStatic))
             } else {
                 diags.append(.init(node: binding, message: .cannotInferTypeWithoutAnnotation))
             }
@@ -452,9 +470,7 @@ extension SemaEvaluator {
 // MARK: - Type-Check exprs
 extension SemaEvaluator {
     internal func _typeCheckExpr(_ expr: ExprSyntax, diags: inout [Diagnostic]) {
-        if _resolveExprType(expr, diags: &diags) == nil {
-            diags.append(.init(node: expr, message: .cannotInferTypeWithoutAnnotation))
-        }
+        _ = _resolveExprType(expr, diags: &diags)
     }
 }
 
@@ -626,6 +642,12 @@ extension SemaEvaluator {
         guard var calledExprType = _resolveExprType(expr.calledExpression, diags: &diags) else {
             return nil
         }
+        
+        if calledExprType == "<circular>" {
+            diags.append(.init(node: expr.calledExpression, message: .circularRefInExpr))
+            return nil
+        }
+        
         if !calledExprType.contains("/f") {
             if calledExprType.hasSuffix(".Type") {
                 // Calling type itself as a function implicitly

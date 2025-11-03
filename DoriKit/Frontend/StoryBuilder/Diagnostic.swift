@@ -46,10 +46,24 @@ extension Diagnostic {
 }
 
 extension Array<Diagnostic> {
-    internal var hasError: Bool {
+    public var hasError: Bool {
         contains { diag in
             diag._diag.diagMessage.severity == .error
         }
+    }
+}
+
+extension Diagnostic: CustomStringConvertible {
+    public var description: String {
+        _diag.debugDescription + "\n"
+        + DiagnosticsFormatter.annotatedSource(tree: syntaxRoot(of: _diag.node), diags: [_diag])
+    }
+}
+private func syntaxRoot(of node: some SyntaxProtocol) -> Syntax {
+    if let parent = node.parent {
+        return syntaxRoot(of: parent)
+    } else {
+        return Syntax(node)
     }
 }
 
