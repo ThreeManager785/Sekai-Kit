@@ -14,6 +14,23 @@
 
 import Foundation
 
-internal struct StoryIR: Sendable {
+internal final class StoryIR {
+    internal var _actions: [StepAction] = []
     
+    internal init?(evaluator: SemaEvaluator, diags: inout [Diagnostic]) {
+        let semaDiags = evaluator.performSema()
+        diags = semaDiags
+        if semaDiags.hasError {
+            return nil
+        }
+        
+        var irGenDiags: [Diagnostic] = []
+        let e = IRGenEvaluator(self)
+        e.emitSemaResult(evaluator, diags: &irGenDiags)
+        diags.append(contentsOf: irGenDiags)
+    }
+    
+    internal enum StepAction {
+        
+    }
 }

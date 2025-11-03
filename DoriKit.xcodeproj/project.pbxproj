@@ -63,6 +63,9 @@
 		8C2CCD4D2E3E66C90014189F /* RichContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CCD4C2E3E66C60014189F /* RichContentView.swift */; };
 		8C2CCD4F2E3E67B30014189F /* RichContentRendering.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CCD4E2E3E67AC0014189F /* RichContentRendering.swift */; };
 		8C2CCD512E3F0D850014189F /* PagedContent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CCD502E3F0D820014189F /* PagedContent.swift */; };
+		8C2CFEF92EB88BDE00A8A149 /* IRGen.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */; };
+		8C2CFEFB2EB8901300A8A149 /* Symbolization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */; };
+		8C2CFEFD2EB8901E00A8A149 /* Mangling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */; };
 		8C2EE3AC2E704A3400EDDD0D /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2EE3AA2E70498800EDDD0D /* libgit2.a */; };
 		8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */; };
 		8C3264042E3B760100081F4F /* PreCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264032E3B75FF00081F4F /* PreCache.swift */; };
@@ -297,6 +300,9 @@
 		8C2CCD4C2E3E66C60014189F /* RichContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichContentView.swift; sourceTree = "<group>"; };
 		8C2CCD4E2E3E67AC0014189F /* RichContentRendering.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichContentRendering.swift; sourceTree = "<group>"; };
 		8C2CCD502E3F0D820014189F /* PagedContent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PagedContent.swift; sourceTree = "<group>"; };
+		8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRGen.swift; sourceTree = "<group>"; };
+		8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbolization.swift; sourceTree = "<group>"; };
+		8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mangling.swift; sourceTree = "<group>"; };
 		8C2EE3AA2E70498800EDDD0D /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgit2.a; path = "../../../Library/Developer/Xcode/DerivedData/Greatdori-aghqtexjlhuxqfcowlzrriajcttj/Build/Products/Debug/libgit2.a"; sourceTree = "<group>"; };
 		8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = DriverCommonProtocol.swift.gyb; sourceTree = "<group>"; };
 		8C3264032E3B75FF00081F4F /* PreCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreCache.swift; sourceTree = "<group>"; };
@@ -826,7 +832,10 @@
 				8CA865CA2EB4DFF5001464F7 /* Diagnostic.swift */,
 				8CA865CE2EB4EB82001464F7 /* DiagsList.swift */,
 				8CA865C82EB4B7F7001464F7 /* Sema.swift */,
+				8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */,
+				8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */,
 				8CA8561F2EB495E1001464F7 /* IntermediateRep.swift */,
+				8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */,
 			);
 			path = StoryBuilder;
 			sourceTree = "<group>";
@@ -1504,11 +1513,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8CA856202EB4960A001464F7 /* IntermediateRep.swift in Sources */,
+				8C2CFEF92EB88BDE00A8A149 /* IRGen.swift in Sources */,
 				8CD13FAE2E2FE2BF00673E15 /* Band.swift in Sources */,
 				8CA865CB2EB4DFF8001464F7 /* Diagnostic.swift in Sources */,
 				8CD13FAF2E2FE2BF00673E15 /* Card.swift in Sources */,
 				8C2CCD4F2E3E67B30014189F /* RichContentRendering.swift in Sources */,
 				8CEC182B2E9947EE00C26B4A /* NewsMarkdown.swift in Sources */,
+				8C2CFEFD2EB8901E00A8A149 /* Mangling.swift in Sources */,
 				8C9474432E348D1F003A90B4 /* FrontendMisc.swift in Sources */,
 				8C3D684E2EA6092F0034E831 /* RichContentMarkdown.swift in Sources */,
 				8C7F6B9A2E593AFE0040C206 /* DoriOfflineAsset.swift in Sources */,
@@ -1536,6 +1547,7 @@
 				8CBC1BDF2E3408AB004023F7 /* FrontendCostume.swift in Sources */,
 				8C7855DA2E4A6994000EA06E /* MiracleTicket.swift in Sources */,
 				8CD13FCB2E2FEFCE00673E15 /* Date+.swift in Sources */,
+				8C2CFEFB2EB8901300A8A149 /* Symbolization.swift in Sources */,
 				8C8E44762E5EE043005590F0 /* Documentation.docc in Sources */,
 				8C4C89412E620C63007F1E9F /* CopyOnWrite.swift in Sources */,
 				8C2CCD4D2E3E66C90014189F /* RichContentView.swift in Sources */,

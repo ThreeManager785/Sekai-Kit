@@ -45,6 +45,14 @@ extension Diagnostic {
     }
 }
 
+extension Array<Diagnostic> {
+    internal var hasError: Bool {
+        contains { diag in
+            diag._diag.diagMessage.severity == .error
+        }
+    }
+}
+
 internal struct ZeileDiagnosticMessage: DiagnosticMessage {
     internal var diagnosticID: SwiftDiagnostics.MessageID
     internal var severity: SwiftDiagnostics.DiagnosticSeverity
