@@ -51,7 +51,10 @@ internal final class SemaEvaluator {
     }
     
     internal func _typeCheckSingle(_ source: SourceFileSyntax, diags: inout [Diagnostic]) {
-        for statement in source.statements {
+        _typeCheckCodeBlock(source.statements, diags: &diags)
+    }
+    internal func _typeCheckCodeBlock(_ list: CodeBlockItemListSyntax, diags: inout [Diagnostic]) {
+        for statement in list {
             let item = statement.item
             if let decl = item.as(DeclSyntax.self) {
                 _typeCheckDecl(decl, diags: &diags)
@@ -130,6 +133,11 @@ extension SemaEvaluator {
     }
     
     internal func _typeCheckEnumDecl(_ decl: EnumDeclSyntax, diags: inout [Diagnostic]) {
+        guard _isTopLevelSyntax(decl) else {
+            diags.append(.init(node: decl, message: .nestingEnumNotSupported))
+            return
+        }
+        
         if !decl.attributes.isEmpty {
             diags.append(.init(node: decl.attributes, message: .attributesNotSupported))
         }
@@ -537,6 +545,7 @@ extension SemaEvaluator {
                 diags.append(.init(node: closureExpr, message: .missingStdlibType("Closure")))
                 return nil
             }
+            _typeCheckCodeBlock(closureExpr.statements, diags: &diags)
             return "Closure"
         } else if let declRefExpr = expr.as(DeclReferenceExprSyntax.self) {
             return _resolveDeclRefExprType(declRefExpr, diags: &diags)
@@ -664,17 +673,24 @@ extension SemaEvaluator {
             }
         }
         
+        let closureIdentifier = "/closure/"
+        var calledArgs = expr.arguments
+        if let closure = expr.trailingClosure {
+            calledArgs.append(.init(label: .identifier(closureIdentifier), expression: closure))
+        }
+        
         var comparedCandidates: [(FunctionDeclSyntax, [Diagnostic])] = []
-        for candidate in candidates where candidate.signature.parameterClause.parameters.count == expr.arguments.count {
+        for candidate in candidates where candidate.signature.parameterClause.parameters.count == calledArgs.count {
             var d: [Diagnostic] = []
-            if expr.arguments.count > 0 {
+            
+            if calledArgs.count > 0 {
                 // Compare parameters one-by-one
-                for index in 0..<expr.arguments.count {
+                for index in 0..<calledArgs.count {
                     let declParam = Array(candidate.signature.parameterClause.parameters)[index]
-                    let callParam = Array(expr.arguments)[index]
+                    let callParam = Array(calledArgs)[index]
                     
                     // Compare argument label
-                    if declParam.firstName.text != (callParam.label?.text ?? "_") {
+                    if declParam.firstName.text != (callParam.label?.text ?? "_") && callParam.label?.text != closureIdentifier {
                         if declParam.firstName.text == "_", let callText = callParam.label?.text {
                             d.append(.init(node: callParam, message: .callExtraArgLabel(callText)))
                         } else if callParam.label == nil {
@@ -709,7 +725,7 @@ extension SemaEvaluator {
                                     memberAccessExpr,
                                     candidates: candidates.compactMap {
                                         let params = Array($0.signature.parameterClause.parameters)
-                                        if params.count == expr.arguments.count {
+                                        if params.count == calledArgs.count {
                                             if let type = _resolveType(params[index].type, diags: &d) {
                                                 return type.typeName
                                             } else {
@@ -737,6 +753,16 @@ extension SemaEvaluator {
                       // be determined, so we do nothing
                 }
             }
+            
+            // Check for async-await call
+            // Calling an `async` function without `await` is allowed,
+            // but the counter is not allowed
+            if let _parent = expr.parent,
+               let awaitExpr = _parent.as(AwaitExprSyntax.self),
+                candidate.signature.effectSpecifiers?.asyncSpecifier == nil {
+                d.append(.init(node: awaitExpr.awaitKeyword, message: .awaitCallUnsupportedFunc))
+            }
+            
             comparedCandidates.append((candidate, d))
         }
         

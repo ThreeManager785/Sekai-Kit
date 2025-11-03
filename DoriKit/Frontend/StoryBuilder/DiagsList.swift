@@ -169,6 +169,13 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         )
     }
     
+    static var nestingEnumNotSupported: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "nesting enum declaration is not supported",
+            id: "nesting_enum_not_supported"
+        )
+    }
+    
     static var varBindingUnexpectedID: some DiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "expected identifier",
@@ -204,6 +211,13 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "static properties may only be declared on a type",
             id: "invalid_static_variable_declaration_position"
+        )
+    }
+    
+    static var awaitCallUnsupportedFunc: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "'await' in a function that does not support concurrency",
+            id: "await_call_unsupported_function"
         )
     }
     
