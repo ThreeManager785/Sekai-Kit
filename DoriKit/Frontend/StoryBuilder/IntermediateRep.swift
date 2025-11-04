@@ -25,8 +25,8 @@ internal final class StoryIR {
         }
         
         var irGenDiags: [Diagnostic] = []
-        let e = IRGenEvaluator(self)
-        e.emitSemaResult(evaluator, diags: &irGenDiags)
+        let e = IRGenEvaluator(self, semaResult: evaluator)
+        e.emitSemaResult(diags: &irGenDiags)
         diags.append(contentsOf: irGenDiags)
     }
     

@@ -18,6 +18,7 @@ internal import SwiftDiagnostics
 
 private let bugReportURL = "https://github.com/Greatdori/DoriKit/issues"
 
+// MARK: Sema
 extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
     static var unrecognizedTopLevelSyntax: some DiagnosticMessage {
         ZeileDiagnosticMessage.error(
@@ -347,6 +348,43 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "'\(modifier)' cannot appear after another '\(modifier)' keyword",
             id: "duplicate_declaration_modifier"
+        )
+    }
+}
+
+// MARK: IRGen
+extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
+    static var funcCallNotResolved: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            """
+            this function call is not resolved by the type-checker; \
+            please submit a bug report (\(bugReportURL))
+            """,
+            id: "function_call_not_resolved"
+        )
+    }
+    
+    static var stringInterpolationNotSupported: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "string interpolation is not supported",
+            id: "string_interpolation_is_not_supported"
+        )
+    }
+    
+    static var exprNoEnclosingBlock: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            """
+            cannot find enclosing code block of this expression; \
+            please submit a bug report (\(bugReportURL))
+            """,
+            id: "expression_no_enclosing_block"
+        )
+    }
+    
+    static func constUsedBeforeInit(_ name: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "constant '\(name)' used before being initialized",
+            id: "constant_used_before_initialized"
         )
     }
 }

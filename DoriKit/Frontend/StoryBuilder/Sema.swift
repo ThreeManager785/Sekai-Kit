@@ -23,7 +23,7 @@ internal final class SemaEvaluator {
         self.sources = sources
     }
     
-    internal var resolvedTypeInfo: [/*hashValue*/Int: /*typeName*/String] = [:]
+    internal var resolvedFuncCalls: [/*hashValue*/Int: FunctionDeclaration] = [:]
     
     internal var _resolvedStructs: [/*name*/String: ResolvedStruct] = [:]
     internal var _resolvedEnums: [/*name*/String: ResolvedEnum] = [:]
@@ -34,7 +34,7 @@ internal final class SemaEvaluator {
     
     internal func performSema() -> [Diagnostic] {
         // Clean up
-        resolvedTypeInfo.removeAll()
+        resolvedFuncCalls.removeAll()
         _resolvedStructs.removeAll()
         _resolvedEnums.removeAll()
         _resolvedTopFunctions.removeAll()
@@ -796,6 +796,8 @@ extension SemaEvaluator {
         let qualifiedCollection = comparedCandidates.min { $0.1.count < $1.1.count }!
         let qualifiedDecl = qualifiedCollection.0
         diags.append(contentsOf: qualifiedCollection.1) // Add diags produced during resolution
+        var _d: [Diagnostic] = []
+        resolvedFuncCalls.updateValue(_typeCheckAnyFunctionDecl(qualifiedDecl, diags: &_d), forKey: expr.hashValue)
         if let clause = qualifiedDecl.signature.returnClause {
             return _resolveType(clause.type, diags: &diags)?.typeName
         } else {

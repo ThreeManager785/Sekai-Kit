@@ -24,7 +24,10 @@ public final class DoriStoryBuilder: Sendable {
     public func buildSourceCode(_ code: String) -> [Diagnostic] {
         let source = Parser.parse(source: code)
         
+        var diags: [Diagnostic] = []
         let sema = SemaEvaluator([source])
-        return sema.performSema()
+        let ir = StoryIR(evaluator: sema, diags: &diags)
+        
+        return diags
     }
 }

@@ -67,6 +67,7 @@
 		8C2CFEFB2EB8901300A8A149 /* Symbolization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */; };
 		8C2CFEFD2EB8901E00A8A149 /* Mangling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */; };
 		8C2CFEFF2EB8AF5200A8A149 /* SwiftParserDiagnostics in Frameworks */ = {isa = PBXBuildFile; productRef = 8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */; };
+		8C2CFF012EB903FF00A8A149 /* RuntimeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */; };
 		8C2EE3AC2E704A3400EDDD0D /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2EE3AA2E70498800EDDD0D /* libgit2.a */; };
 		8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */; };
 		8C3264042E3B760100081F4F /* PreCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264032E3B75FF00081F4F /* PreCache.swift */; };
@@ -147,6 +148,8 @@
 		8CBC1BD32E32B898004023F7 /* InMemoryCaches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */; };
 		8CBC1BDB2E334246004023F7 /* Searching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BDA2E334233004023F7 /* Searching.swift */; };
 		8CBC1BDF2E3408AB004023F7 /* FrontendCostume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BDE2E3408A7004023F7 /* FrontendCostume.swift */; };
+		8CBCBAF12EB9CBE3007A1E33 /* SwiftLexicalLookup in Frameworks */ = {isa = PBXBuildFile; productRef = 8CBCBAF02EB9CBE3007A1E33 /* SwiftLexicalLookup */; };
+		8CBCBB562EB9DDD5007A1E33 /* VTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCBB552EB9DDCD007A1E33 /* VTable.swift */; };
 		8CD13FAE2E2FE2BF00673E15 /* Band.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FA12E2FE2BF00673E15 /* Band.swift */; };
 		8CD13FAF2E2FE2BF00673E15 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FA22E2FE2BF00673E15 /* Card.swift */; };
 		8CD13FB02E2FE2BF00673E15 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FA32E2FE2BF00673E15 /* Character.swift */; };
@@ -304,6 +307,7 @@
 		8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRGen.swift; sourceTree = "<group>"; };
 		8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbolization.swift; sourceTree = "<group>"; };
 		8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mangling.swift; sourceTree = "<group>"; };
+		8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeObject.swift; sourceTree = "<group>"; };
 		8C2EE3AA2E70498800EDDD0D /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgit2.a; path = "../../../Library/Developer/Xcode/DerivedData/Greatdori-aghqtexjlhuxqfcowlzrriajcttj/Build/Products/Debug/libgit2.a"; sourceTree = "<group>"; };
 		8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = DriverCommonProtocol.swift.gyb; sourceTree = "<group>"; };
 		8C3264032E3B75FF00081F4F /* PreCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreCache.swift; sourceTree = "<group>"; };
@@ -390,6 +394,7 @@
 		8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCaches.swift; sourceTree = "<group>"; };
 		8CBC1BDA2E334233004023F7 /* Searching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Searching.swift; sourceTree = "<group>"; };
 		8CBC1BDE2E3408A7004023F7 /* FrontendCostume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendCostume.swift; sourceTree = "<group>"; };
+		8CBCBB552EB9DDCD007A1E33 /* VTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTable.swift; sourceTree = "<group>"; };
 		8CD13FA12E2FE2BF00673E15 /* Band.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Band.swift; sourceTree = "<group>"; };
 		8CD13FA22E2FE2BF00673E15 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		8CD13FA32E2FE2BF00673E15 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
@@ -539,6 +544,7 @@
 				8C43486A2EB73EE100067FBD /* SwiftParser in Frameworks */,
 				8C7F6BF72E594EDF0040C206 /* libgssapi_krb5.tbd in Frameworks */,
 				8C7F6BF62E594EDF0040C206 /* GSS.framework in Frameworks */,
+				8CBCBAF12EB9CBE3007A1E33 /* SwiftLexicalLookup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -837,6 +843,8 @@
 				8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */,
 				8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */,
 				8CA8561F2EB495E1001464F7 /* IntermediateRep.swift */,
+				8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */,
+				8CBCBB552EB9DDCD007A1E33 /* VTable.swift */,
 				8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */,
 			);
 			path = StoryBuilder;
@@ -1006,6 +1014,7 @@
 				8C4348672EB71E3F00067FBD /* SwiftOperators */,
 				8C4348692EB73EE100067FBD /* SwiftParser */,
 				8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */,
+				8CBCBAF02EB9CBE3007A1E33 /* SwiftLexicalLookup */,
 			);
 			productName = DoriKit;
 			productReference = 8C0C99912E296A8C00549B5C /* DoriKit.framework */;
@@ -1551,6 +1560,7 @@
 				8C7855DA2E4A6994000EA06E /* MiracleTicket.swift in Sources */,
 				8CD13FCB2E2FEFCE00673E15 /* Date+.swift in Sources */,
 				8C2CFEFB2EB8901300A8A149 /* Symbolization.swift in Sources */,
+				8CBCBB562EB9DDD5007A1E33 /* VTable.swift in Sources */,
 				8C8E44762E5EE043005590F0 /* Documentation.docc in Sources */,
 				8C4C89412E620C63007F1E9F /* CopyOnWrite.swift in Sources */,
 				8C2CCD4D2E3E66C90014189F /* RichContentView.swift in Sources */,
@@ -1560,6 +1570,7 @@
 				8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift.gyb in Sources */,
 				8C7855DC2E4A6BFA000EA06E /* FrontendMiracleTicket.swift in Sources */,
 				8C923D952E307227003AFC0A /* TaskGroup.swift.gyb in Sources */,
+				8C2CFF012EB903FF00A8A149 /* RuntimeObject.swift in Sources */,
 				8C923D9B2E3138E3003AFC0A /* Post.swift in Sources */,
 				8C2B9D242E9386F500D003D1 /* Live2DModel.swift in Sources */,
 				E9EFF2B82E61BEAB00991940 /* MatchedFilters.swift in Sources */,
@@ -3342,6 +3353,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8C8E44F92E5F6867005590F0 /* XCRemoteSwiftPackageReference "swift-syntax" */;
 			productName = SwiftDiagnostics;
+		};
+		8CBCBAF02EB9CBE3007A1E33 /* SwiftLexicalLookup */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C8E44F92E5F6867005590F0 /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftLexicalLookup;
 		};
 		8CE186AC2E535324009C1C87 /* ArgumentParser */ = {
 			isa = XCSwiftPackageProductDependency;

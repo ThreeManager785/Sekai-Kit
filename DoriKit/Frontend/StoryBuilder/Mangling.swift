@@ -153,6 +153,8 @@ internal func demangleFunction(_ mangled: String) -> (decl: SemaEvaluator.Functi
         } else {
             return nil
         }
+    } else {
+        mangled.removeFirst()
     }
     
     guard mangled.isEmpty else {
