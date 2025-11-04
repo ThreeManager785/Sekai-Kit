@@ -21,6 +21,7 @@ internal final class ZeileVTable {
     internal init(ctx: IRGenEvaluator) {
         self.ctx = ctx
         self.table = [:]
+        self.table.merge(Self._stdlibTable) { $1 }
     }
     
     internal func callFunc(_ rawName: String, args: ZeileFunctionArguments) -> ZeileRuntimeObject? {
@@ -29,11 +30,39 @@ internal final class ZeileVTable {
 }
 
 extension ZeileVTable {
-//    internal static var _stdlibTable: [String: Function] {
-//        [
-//            
-//        ]
-//    }
-    
-    
+    internal static var _stdlibTable: [String: Function] {
+        unsafe [
+            "$zp9Characterf4init2id3IntesrV": zeile_characterInitByID,
+            "$zf3say1_6String7speaker9CharacterrV": zeile_sayWithTextFromSpeaker
+        ]
+    }
+}
+
+nonisolated(unsafe)
+private let zeile_characterInitByID: ZeileVTable.Function = { vtable, args in
+    let idObj = args.buffer[0].storages["_value"]!
+    if case .trivial(let t) = idObj, case .int(let id) = t {
+        return .init(type: "Character", storages: [
+            "id": idObj,
+            "name": .trivial(.string(_characterName(byID: id, in: vtable.ctx)))
+        ])
+    } else {
+        preconditionFailure()
+    }
+}
+
+nonisolated(unsafe)
+private let zeile_sayWithTextFromSpeaker: ZeileVTable.Function = { vtable, args in
+    dump(args)
+    return .init(type: "", storages: [:])
+}
+
+private func _characterName(byID id: Int, in ctx: IRGenEvaluator) -> String {
+    if let character = DoriCache.preCache.characters.first(where: { $0.id == id }) {
+        return (character.characterName
+            .forLocale(character.characterName.availableLocale(prefer: ctx.sema.locale) ?? .jp) ?? "")
+            .replacing(" ", with: "")
+    } else {
+        return ""
+    }
 }

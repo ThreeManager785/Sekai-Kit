@@ -13,6 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 internal import SwiftSyntax
+internal import SwiftParser
 internal import SwiftOperators
 internal import SwiftParserDiagnostics
 
@@ -23,6 +24,7 @@ internal final class SemaEvaluator {
         self.sources = sources
     }
     
+    internal var locale: _DoriAPI.Locale = .jp
     internal var resolvedFuncCalls: [/*hashValue*/Int: FunctionDeclaration] = [:]
     
     internal var _resolvedStructs: [/*name*/String: ResolvedStruct] = [:]
@@ -55,7 +57,39 @@ internal final class SemaEvaluator {
     
     internal func _performTypeCheck(diags: inout [Diagnostic]) {
         for source in sources {
+            if let shebang = source.shebang {
+                _resolveShebang(shebang, diags: &diags)
+            }
+            
             _typeCheckSingle(source, diags: &diags)
+        }
+    }
+    
+    internal func _resolveShebang(_ shebang: TokenSyntax, diags: inout [Diagnostic]) {
+        var shebangText = shebang.text
+        shebangText.removeFirst(2)
+        let shebangSrc = Parser.parse(source: shebangText)
+        for statement in shebangSrc.statements {
+            let item = statement.item
+            if let seq = item.as(SequenceExprSyntax.self) {
+                let precedence = OperatorTable.standardOperators
+                if let foldedExpr = try? precedence.foldSingle(seq),
+                   let infix = foldedExpr.as(InfixOperatorExprSyntax.self),
+                   infix.operator.is(AssignmentExprSyntax.self) {
+                    if infix.leftOperand.as(DeclReferenceExprSyntax.self)?.baseName.text == "locale" {
+                        if let localeRef = infix.rightOperand.as(DeclReferenceExprSyntax.self)?.baseName.text,
+                           let locale = _DoriAPI.Locale(rawValue: localeRef) {
+                            self.locale = locale
+                        }
+                    } else {
+                        diags.append(.init(node: shebang, message: .invalidShebang))
+                    }
+                } else {
+                    diags.append(.init(node: shebang, message: .invalidShebang))
+                }
+            } else {
+                diags.append(.init(node: shebang, message: .invalidShebang))
+            }
         }
     }
     
@@ -111,7 +145,6 @@ internal final class SemaEvaluator {
         internal struct Parameter: Hashable {
             internal var name: String
             internal var typeName: String
-            internal var omittable: Bool
             
             func hash(into hasher: inout Hasher) {
                 hasher.combine(name)
@@ -263,8 +296,7 @@ extension SemaEvaluator {
                 resultParams.append(
                     .init(
                         name: parameter.firstName.text,
-                        typeName: resolvedType.typeName,
-                        omittable: resolvedType.optional
+                        typeName: resolvedType
                     )
                 )
             }
@@ -284,11 +316,7 @@ extension SemaEvaluator {
         var returnTypeName = ""
         if let retClause = decl.signature.returnClause,
            let resolvedType = _resolveType(retClause.type, diags: &diags) {
-            if resolvedType.optional {
-                diags.append(.init(node: retClause, message: .contextOptionalTypeNotSupported))
-            }
-            
-            returnTypeName = resolvedType.typeName
+            returnTypeName = resolvedType
         }
         
         return .init(
@@ -415,21 +443,21 @@ extension SemaEvaluator {
             
             let variableName = idPattern.identifier.text
             
-            if _variablesUnderTypeChecking.contains(variableName) {
+            var qualifiedVariableName = variableName
+            if let structDecl = decl.parent?.parent?.parent?.parent?.as(StructDeclSyntax.self) {
+                qualifiedVariableName = structDecl.name.text + "." + variableName
+            }
+            if _variablesUnderTypeChecking.contains(qualifiedVariableName) {
                 diags.append(.init(node: binding, message: .circularRefInExpr))
                 continue
             }
-            _variablesUnderTypeChecking.insert(variableName)
-            defer { _variablesUnderTypeChecking.remove(variableName) }
+            _variablesUnderTypeChecking.insert(qualifiedVariableName)
+            defer { _variablesUnderTypeChecking.remove(qualifiedVariableName) }
             
             var typeName: String?
             if let annotation = binding.typeAnnotation {
                 if let resolvedType = _resolveType(annotation.type, diags: &diags) {
-                    if resolvedType.optional {
-                        diags.append(.init(node: annotation.type, message: .contextOptionalTypeNotSupported))
-                    }
-                    
-                    typeName = resolvedType.typeName
+                    typeName = resolvedType
                 } else {
                     // `_resolveType` has produced diagnostics here
                     continue
@@ -476,7 +504,7 @@ extension SemaEvaluator {
 
 // MARK: - Resolve
 extension SemaEvaluator {
-    internal func _resolveType(_ syntax: TypeSyntax, diags: inout [Diagnostic]) -> (typeName: String, optional: Bool)? {
+    internal func _resolveType(_ syntax: TypeSyntax, diags: inout [Diagnostic]) -> String? {
         if let idSyntax = syntax.as(IdentifierTypeSyntax.self) {
             if let clause = idSyntax.genericArgumentClause {
                 diags.append(.init(node: clause, message: .genericNotSupported))
@@ -485,18 +513,9 @@ extension SemaEvaluator {
             
             let typeName = idSyntax.name.text
             if _lookupTypeExistence(atRoot: typeName) {
-                return (idSyntax.name.text, false)
+                return idSyntax.name.text
             } else {
                 diags.append(.init(node: syntax, message: .cannotFindTypeInScope(typeName)))
-            }
-        } else if let optSyntax = syntax.as(OptionalTypeSyntax.self) {
-            if let resolved = _resolveType(optSyntax.wrappedType, diags: &diags) {
-                if resolved.optional {
-                    diags.append(.init(node: optSyntax.questionMark, message: .nestingOptionalTypeNotSupported))
-                    return nil
-                }
-                
-                return (resolved.typeName, true)
             }
         }
         
@@ -515,10 +534,7 @@ extension SemaEvaluator {
             if let resolvedType = _resolveType(param.type, diags: &diags) {
                 desc += param.firstName.text
                 desc += ": "
-                desc += resolvedType.typeName
-                if resolvedType.optional {
-                    desc += "?"
-                }
+                desc += resolvedType
             }
             paramDescs.append(desc)
         }
@@ -532,7 +548,7 @@ extension SemaEvaluator {
         
         if let retClause = decl.signature.returnClause,
            let type = _resolveType(retClause.type, diags: &diags) {
-            result += " -> \(type.typeName)"
+            result += " -> \(type)"
         }
         
         return result
@@ -541,7 +557,7 @@ extension SemaEvaluator {
 
 // MARK: Resolve - Type
 extension SemaEvaluator {
-    internal func _resolveExprType(_ expr: ExprSyntax, diags: inout [Diagnostic]) -> String? {
+    internal func _resolveExprType(_ expr: ExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> String? {
         if let awaitExpr = expr.as(AwaitExprSyntax.self) {
             // 'await' doesn't change the type,
             // we return the type of the wrapped expr
@@ -575,7 +591,7 @@ extension SemaEvaluator {
             }
             return "Float"
         } else if let funcCallExpr = expr.as(FunctionCallExprSyntax.self) {
-            return _resolveFuncCallExprType(funcCallExpr, diags: &diags)
+            return _resolveFuncCallExprType(funcCallExpr, type: type, diags: &diags)
         } else if let infixOperatorExpr = expr.as(InfixOperatorExprSyntax.self) {
             // Only assignment infix operator is valid currently,
             // and an assignment expr always has the type 'Void'
@@ -596,7 +612,7 @@ extension SemaEvaluator {
             }
             return "Int"
         } else if let memberAccessExpr = expr.as(MemberAccessExprSyntax.self) {
-            return _resolveMemberAccessExprType(memberAccessExpr, diags: &diags)
+            return _resolveMemberAccessExprType(memberAccessExpr, type: type, diags: &diags)
         } else if let seqExpr = expr.as(SequenceExprSyntax.self) {
             // We have to use SwiftOperators to fold this expr
             // then resolve the folded expr
@@ -638,8 +654,8 @@ extension SemaEvaluator {
         }
     }
     
-    internal func _resolveFuncCallExprType(_ expr: FunctionCallExprSyntax, diags: inout [Diagnostic]) -> String? {
-        guard var calledExprType = _resolveExprType(expr.calledExpression, diags: &diags) else {
+    internal func _resolveFuncCallExprType(_ expr: FunctionCallExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> String? {
+        guard var calledExprType = _resolveExprType(expr.calledExpression, type: type, diags: &diags) else {
             return nil
         }
         
@@ -730,13 +746,13 @@ extension SemaEvaluator {
                     
                     // Compare type
                     if let declType = _resolveType(declParam.type, diags: &d) {
-                        if let callType = _resolveExprType(callParam.expression, diags: &d) {
-                            if declType.typeName != callType {
+                        if let callType = _resolveExprType(callParam.expression, type: declType, diags: &d) {
+                            if declType != callType {
                                 d.append(.init(
                                     node: callParam.expression,
                                     message: .callArgTypeNotMatchToDecl(
                                         callType: callType,
-                                        declType: declType.typeName
+                                        declType: declType
                                     )
                                 ))
                             }
@@ -749,7 +765,7 @@ extension SemaEvaluator {
                                         let params = Array($0.signature.parameterClause.parameters)
                                         if params.count == calledArgs.count {
                                             if let type = _resolveType(params[index].type, diags: &d) {
-                                                return type.typeName
+                                                return type
                                             } else {
                                                 return nil
                                             }
@@ -799,26 +815,32 @@ extension SemaEvaluator {
         var _d: [Diagnostic] = []
         resolvedFuncCalls.updateValue(_typeCheckAnyFunctionDecl(qualifiedDecl, diags: &_d), forKey: expr.hashValue)
         if let clause = qualifiedDecl.signature.returnClause {
-            return _resolveType(clause.type, diags: &diags)?.typeName
+            return _resolveType(clause.type, diags: &diags)
         } else {
             return ""
         }
     }
     
-    internal func _resolveMemberAccessExprType(_ expr: MemberAccessExprSyntax, diags: inout [Diagnostic]) -> String? {
-        guard let base = expr.base,
-              let baseType = _resolveExprType(base, diags: &diags) else {
-            // The base type can't be resolved,
-            // so this access can't be resolved as well
-            return nil
+    internal func _resolveMemberAccessExprType(_ expr: MemberAccessExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> String? {
+        if let base = expr.base {
+            if let baseType = _resolveExprType(base, diags: &diags) {
+                if let result = _lookupMemberType(expr.declName.baseName.text, of: baseType) {
+                    return result
+                } else {
+                    diags.append(.init(node: expr.declName, message: .typeValueHasNoMember(type: baseType, member: expr.declName.baseName.text)))
+                    return nil
+                }
+            }
+        } else if let type {
+            let baseType = "\(type).Type"
+            if let result = _lookupMemberType(expr.declName.baseName.text, of: baseType) {
+                return result
+            } else {
+                diags.append(.init(node: expr.declName, message: .typeValueHasNoMember(type: baseType, member: expr.declName.baseName.text)))
+                return nil
+            }
         }
-        
-        if let result = _lookupMemberType(expr.declName.baseName.text, of: baseType) {
-            return result
-        } else {
-            diags.append(.init(node: expr.declName, message: .typeValueHasNoMember(type: baseType, member: expr.declName.baseName.text)))
-            return nil
-        }
+        return nil
     }
 }
 
@@ -903,8 +925,7 @@ extension SemaEvaluator {
         if let s = _resolvedStructs[fixedBaseType] {
             if baseType.hasSuffix(".Type") {
                 if memberName == "init" {
-                    // Initializer returns an instance of type
-                    return fixedBaseType
+                    return "\(fixedBaseType)/finit"
                 }
                 if s.staticMethods.contains(where: { $0.name == memberName }) {
                     return "\(fixedBaseType)/f" + memberName
@@ -929,8 +950,7 @@ extension SemaEvaluator {
                 if let structDecl = item.as(StructDeclSyntax.self),
                    fixedBaseType == structDecl.name.text {
                     if memberName == "init" {
-                        // Initializer returns an instance of type
-                        return fixedBaseType
+                        return "\(fixedBaseType)/finit"
                     }
                     
                     for member in structDecl.memberBlock.members {

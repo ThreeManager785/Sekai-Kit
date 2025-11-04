@@ -149,13 +149,6 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         )
     }
     
-    static var nestingOptionalTypeNotSupported: some DiagnosticMessage {
-        ZeileDiagnosticMessage.error(
-            "nesting optional type is not supported",
-            id: "nesting_optional_type_not_supported"
-        )
-    }
-    
     static var contextOptionalTypeNotSupported: some DiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "optional type is not supported here",
@@ -226,6 +219,13 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
         ZeileDiagnosticMessage.error(
             "circular reference in expression",
             id: "circulat_reference_in_expression"
+        )
+    }
+    
+    static var invalidShebang: some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "invalid shebang",
+            id: "invalid_shebang"
         )
     }
     

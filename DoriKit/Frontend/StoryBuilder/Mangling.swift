@@ -20,7 +20,7 @@ internal import SwiftSyntax
 // parent-spec ::= 'p' name-spec
 // signature ::= 'f' name-spec arguments effect? return-type
 // arguments ::= argument+
-// argument ::= arg-label arg-type '?'?
+// argument ::= arg-label arg-type
 // arg-label ::= name-spec
 // arg-type ::= name-spec
 // effect ::= 'e' effect-type+
@@ -47,9 +47,6 @@ internal func mangleFunction(_ decl: SemaEvaluator.FunctionDeclaration, parent: 
         var arg = ""
         arg += nameSpec(for: param.name)
         arg += nameSpec(for: param.typeName)
-        if param.omittable {
-            arg += "?"
-        }
         arguments += arg
     }
     result += arguments
@@ -96,27 +93,20 @@ internal func demangleFunction(_ mangled: String) -> (decl: SemaEvaluator.Functi
         return nil
     }
     
-    var argDefs: [(String, Bool)] = []
+    var argDefs: [String] = []
     while let name = prefixSourceName(inSpec: &mangled) {
-        let omittable = mangled.hasPrefix("?")
-        argDefs.append((name, omittable))
-        if omittable {
-            mangled.removeFirst()
-        }
+        argDefs.append(name)
     }
     guard argDefs.count % 2 == 0 else {
         return nil
     }
     
     var params: [SemaEvaluator.FunctionDeclaration.Parameter] = []
-    for (index, (name, omittable)) in argDefs.enumerated() {
+    for (index, name) in argDefs.enumerated() {
         if index % 2 == 0 {
-            params.append(.init(name: name, typeName: "", omittable: false))
+            params.append(.init(name: name, typeName: ""))
         } else {
             params[params.endIndex - 1].typeName = name
-            if omittable {
-                params[params.endIndex - 1].omittable = true
-            }
         }
     }
     

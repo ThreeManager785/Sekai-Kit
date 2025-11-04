@@ -52,36 +52,46 @@ extension IRGenEvaluator {
         }
     }
     
-    internal func _emitFuncCallExpr(_ expr: FunctionCallExprSyntax, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
+    internal func _emitFuncCallExpr(_ expr: FunctionCallExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
         guard let calledDecl = sema.resolvedFuncCalls[expr.hashValue] else {
             diags.append(.init(node: expr, message: .funcCallNotResolved))
             return nil
         }
-        guard let calledValue = _evaluateExpr(expr.calledExpression, diags: &diags) else {
+        guard let calledValue = _evaluateExpr(expr.calledExpression, type: type, diags: &diags) else {
             return nil
         }
-        guard calledValue.type == "Functions" else {
+        guard calledValue.type == "Functions" || calledValue.type.hasSuffix(".Type") else {
             diags.append(.init(node: expr.calledExpression, message: .cannotCallNonFuncValue(ofType: calledValue.type)))
             return nil
         }
         
         var mangledNames: [String] = []
-        if case .trivial(let t) = calledValue.storages["_count"], case .int(let count) = t {
-            for i in 0..<count {
-                if case .trivial(let t) = calledValue.storages["_\(i)"], case .string(let name) = t {
-                    mangledNames.append(name)
+        if calledValue.type.hasSuffix(".Type") {
+            let sourceTypeName = String(calledValue.type.dropLast(".Type".count))
+            if let s = sema._resolvedStructs[sourceTypeName] {
+                for i in s.initializers {
+                    mangledNames.append(mangleFunction(i, parent: sourceTypeName, isStatic: true))
+                }
+            }
+        } else {
+            if case .trivial(let t) = calledValue.storages["_count"], case .int(let count) = t {
+                for i in 0..<count {
+                    if case .trivial(let t) = calledValue.storages["_\(i)"], case .string(let name) = t {
+                        mangledNames.append(name)
+                    }
                 }
             }
         }
         
+        // Retrieve parent info
         guard let decl = mangledNames.compactMap({ demangleFunction($0) }).first(where: { $0.decl == calledDecl }) else {
             return nil
         }
         let qualifiedMangledName = mangleFunction(decl.decl, parent: decl.parent, isStatic: decl.isStatic)
         
         var argBuffer: [ZeileRuntimeObject] = []
-        for argument in expr.arguments {
-            if let value = _evaluateExpr(argument.expression, diags: &diags) {
+        for (index, argument) in expr.arguments.enumerated() {
+            if let value = _evaluateExpr(argument.expression, type: decl.decl.parameters[index].typeName, diags: &diags) {
                 argBuffer.append(value)
             }
         }
@@ -96,7 +106,7 @@ extension IRGenEvaluator {
 }
 
 extension IRGenEvaluator {
-    internal func _evaluateExpr(_ expr: ExprSyntax, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
+    internal func _evaluateExpr(_ expr: ExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
         if let awaitExpr = expr.as(AwaitExprSyntax.self) {
             return _evaluateExpr(awaitExpr.expression, diags: &diags)
         } else if let boolLiteralExpr = expr.as(BooleanLiteralExprSyntax.self) {
@@ -109,13 +119,13 @@ extension IRGenEvaluator {
         } else if let floatLiteralExpr = expr.as(FloatLiteralExprSyntax.self) {
             return .init(type: "Float", storages: ["_value": .trivial(.float(.init(floatLiteralExpr.literal.text)!))])
         } else if let funcCallExpr = expr.as(FunctionCallExprSyntax.self) {
-            return _emitFuncCallExpr(funcCallExpr, diags: &diags)
+            return _emitFuncCallExpr(funcCallExpr, type: type, diags: &diags)
         } else if let infixOperatorExpr = expr.as(InfixOperatorExprSyntax.self) {
             return .init(type: "", storages: [:])
         } else if let intLiteralExpr = expr.as(IntegerLiteralExprSyntax.self) {
             return .init(type: "Int", storages: ["_value": .trivial(.int(Int(intLiteralExpr.literal.text)!))])
         } else if let memberAccessExpr = expr.as(MemberAccessExprSyntax.self) {
-            return _evaluateMemberAccessExpr(memberAccessExpr, diags: &diags)
+            return _evaluateMemberAccessExpr(memberAccessExpr, type: type, diags: &diags)
         } else if let seqExpr = expr.as(SequenceExprSyntax.self) {
             // We have to use SwiftOperators to fold this expr
             // then resolve the folded expr
@@ -150,15 +160,24 @@ extension IRGenEvaluator {
         }
     }
     
-    internal func _evaluateMemberAccessExpr(_ expr: MemberAccessExprSyntax, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
-        guard let base = expr.base,
-              let baseValue = _evaluateExpr(base, diags: &diags) else {
-            return nil
-        }
-        
-        if let result = _evaluateMember(expr.declName.baseName.text, of: baseValue) {
-            return result
+    internal func _evaluateMemberAccessExpr(_ expr: MemberAccessExprSyntax, type: String? = nil, diags: inout [Diagnostic])
+    -> ZeileRuntimeObject? {
+        let declName = expr.declName.baseName.text
+        if let base = expr.base {
+            if let baseValue = _evaluateExpr(base, diags: &diags),
+               let result = _evaluateMember(declName, of: baseValue, diags: &diags) {
+                return result
+            } else {
+                return nil
+            }
+        } else if let type {
+            if let result = _evaluateMember(declName, of: .init(type: "\(type).Type", storages: [:]), diags: &diags) {
+                return result
+            } else {
+                return nil
+            }
         } else {
+            
             return nil
         }
     }
@@ -198,17 +217,15 @@ extension IRGenEvaluator {
                     }
                     return value
                 }
+            } else if let structDecl = item.as(StructDeclSyntax.self),
+                      structDecl.name.text == name {
+                return .init(type: "\(name).Type", storages: [:])
             }
         }
         
         var funcResults: [String] = []
         for function in sema._resolvedTopFunctions where function.name == name {
             funcResults.append(mangleFunction(function, parent: nil, isStatic: false))
-        }
-        for s in sema._resolvedStructs where s.key == name {
-            for i in s.value.initializers {
-                funcResults.append(mangleFunction(i, parent: s.key, isStatic: true))
-            }
         }
         
         if !funcResults.isEmpty {
@@ -224,7 +241,7 @@ extension IRGenEvaluator {
         }
     }
     
-    internal func _evaluateMember(_ name: String, of value: ZeileRuntimeObject) -> ZeileRuntimeObject? {
+    internal func _evaluateMember(_ name: String, of value: ZeileRuntimeObject, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
         if let member = value.storages[name] {
             return member.asObject()
         }
@@ -234,6 +251,7 @@ extension IRGenEvaluator {
             isStatic = true
             type.removeLast(".Type".count)
         }
+        
         if let s = sema._resolvedStructs[type] {
             let functions: [SemaEvaluator.FunctionDeclaration]
             if isStatic {
@@ -241,20 +259,52 @@ extension IRGenEvaluator {
             } else {
                 functions = s.instanceMethods.filter { $0.name == name }
             }
-            let mangledNames = functions.map {
-                mangleFunction($0, parent: type, isStatic: isStatic)
+            if !functions.isEmpty {
+                let mangledNames = functions.map {
+                    mangleFunction($0, parent: type, isStatic: isStatic)
+                }
+                var result = ZeileRuntimeObject(type: "Functions", storages: [
+                    "_count": .trivial(.int(mangledNames.count))
+                ])
+                if !isStatic {
+                    result.storages.updateValue(.nonTrivial(value), forKey: "_self")
+                }
+                for (index, name) in mangledNames.enumerated() {
+                    result.storages.updateValue(.trivial(.string(name)), forKey: "_\(index)")
+                }
+                return result
             }
-            var result = ZeileRuntimeObject(type: "Functions", storages: [
-                "_count": .trivial(.int(mangledNames.count)),
-                "_self": .nonTrivial(value)
-            ])
-            for (index, name) in mangledNames.enumerated() {
-                result.storages.updateValue(.trivial(.string(name)), forKey: "_\(index)")
-            }
-            return result
-        } else {
-            return nil
         }
+        
+        if let e = sema._resolvedEnums[type] {
+            for (index, n) in e.cases.enumerated() where n == name {
+                return .init(type: type, storages: [
+                    "rawValue": .trivial(.int(index)),
+                    "_name": .trivial(.string(n))
+                ])
+            }
+        }
+        
+        // Find static property of struct
+        if isStatic {
+            for source in sema.sources {
+                for statement in source.statements {
+                    if let structDecl = statement.item.as(StructDeclSyntax.self),
+                       structDecl.name.text == type {
+                        for member in structDecl.memberBlock.members {
+                            if let decl = member.decl.as(VariableDeclSyntax.self),
+                               decl.modifiers.contains(where: { $0.name.text == "static" }) {
+                                for binding in decl.bindings where binding.pattern.cast(IdentifierPatternSyntax.self).identifier.text == name {
+                                    return _evaluateExpr(binding.initializer!.value, diags: &diags)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return nil
     }
 }
 
