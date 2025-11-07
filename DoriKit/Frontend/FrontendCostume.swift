@@ -78,7 +78,8 @@ extension _DoriFrontend {
                 characterName: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
                 nickname: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
                 bandID: nil,
-                color: nil
+                color: nil,
+                seasonCostumeList: nil
             )
             return .init(
                 costume: costume,
