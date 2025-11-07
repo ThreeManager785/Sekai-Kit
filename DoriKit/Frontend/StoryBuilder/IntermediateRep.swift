@@ -30,7 +30,57 @@ internal final class StoryIR {
         diags.append(contentsOf: irGenDiags)
     }
     
+    internal func emitAction(_ action: StepAction) {
+        _actions.append(action)
+    }
+    
     internal enum StepAction {
+        case talk(
+            String,
+            characterIDs: [Int],
+            characterNames: [String],
+            voicePath: String?
+        )
+        case showModel(
+            characterID: Int,
+            modelPath: String,
+            position: Position
+        )
+        case hideModel(characterID: Int)
+        case moveModel(characterID: Int, position: Position)
+        case act(characterID: Int, motionName: String)
+        case express(characterID: Int, expressionName: String)
+        case showBlackCover(duration: Double)
+        case hideBlackCover(duration: Double)
+        case showWhiteCover(duration: Double)
+        case hideWhiteCover(duration: Double)
+        case changeBackground(path: String)
+        case changeBGM(path: String)
+        case changeSE(path: String)
         
+        case delay(seconds: Double)
+        case forkTask([StepAction])
+        case waitForAll
+    }
+}
+
+extension StoryIR.StepAction {
+    internal struct Position {
+        internal var base: Base
+        internal var offsetX: Double
+        
+        internal enum Base: Int {
+            case leftOutside
+            case left
+            case leftInside
+            case leftBottom
+            case leftInsideBottom
+            case center
+            case rightOutside
+            case right
+            case rightInside
+            case rightBottom
+            case rightInsideBottom
+        }
     }
 }

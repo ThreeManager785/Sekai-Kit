@@ -33,36 +33,204 @@ extension ZeileVTable {
     internal static var _stdlibTable: [String: Function] {
         unsafe [
             "$zp9Characterf4init2id3IntesrV": zeile_characterInitByID,
-            "$zf3say1_6String7speaker9CharacterrV": zeile_sayWithTextFromSpeaker
+            "$zp9Characterf4init2id3Int6live2d6StringesrV": zeile_characterInitByIDWithLive2D,
+            "$zp9Characterf4init1_6String6live2d6StringesrV": zeile_characterInitByNameWithLive2D,
+            "$zp9Characterf4init2id3Int4name6StringesrV": zeile_characterInitByIDWithName,
+            "$zp9Characterf4init2id3Int4name6String6live2d6StringesrV": zeile_characterInitByIDWithNameAndLive2D,
+            "$zp9Characterf4show2at8PositioneAr9Character": zeile_characterShowAtPosition,
+            "$zp9Characterf4move2to8PositioneAr9Character": zeile_characterMoveToPosition,
+            "$zp9Characterf4hideeAr9Character": zeile_characterHide,
+            "$zp9Characterf3act1_6StringeAr9Character": zeile_characterActWithName,
+            "$zf3say1_6String7speaker9CharacterrV": zeile_sayWithTextFromSpeaker,
+            "$zf3say1_6String7speaker9Character5voice5VoicerV": zeile_sayWithTextFromSpeakerAndVoice
         ]
     }
 }
 
 nonisolated(unsafe)
 private let zeile_characterInitByID: ZeileVTable.Function = { vtable, args in
-    let idObj = args.buffer[0].storages["_value"]!
-    if case .trivial(let t) = idObj, case .int(let id) = t {
-        return .init(type: "Character", storages: [
-            "id": idObj,
-            "name": .trivial(.string(_characterName(byID: id, in: vtable.ctx)))
-        ])
-    } else {
-        preconditionFailure()
-    }
+    return .init(type: "Character", storages: [
+        "id": args.buffer[0].storages["_value"]!,
+        "name": .trivial(.string(_characterName(
+            byID: args.buffer[0].asTrivialInt(),
+            in: vtable.ctx
+        ))),
+        "live2dPath": .trivial(.string(_characterLive2D(
+            byID: args.buffer[0].asTrivialInt(),
+            in: vtable.ctx
+        )))
+    ])
+}
+
+nonisolated(unsafe)
+private let zeile_characterInitByIDWithLive2D: ZeileVTable.Function = { vtable, args in
+    return .init(type: "Character", storages: [
+        "id": args.buffer[0].storages["_value"]!,
+        "name": .trivial(.string(_characterName(
+            byID: args.buffer[0].asTrivialInt(),
+            in: vtable.ctx
+        ))),
+        "live2dPath": .trivial(.string(_resolvePath(
+            args.buffer[1].asTrivialString(),
+            base: "\(vtable.ctx.sema.locale.rawValue)/live2d/chara/"
+        )))
+    ])
+}
+
+nonisolated(unsafe)
+private let zeile_characterInitByNameWithLive2D: ZeileVTable.Function = { vtable, args in
+    return .init(type: "Character", storages: [
+        "id": .trivial(.int(.random(in: 10_000...10_000_000))),
+        "name": args.buffer[0].storages["_value"]!,
+        "live2dPath": .trivial(.string(_resolvePath(
+            args.buffer[1].asTrivialString(),
+            base: "\(vtable.ctx.sema.locale.rawValue)/live2d/chara/"
+        )))
+    ])
+}
+
+nonisolated(unsafe)
+private let zeile_characterInitByIDWithName: ZeileVTable.Function = { vtable, args in
+    return .init(type: "Character", storages: [
+        "id": args.buffer[0].storages["_value"]!,
+        "name": args.buffer[1].storages["_value"]!,
+        "live2dPath": .trivial(.string(_characterLive2D(
+            byID: args.buffer[0].asTrivialInt(),
+            in: vtable.ctx
+        )))
+    ])
+}
+
+nonisolated(unsafe)
+private let zeile_characterInitByIDWithNameAndLive2D: ZeileVTable.Function = { vtable, args in
+    return .init(type: "Character", storages: [
+        "id": args.buffer[0].storages["_value"]!,
+        "name": args.buffer[1].storages["_value"]!,
+        "live2dPath": .trivial(.string(_resolvePath(
+            args.buffer[2].asTrivialString(),
+            base: "\(vtable.ctx.sema.locale.rawValue)/live2d/chara/"
+        )))
+    ])
+}
+
+nonisolated(unsafe)
+private let zeile_characterShowAtPosition: ZeileVTable.Function = { vtable, args in
+    let charaStorages = args.implicitSelf!.storages
+    vtable.ctx.ir.emitAction(.showModel(
+        characterID: charaStorages["id"]!.castTrivial().asInt(),
+        modelPath: charaStorages["live2dPath"]!.castTrivial().asString(),
+        position: .init(
+            base: .init(
+                rawValue: args.buffer[0].storages["rawValue"]!
+                    .castTrivial().asInt()
+            )!,
+            offsetX: 0
+        )
+    ))
+    return args.implicitSelf!
+}
+
+nonisolated(unsafe)
+private let zeile_characterMoveToPosition: ZeileVTable.Function = { vtable, args in
+    let charaStorages = args.implicitSelf!.storages
+    vtable.ctx.ir.emitAction(.moveModel(
+        characterID: charaStorages["id"]!.castTrivial().asInt(),
+        position: .init(
+            base: .init(
+                rawValue: args.buffer[0].storages["rawValue"]!
+                    .castTrivial().asInt()
+            )!,
+            offsetX: 0
+        )
+    ))
+    return args.implicitSelf!
+}
+
+nonisolated(unsafe)
+private let zeile_characterHide: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.hideModel(
+        characterID: args.implicitSelf!.storages["id"]!.castTrivial().asInt()
+    ))
+    return args.implicitSelf!
+}
+
+nonisolated(unsafe)
+private let zeile_characterActWithName: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.act(
+        characterID: args.implicitSelf!.storages["id"]!.castTrivial().asInt(),
+        motionName: args.buffer[0].asTrivialString()
+    ))
+    return args.implicitSelf!
+}
+
+nonisolated(unsafe)
+private let zeile_characterEmoteWithName: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.express(
+        characterID: args.implicitSelf!.storages["id"]!.castTrivial().asInt(),
+        expressionName: args.buffer[0].asTrivialString()
+    ))
+    return args.implicitSelf!
 }
 
 nonisolated(unsafe)
 private let zeile_sayWithTextFromSpeaker: ZeileVTable.Function = { vtable, args in
-    dump(args)
+    let buffer = args.buffer
+    vtable.ctx.ir.emitAction(.talk(
+        buffer[0].asTrivialString(),
+        characterIDs: [buffer[1].storages["id"]!.castTrivial().asInt()],
+        characterNames: [buffer[1].storages["name"]!.castTrivial().asString()],
+        voicePath: nil
+    ))
     return .init(type: "", storages: [:])
 }
 
+nonisolated(unsafe)
+private let zeile_sayWithTextFromSpeakerAndVoice: ZeileVTable.Function = { vtable, args in
+    let buffer = args.buffer
+    vtable.ctx.ir.emitAction(.talk(
+        buffer[0].asTrivialString(),
+        characterIDs: [buffer[1].storages["id"]!.castTrivial().asInt()],
+        characterNames: [buffer[1].storages["name"]!.castTrivial().asString()],
+        voicePath: buffer[2].storages["_path"]!.castTrivial().asString()
+    ))
+    return .init(type: "", storages: [:])
+}
+
+// MARK: - Helpers
 private func _characterName(byID id: Int, in ctx: IRGenEvaluator) -> String {
-    if let character = DoriCache.preCache.characters.first(where: { $0.id == id }) {
+    if let character = DoriCache.preCache.characters.first(
+        where: { $0.id == id }
+    ) {
         return (character.characterName
-            .forLocale(character.characterName.availableLocale(prefer: ctx.sema.locale) ?? .jp) ?? "")
+            .forLocale(character.characterName.availableLocale(
+                prefer: ctx.sema.locale
+            ) ?? .jp) ?? "")
             .replacing(" ", with: "")
     } else {
         return ""
+    }
+}
+
+private func _characterLive2D(byID id: Int, in ctx: IRGenEvaluator) -> String {
+    if let character = DoriCache.preCache.characters.first(
+        where: { $0.id == id }
+    ), let costume = character.seasonCostumeList?.flatMap({ $0 }).first {
+        return "\(ctx.sema.locale.rawValue)/live2d/chara/\(costume.live2dAssetBundleName)"
+    } else {
+        return ""
+    }
+}
+
+private func _resolvePath(_ path: String, base: String) -> String {
+    if path.hasPrefix("jp/")
+        || path.hasPrefix("en/")
+        || path.hasPrefix("tw/")
+        || path.hasPrefix("cn/")
+        || path.hasPrefix("kr/") {
+        return path
+    } else if path.hasPrefix("http://") || path.hasPrefix("https://") {
+        return path
+    } else {
+        return base + path
     }
 }

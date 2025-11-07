@@ -45,3 +45,63 @@ internal struct ZeileFunctionArguments {
     internal var implicitSelf: ZeileRuntimeObject?
     internal var buffer: [ZeileRuntimeObject]
 }
+
+extension ZeileRuntimeObject.Storage {
+    internal func castTrivial() -> ZeileRuntimeObject.TrivialStorage {
+        if case .trivial(let trivialStorage) = self {
+            return trivialStorage
+        } else {
+            preconditionFailure("Casting a non-trivial storage to trivial")
+        }
+    }
+}
+extension ZeileRuntimeObject.TrivialStorage {
+    internal func asInt() -> Int {
+        if case .int(let int) = self {
+            return int
+        } else {
+            preconditionFailure("Casting a trivial storage to different type")
+        }
+    }
+    
+    internal func asBool() -> Bool {
+        if case .bool(let bool) = self {
+            return bool
+        } else {
+            preconditionFailure("Casting a trivial storage to different type")
+        }
+    }
+    
+    internal func asFloat() -> Float {
+        if case .float(let float) = self {
+            return float
+        } else {
+            preconditionFailure("Casting a trivial storage to different type")
+        }
+    }
+    
+    internal func asString() -> String {
+        if case .string(let string) = self {
+            return string
+        } else {
+            preconditionFailure("Casting a trivial storage to different type")
+        }
+    }
+}
+extension ZeileRuntimeObject {
+    internal func asTrivialInt() -> Int {
+        storages["_value"]!.castTrivial().asInt()
+    }
+    
+    internal func asTrivialBool() -> Bool {
+        storages["_value"]!.castTrivial().asBool()
+    }
+    
+    internal func asTrivialFloat() -> Float {
+        storages["_value"]!.castTrivial().asFloat()
+    }
+    
+    internal func asTrivialString() -> String {
+        storages["_value"]!.castTrivial().asString()
+    }
+}

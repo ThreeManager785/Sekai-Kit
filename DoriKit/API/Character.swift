@@ -81,7 +81,20 @@ extension _DoriAPI {
                                     kr: value["nickname"][4].string
                                 ),
                                 bandID: value["bandId"].int,
-                                color: .init(hex: value["colorCode"].stringValue)
+                                color: .init(hex: value["colorCode"].stringValue),
+                                seasonCostumeList: respJSON["seasonCostumeListMap"]["entries"].map {
+                                    $0.1["entries"].map {
+                                        .init(
+                                            characterID: $0.1["characterId"].intValue,
+                                            basicSeasonID: $0.1["basicSeasonId"].intValue,
+                                            costumeType: .init(rawValue: $0.1["costumeType"].stringValue) ?? .casual,
+                                            seasonCostumeType: .init(rawValue: $0.1["seasonCostumeType"].stringValue) ?? .casualSpring,
+                                            sdAssetBundleName: $0.1["sdAssetBundleName"].stringValue,
+                                            live2dAssetBundleName: $0.1["live2dAssetBundleName"].stringValue,
+                                            seasonType: $0.1["seasonType"].stringValue
+                                        )
+                                    }
+                                }.reversed()
                             )
                         )
                     }
@@ -417,6 +430,35 @@ extension _DoriAPI.Characters {
         public var bandID: Int?
         /// Member color of character.
         public var color: Color? // String(JSON) -> Color(Swift)
+        /// A list of season costumes of character, if present.
+        ///
+        /// This array contains all seasonal costumes of this character.
+        ///
+        /// The first level of this array stands for *season*,
+        /// which is the same as the ones in the story page in GBP.
+        /// For instance, *Poppin' Party* was introduced in *season 1*,
+        /// as well as *MyGO!!!!!* was introduced in *season 3*.
+        /// Like all arrays, the indexs start from 0,
+        /// so the code below gets all seasonal costumes of *Kasumi* in **season 1**:
+        ///
+        /// ```swift
+        /// let kasumi = await Character(id: 1)!
+        /// let season1Costumes = kasumi.seasonCostumeList![0]
+        /// ```
+        ///
+        /// - NOTE:
+        ///     Some characters were introduced after season 1,
+        ///     so they have no costumes in season 1.
+        ///     In that case, the index 0 gets all seasonal costumes
+        ///     in the season they **introduced**.
+        ///     For instance, the code below gets all seasonal costumes
+        ///     of *Soyo* in **season 3**:
+        ///
+        ///     ```swift
+        ///     let soyo = await Character(id: 39)!
+        ///     let season3Costumes = soyo.seasonCostumeList![0]
+        ///     ```
+        public var seasonCostumeList: [[SeasonCostume]]?
         
         internal init(
             id: Int,
@@ -424,7 +466,8 @@ extension _DoriAPI.Characters {
             characterName: _DoriAPI.LocalizedData<String>,
             nickname: _DoriAPI.LocalizedData<String>,
             bandID: Int?,
-            color: Color?
+            color: Color?,
+            seasonCostumeList: [[SeasonCostume]]?
         ) {
             self.id = id
             self.characterType = characterType
@@ -432,6 +475,7 @@ extension _DoriAPI.Characters {
             self.nickname = nickname
             self.bandID = bandID
             self.color = color
+            self.seasonCostumeList = seasonCostumeList
         }
     }
     
@@ -655,7 +699,8 @@ extension _DoriAPI.Characters.PreviewCharacter {
             characterName: full.characterName,
             nickname: full.nickname,
             bandID: full.bandID,
-            color: full.color
+            color: full.color,
+            seasonCostumeList: full.seasonCostumeList
         )
     }
 }
