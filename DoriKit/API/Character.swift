@@ -57,7 +57,7 @@ extension _DoriAPI {
             //     },
             //     ...
             // }
-            let request = await requestJSON("https://bestdori.com/api/characters/all.2.json")
+            let request = await requestJSON("https://bestdori.com/api/characters/all.5.json")
             if case let .success(respJSON) = request {
                 let task = Task.detached(priority: .userInitiated) {
                     var characters = [PreviewCharacter]()
@@ -82,7 +82,7 @@ extension _DoriAPI {
                                 ),
                                 bandID: value["bandId"].int,
                                 color: .init(hex: value["colorCode"].stringValue),
-                                seasonCostumeList: respJSON["seasonCostumeListMap"]["entries"].map {
+                                seasonCostumeList: value["seasonCostumeListMap"]["entries"].map {
                                     $0.1["entries"].map {
                                         .init(
                                             characterID: $0.1["characterId"].intValue,

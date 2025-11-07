@@ -27,7 +27,7 @@ public final class DoriStoryBuilder: Sendable {
         var diags: [Diagnostic] = []
         let sema = SemaEvaluator([source])
         let ir = StoryIR(evaluator: sema, diags: &diags)
-        print(ir)
+        print(ir?._actions.map { "\($0)" }.joined(separator: "\n") ?? "")
         
         return diags
     }

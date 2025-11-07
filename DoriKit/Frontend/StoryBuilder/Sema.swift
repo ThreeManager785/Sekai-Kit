@@ -12,6 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import Foundation
 internal import SwiftSyntax
 internal import SwiftParser
 internal import SwiftOperators
@@ -21,6 +22,15 @@ internal final class SemaEvaluator {
     internal let sources: [SourceFileSyntax]
     
     internal init(_ sources: [SourceFileSyntax]) {
+        var sources = sources
+        let stdlib = Parser.parse(source: try! .init(
+            contentsOf: #bundle.url(
+                forResource: "Stdlib",
+                withExtension: "zeile"
+            )!,
+            encoding: .utf8
+        ))
+        sources = [stdlib] + sources
         self.sources = sources
     }
     

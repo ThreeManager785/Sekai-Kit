@@ -1,0 +1,136 @@
+//===---*- Greatdori! -*---------------------------------------------------===//
+//
+// Stdlib.zeile
+//
+// This source file is part of the Greatdori! open source project
+//
+// Copyright (c) 2025 the Greatdori! project authors
+// Licensed under Apache License v2.0
+//
+// See https://greatdori.com/LICENSE.txt for license information
+// See https://greatdori.com/CONTRIBUTORS.txt for the list of Greatdori! project authors
+//
+//===----------------------------------------------------------------------===//
+
+struct Int {}
+struct Bool {}
+struct Float {}
+struct String {}
+struct Closure {}
+
+struct Character {
+    // Poppin'Party
+    static let kasumi = Character(id: 1)
+    static let tae    = Character(id: 2)
+    static let rimi   = Character(id: 3)
+    static let saya   = Character(id: 4)
+    static let arisa  = Character(id: 5)
+    
+    // Afterglow
+    static let ran     = Character(id: 6)
+    static let moca    = Character(id: 7)
+    static let himari  = Character(id: 8)
+    static let tomoe   = Character(id: 9)
+    static let tsugumi = Character(id: 10)
+    
+    // Hello, Happy World!
+    static let kokoro = Character(id: 11)
+    static let kaoru  = Character(id: 12)
+    static let hagumi = Character(id: 13)
+    static let kanon  = Character(id: 14)
+    static let misaki = Character(id: 15)
+    
+    // Pastel＊Palettes
+    static let aya     = Character(id: 16)
+    static let hina    = Character(id: 17)
+    static let chisato = Character(id: 18)
+    static let maya    = Character(id: 19)
+    static let eve     = Character(id: 20)
+    
+    // Roselia
+    static let yukina = Character(id: 21)
+    static let sayo   = Character(id: 22)
+    static let lisa   = Character(id: 23)
+    static let ako    = Character(id: 24)
+    static let rinko  = Character(id: 25)
+    
+    // Morfonica
+    static let mashiro  = Character(id: 26)
+    static let toko     = Character(id: 27)
+    static let nanami   = Character(id: 28)
+    static let tsukushi = Character(id: 29)
+    static let rui      = Character(id: 30)
+    
+    // RAISE A SUILEN
+    static let rei      = Character(id: 31)
+    static let rokka    = Character(id: 32)
+    static let masuki   = Character(id: 33)
+    static let reona    = Character(id: 34)
+    static let chiyu    = Character(id: 35)
+    
+    // MyGO!!!!!
+    static let tomori = Character(id: 36)
+    static let anon   = Character(id: 37)
+    static let rana   = Character(id: 38)
+    static let soyo   = Character(id: 39)
+    static let taki   = Character(id: 40)
+    
+    let id: Int
+    let name: String
+    let live2dPath: String
+    
+    init(id: Int)
+    init(id: Int, live2d: String)
+    init(_: String, live2d: String)
+    init(id: Int, name: String)
+    init(id: Int, name: String, live2d: String)
+    
+    func show(at: Position) async -> Character
+    func move(to: Position) async -> Character
+    func hide() async -> Character
+    
+    func act(_: String) async -> Character
+    func emote(_: String) async -> Character
+}
+
+enum Position {
+    case leftOutside // = 0
+    case left // = 1
+    case leftInside // = 2
+    case leftBottom // = 3
+    case leftInsideBottom // = 4
+    case center // = 5
+    case rightOutside // = 6
+    case right // = 7
+    case rightInside // = 8
+    case rightBottom // = 9
+    case rightInsideBottom // = 10
+}
+
+struct Voice {
+    let _path: String
+    
+    init(_: String)
+}
+
+struct Background {
+    static func change(to: String)
+}
+
+struct BGM {
+    static func change(to: String)
+}
+struct SE {
+    static func change(to: String)
+}
+
+struct Task {
+    init(_: Closure)
+}
+
+func say(_: String, speaker: Character)
+func say(_: String, speaker: Character, voice: Voice)
+
+func waitUntilDone()
+
+func sleep(_: Float)

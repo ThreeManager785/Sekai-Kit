@@ -26,7 +26,7 @@ internal final class IRGenEvaluator {
         self.sema = semaResult
         self._symbolizer = .init(semaResult: semaResult)
         self.vtable = .init(ctx: self)
-        print(_symbolizer.symbolizeAll().joined(separator: "\n"))
+        print(_symbolizer.symbolizeAll().joined(separator: "\n"), terminator: "\n\n")
     }
     
     internal func emitSemaResult(diags: inout [Diagnostic]) {
@@ -197,29 +197,27 @@ extension IRGenEvaluator {
     }
     
     internal func _evaluateRef(_ name: String, at syntax: some SyntaxProtocol, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
-        guard let enclosingBlock = findCodeBlock(of: syntax) else {
-            diags.append(.init(node: syntax, message: .exprNoEnclosingBlock))
-            return nil
-        }
         let position = syntax.position
-        for statement in enclosingBlock {
-            let item = statement.item
-            if let varDecl = item.as(VariableDeclSyntax.self) {
-                for binding in varDecl.bindings where binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text == name {
-                    let pos = binding.position
-                    guard pos < position else {
-                        diags.append(.init(node: syntax, message: .constUsedBeforeInit(name)))
-                        return nil
+        for source in sema.sources {
+            for statement in source.statements {
+                let item = statement.item
+                if let varDecl = item.as(VariableDeclSyntax.self) {
+                    for binding in varDecl.bindings where binding.pattern.as(IdentifierPatternSyntax.self)?.identifier.text == name {
+                        let pos = binding.position
+                        guard pos < position else {
+                            diags.append(.init(node: syntax, message: .constUsedBeforeInit(name)))
+                            return nil
+                        }
+                        guard let _init = binding.initializer,
+                              let value = _evaluateExpr(_init.value, diags: &diags) else {
+                            return nil
+                        }
+                        return value
                     }
-                    guard let _init = binding.initializer,
-                          let value = _evaluateExpr(_init.value, diags: &diags) else {
-                        return nil
-                    }
-                    return value
+                } else if let structDecl = item.as(StructDeclSyntax.self),
+                          structDecl.name.text == name {
+                    return .init(type: "\(name).Type", storages: [:])
                 }
-            } else if let structDecl = item.as(StructDeclSyntax.self),
-                      structDecl.name.text == name {
-                return .init(type: "\(name).Type", storages: [:])
             }
         }
         
@@ -304,16 +302,6 @@ extension IRGenEvaluator {
             }
         }
         
-        return nil
-    }
-}
-
-private func findCodeBlock(of syntax: some SyntaxProtocol) -> CodeBlockItemListSyntax? {
-    if let list = syntax.as(CodeBlockItemListSyntax.self) {
-        return list
-    } else if let parent = syntax.parent {
-        return findCodeBlock(of: parent)
-    } else {
         return nil
     }
 }

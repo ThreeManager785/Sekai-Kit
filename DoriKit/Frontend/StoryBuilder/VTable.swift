@@ -41,6 +41,9 @@ extension ZeileVTable {
             "$zp9Characterf4move2to8PositioneAr9Character": zeile_characterMoveToPosition,
             "$zp9Characterf4hideeAr9Character": zeile_characterHide,
             "$zp9Characterf3act1_6StringeAr9Character": zeile_characterActWithName,
+            "$zp10Backgroundf6change2to6StringesrV": zeile_backgroundChangeToPath,
+            "$zp3BGMf6change2to6StringesrV": zeile_BGMChangeToPath,
+            "$zp2SEf6change2to6StringesrV": zeile_SEChangeToPath,
             "$zf3say1_6String7speaker9CharacterrV": zeile_sayWithTextFromSpeaker,
             "$zf3say1_6String7speaker9Character5voice5VoicerV": zeile_sayWithTextFromSpeakerAndVoice
         ]
@@ -161,6 +164,33 @@ private let zeile_characterActWithName: ZeileVTable.Function = { vtable, args in
         motionName: args.buffer[0].asTrivialString()
     ))
     return args.implicitSelf!
+}
+
+nonisolated(unsafe)
+private let zeile_backgroundChangeToPath: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.changeBackground(path: _resolvePath(
+        args.buffer[0].asTrivialString(),
+        base: "\(vtable.ctx.sema.locale.rawValue)/bg/"
+    )))
+    return .init(type: "", storages: [:])
+}
+
+nonisolated(unsafe)
+private let zeile_BGMChangeToPath: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.changeBGM(path: _resolvePath(
+        args.buffer[0].asTrivialString(),
+        base: "\(vtable.ctx.sema.locale.rawValue)/sound/scenario/bgm/"
+    )))
+    return .init(type: "", storages: [:])
+}
+
+nonisolated(unsafe)
+private let zeile_SEChangeToPath: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.changeSE(path: _resolvePath(
+        args.buffer[0].asTrivialString(),
+        base: "\(vtable.ctx.sema.locale.rawValue)/sound/se/"
+    )))
+    return .init(type: "", storages: [:])
 }
 
 nonisolated(unsafe)
