@@ -131,6 +131,8 @@ struct Task {
 func say(_: String, speaker: Character)
 func say(_: String, speaker: Character, voice: Voice)
 
+func telop(_: String)
+
 func waitUntilDone()
 
 func sleep(_: Float)

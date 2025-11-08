@@ -34,13 +34,14 @@ internal final class StoryIR {
         _actions.append(action)
     }
     
-    internal enum StepAction {
+    internal enum StepAction: Codable {
         case talk(
             String,
             characterIDs: [Int],
             characterNames: [String],
             voicePath: String?
         )
+        case telop(String)
         case showModel(
             characterID: Int,
             modelPath: String,
@@ -66,11 +67,11 @@ internal final class StoryIR {
 }
 
 extension StoryIR.StepAction {
-    internal struct Position {
+    internal struct Position: Codable {
         internal var base: Base
         internal var offsetX: Double
         
-        internal enum Base: Int {
+        internal enum Base: Int, Codable {
             case leftOutside
             case left
             case leftInside

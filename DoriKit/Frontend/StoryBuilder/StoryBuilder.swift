@@ -21,14 +21,18 @@ public final class DoriStoryBuilder: Sendable {
         
     }
     
-    public func buildSourceCode(_ code: String) -> [Diagnostic] {
+    public func buildIR(from code: String, diags: inout [Diagnostic]) -> Data? {
         let source = Parser.parse(source: code)
         
-        var diags: [Diagnostic] = []
         let sema = SemaEvaluator([source])
-        let ir = StoryIR(evaluator: sema, diags: &diags)
-        print(ir?._actions.map { "\($0)" }.joined(separator: "\n") ?? "")
+        if let ir = StoryIR(evaluator: sema, diags: &diags) {
+            print(ir._actions.map { "\($0)" }.joined(separator: "\n"))
+            
+            if !diags.hasError {
+                return ir.binEncode()
+            }
+        }
         
-        return diags
+        return nil
     }
 }

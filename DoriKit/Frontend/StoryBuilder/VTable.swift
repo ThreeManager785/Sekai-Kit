@@ -46,7 +46,10 @@ extension ZeileVTable {
             "$zp2SEf6change2to6StringesrV": zeile_SEChangeToPath,
             "$zp4Taskf4init1_7ClosureesrV": zeile_taskInitWithClosure,
             "$zf3say1_6String7speaker9CharacterrV": zeile_sayWithTextFromSpeaker,
-            "$zf3say1_6String7speaker9Character5voice5VoicerV": zeile_sayWithTextFromSpeakerAndVoice
+            "$zf3say1_6String7speaker9Character5voice5VoicerV": zeile_sayWithTextFromSpeakerAndVoice,
+            "$zf5telop1_6StringrV": zeile_telopWithText,
+            "$zf13waitUntilDonerV": zeile_waitUntilDone,
+            "$zf5sleep1_5FloatrV": zeile_sleepForSeconds
         ]
     }
 }
@@ -239,6 +242,26 @@ private let zeile_sayWithTextFromSpeakerAndVoice: ZeileVTable.Function = { vtabl
         characterIDs: [buffer[1].storages["id"]!.castTrivial().asInt()],
         characterNames: [buffer[1].storages["name"]!.castTrivial().asString()],
         voicePath: buffer[2].storages["_path"]!.castTrivial().asString()
+    ))
+    return .init(type: "", storages: [:])
+}
+
+nonisolated(unsafe)
+private let zeile_telopWithText: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.telop(args.buffer[0].asTrivialString()))
+    return .init(type: "", storages: [:])
+}
+
+nonisolated(unsafe)
+private let zeile_waitUntilDone: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.waitForAll)
+    return .init(type: "", storages: [:])
+}
+
+nonisolated(unsafe)
+private let zeile_sleepForSeconds: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.delay(
+        seconds: .init(args.buffer[0].asTrivialFloat())
     ))
     return .init(type: "", storages: [:])
 }
