@@ -49,6 +49,8 @@ extension IRGenEvaluator {
     internal func _emitExpr(_ expr: ExprSyntax, diags: inout [Diagnostic]) {
         if let funcCallExpr = expr.as(FunctionCallExprSyntax.self) {
             _ = _emitFuncCallExpr(funcCallExpr, diags: &diags)
+        } else if let awaitExpr = expr.as(AwaitExprSyntax.self) {
+            _ = _evaluateAwaitExpr(awaitExpr.expression, diags: &diags)
         }
     }
     
@@ -95,6 +97,10 @@ extension IRGenEvaluator {
                 argBuffer.append(value)
             }
         }
+        if let closure = expr.trailingClosure,
+           let value = _evaluateClosureExpr(closure, diags: &diags) {
+            argBuffer.append(value)
+        }
         var impSelf: ZeileRuntimeObject?
         if case .nonTrivial(let v) = calledValue.storages["_self"] {
             impSelf = v
@@ -108,12 +114,11 @@ extension IRGenEvaluator {
 extension IRGenEvaluator {
     internal func _evaluateExpr(_ expr: ExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
         if let awaitExpr = expr.as(AwaitExprSyntax.self) {
-            return _evaluateExpr(awaitExpr.expression, diags: &diags)
+            return _evaluateAwaitExpr(awaitExpr.expression, type: type, diags: &diags)
         } else if let boolLiteralExpr = expr.as(BooleanLiteralExprSyntax.self) {
             return .init(type: "Bool", storages: ["_value": .trivial(.bool(boolLiteralExpr.literal.text == "true"))])
         } else if let closureExpr = expr.as(ClosureExprSyntax.self) {
-            _emitCodeBlock(closureExpr.statements, diags: &diags)
-            return .init(type: "Closure", storages: [:])
+            return _evaluateClosureExpr(closureExpr, diags: &diags)
         } else if let declRefExpr = expr.as(DeclReferenceExprSyntax.self) {
             return _evaluateDeclRefExpr(declRefExpr, diags: &diags)
         } else if let floatLiteralExpr = expr.as(FloatLiteralExprSyntax.self) {
@@ -141,6 +146,33 @@ extension IRGenEvaluator {
         } else {
             return nil
         }
+    }
+    
+    internal func _evaluateAwaitExpr(_ expr: ExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
+        let actionsBefore = self.ir._actions
+        self.ir._actions = []
+        defer {
+            let newActions = self.ir._actions
+            self.ir._actions = actionsBefore
+            self.ir.emitAction(.blocking(newActions))
+        }
+        return _evaluateExpr(expr, type: type, diags: &diags)
+    }
+    
+    internal func _evaluateClosureExpr(_ expr: ClosureExprSyntax, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
+        let actionsBefore = self.ir._actions
+        self.ir._actions = []
+        _emitCodeBlock(expr.statements, diags: &diags)
+        let newActions = self.ir._actions
+        self.ir._actions = actionsBefore
+        
+        let retainNewActions = UnsafeMutablePointer<[StoryIR.StepAction]>
+            .allocate(capacity: 1)
+        unsafe retainNewActions.initialize(to: newActions)
+        
+        return .init(type: "Closure", storages: [
+            "_unsafeAddress": .trivial(.int(Int(bitPattern: retainNewActions)))
+        ])
     }
     
     internal func _evaluateDeclRefExpr(_ expr: DeclReferenceExprSyntax, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {

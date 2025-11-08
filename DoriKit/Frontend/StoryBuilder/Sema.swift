@@ -725,6 +725,8 @@ extension SemaEvaluator {
         var calledArgs = expr.arguments
         if let closure = expr.trailingClosure {
             calledArgs.append(.init(label: .identifier(closureIdentifier), expression: closure))
+            var _d: [Diagnostic] = []
+            _ = _resolveExprType(ExprSyntax(closure), diags: &_d)
         }
         
         var comparedCandidates: [(FunctionDeclSyntax, [Diagnostic])] = []

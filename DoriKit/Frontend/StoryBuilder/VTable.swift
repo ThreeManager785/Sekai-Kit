@@ -44,6 +44,7 @@ extension ZeileVTable {
             "$zp10Backgroundf6change2to6StringesrV": zeile_backgroundChangeToPath,
             "$zp3BGMf6change2to6StringesrV": zeile_BGMChangeToPath,
             "$zp2SEf6change2to6StringesrV": zeile_SEChangeToPath,
+            "$zp4Taskf4init1_7ClosureesrV": zeile_taskInitWithClosure,
             "$zf3say1_6String7speaker9CharacterrV": zeile_sayWithTextFromSpeaker,
             "$zf3say1_6String7speaker9Character5voice5VoicerV": zeile_sayWithTextFromSpeakerAndVoice
         ]
@@ -167,6 +168,15 @@ private let zeile_characterActWithName: ZeileVTable.Function = { vtable, args in
 }
 
 nonisolated(unsafe)
+private let zeile_characterEmoteWithName: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.express(
+        characterID: args.implicitSelf!.storages["id"]!.castTrivial().asInt(),
+        expressionName: args.buffer[0].asTrivialString()
+    ))
+    return args.implicitSelf!
+}
+
+nonisolated(unsafe)
 private let zeile_backgroundChangeToPath: ZeileVTable.Function = { vtable, args in
     vtable.ctx.ir.emitAction(.changeBackground(path: _resolvePath(
         args.buffer[0].asTrivialString(),
@@ -194,12 +204,19 @@ private let zeile_SEChangeToPath: ZeileVTable.Function = { vtable, args in
 }
 
 nonisolated(unsafe)
-private let zeile_characterEmoteWithName: ZeileVTable.Function = { vtable, args in
-    vtable.ctx.ir.emitAction(.express(
-        characterID: args.implicitSelf!.storages["id"]!.castTrivial().asInt(),
-        expressionName: args.buffer[0].asTrivialString()
-    ))
-    return args.implicitSelf!
+private let zeile_taskInitWithClosure: ZeileVTable.Function = { vtable, args in
+    let retainedActionsAddress = args.buffer[0].storages["_unsafeAddress"]!
+        .castTrivial().asInt()
+    let retainedActions = unsafe UnsafeMutablePointer<[StoryIR.StepAction]>
+        .init(bitPattern: retainedActionsAddress)!
+    defer {
+        unsafe retainedActions.deinitialize(count: 1)
+        unsafe retainedActions.deallocate()
+    }
+    
+    vtable.ctx.ir.emitAction(.forkTask(unsafe retainedActions.pointee))
+    
+    return .init(type: "Task", storages: [:])
 }
 
 nonisolated(unsafe)

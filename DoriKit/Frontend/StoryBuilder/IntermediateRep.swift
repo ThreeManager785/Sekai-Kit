@@ -58,6 +58,7 @@ internal final class StoryIR {
         case changeBGM(path: String)
         case changeSE(path: String)
         
+        case blocking([StepAction])
         case delay(seconds: Double)
         case forkTask([StepAction])
         case waitForAll
