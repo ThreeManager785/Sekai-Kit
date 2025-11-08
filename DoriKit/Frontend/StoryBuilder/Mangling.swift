@@ -104,7 +104,7 @@ internal func demangleFunction(_ mangled: String) -> (decl: SemaEvaluator.Functi
     var params: [SemaEvaluator.FunctionDeclaration.Parameter] = []
     for (index, name) in argDefs.enumerated() {
         if index % 2 == 0 {
-            params.append(.init(name: name, typeName: ""))
+            params.append(.init(name: name, typeName: "", attributes: []))
         } else {
             params[params.endIndex - 1].typeName = name
         }
@@ -151,7 +151,7 @@ internal func demangleFunction(_ mangled: String) -> (decl: SemaEvaluator.Functi
         return nil
     }
     
-    return (.init(name: funcName, parameters: params, returnType: returnType, isAsync: isAsync), parent, isStatic)
+    return (.init(name: funcName, parameters: params, returnType: returnType, isAsync: isAsync, attributes: []), parent, isStatic)
 }
 
 private func nameSpec(for name: String) -> String {

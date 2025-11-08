@@ -125,12 +125,15 @@ struct SE {
 }
 
 struct Task {
-    init(_: Closure)
+    init(_: @_asyncContext Closure)
 }
 
+@_unavailableFromAsync
 func say(_: String, speaker: Character)
+@_unavailableFromAsync
 func say(_: String, speaker: Character, voice: Voice)
 
+@_unavailableFromAsync
 func telop(_: String)
 
 func waitUntilDone()

@@ -148,6 +148,8 @@
 		8CBC1BD32E32B898004023F7 /* InMemoryCaches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */; };
 		8CBC1BDB2E334246004023F7 /* Searching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BDA2E334233004023F7 /* Searching.swift */; };
 		8CBC1BDF2E3408AB004023F7 /* FrontendCostume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BDE2E3408A7004023F7 /* FrontendCostume.swift */; };
+		8CBCB1202EBF9CF3007A1E33 /* IR2Bestdori.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCB11F2EBF9CE8007A1E33 /* IR2Bestdori.swift */; };
+		8CBCB1222EBF9D13007A1E33 /* IRConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCB1212EBF9D0F007A1E33 /* IRConversion.swift */; };
 		8CBCBAF12EB9CBE3007A1E33 /* SwiftLexicalLookup in Frameworks */ = {isa = PBXBuildFile; productRef = 8CBCBAF02EB9CBE3007A1E33 /* SwiftLexicalLookup */; };
 		8CBCBB562EB9DDD5007A1E33 /* VTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCBB552EB9DDCD007A1E33 /* VTable.swift */; };
 		8CBCCAFF2EBE39DD007A1E33 /* Stdlib.zeile in Resources */ = {isa = PBXBuildFile; fileRef = 8CBCCAFE2EBE39D0007A1E33 /* Stdlib.zeile */; };
@@ -396,6 +398,8 @@
 		8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCaches.swift; sourceTree = "<group>"; };
 		8CBC1BDA2E334233004023F7 /* Searching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Searching.swift; sourceTree = "<group>"; };
 		8CBC1BDE2E3408A7004023F7 /* FrontendCostume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendCostume.swift; sourceTree = "<group>"; };
+		8CBCB11F2EBF9CE8007A1E33 /* IR2Bestdori.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IR2Bestdori.swift; sourceTree = "<group>"; };
+		8CBCB1212EBF9D0F007A1E33 /* IRConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRConversion.swift; sourceTree = "<group>"; };
 		8CBCBB552EB9DDCD007A1E33 /* VTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTable.swift; sourceTree = "<group>"; };
 		8CBCCAFE2EBE39D0007A1E33 /* Stdlib.zeile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Stdlib.zeile; sourceTree = "<group>"; };
 		8CBCCB002EBF8F0D007A1E33 /* IRCoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCoding.swift; sourceTree = "<group>"; };
@@ -851,9 +855,19 @@
 				8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */,
 				8CBCBB552EB9DDCD007A1E33 /* VTable.swift */,
 				8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */,
+				8CBCB11E2EBF9CBE007A1E33 /* IRConversion */,
 				8CBCCAFE2EBE39D0007A1E33 /* Stdlib.zeile */,
 			);
 			path = StoryBuilder;
+			sourceTree = "<group>";
+		};
+		8CBCB11E2EBF9CBE007A1E33 /* IRConversion */ = {
+			isa = PBXGroup;
+			children = (
+				8CBCB1212EBF9D0F007A1E33 /* IRConversion.swift */,
+				8CBCB11F2EBF9CE8007A1E33 /* IR2Bestdori.swift */,
+			);
+			path = IRConversion;
 			sourceTree = "<group>";
 		};
 		8CD13FAD2E2FE2BF00673E15 /* API */ = {
@@ -1537,6 +1551,7 @@
 				8CA865CB2EB4DFF8001464F7 /* Diagnostic.swift in Sources */,
 				8CD13FAF2E2FE2BF00673E15 /* Card.swift in Sources */,
 				8C2CCD4F2E3E67B30014189F /* RichContentRendering.swift in Sources */,
+				8CBCB1222EBF9D13007A1E33 /* IRConversion.swift in Sources */,
 				8CEC182B2E9947EE00C26B4A /* NewsMarkdown.swift in Sources */,
 				8C2CFEFD2EB8901E00A8A149 /* Mangling.swift in Sources */,
 				8C9474432E348D1F003A90B4 /* FrontendMisc.swift in Sources */,
@@ -1544,6 +1559,7 @@
 				8C3D684E2EA6092F0034E831 /* RichContentMarkdown.swift in Sources */,
 				8C7F6B9A2E593AFE0040C206 /* DoriOfflineAsset.swift in Sources */,
 				8C3DEB652EAE4FF10004E1F5 /* UserInfoInits.swift.gyb in Sources */,
+				8CBCB1202EBF9CF3007A1E33 /* IR2Bestdori.swift in Sources */,
 				8CD13FBD2E2FE2BF00673E15 /* DoriFrontend.swift in Sources */,
 				8C9474412E345BED003A90B4 /* Misc.swift in Sources */,
 				8CA865C92EB4B7F9001464F7 /* Sema.swift in Sources */,

@@ -29,6 +29,8 @@ internal final class IRGenEvaluator {
         print(_symbolizer.symbolizeAll().joined(separator: "\n"), terminator: "\n\n")
     }
     
+    internal var _isEvaluatingAsyncContext: Bool = false
+    
     internal func emitSemaResult(diags: inout [Diagnostic]) {
         for source in sema.sources {
             _emitCodeBlock(source.statements, diags: &diags)
@@ -66,6 +68,12 @@ extension IRGenEvaluator {
             diags.append(.init(node: expr.calledExpression, message: .cannotCallNonFuncValue(ofType: calledValue.type)))
             return nil
         }
+        if _isEvaluatingAsyncContext {
+            guard !calledDecl.attributes.contains(where: { $0.name == "_unavailableFromAsync" }) else {
+                diags.append(.init(node: expr, message: .funcNotAvailableFromAsync(calledDecl.name)))
+                return nil
+            }
+        }
         
         var mangledNames: [String] = []
         if calledValue.type.hasSuffix(".Type") {
@@ -89,21 +97,39 @@ extension IRGenEvaluator {
         guard let decl = mangledNames.compactMap({ demangleFunction($0) }).first(where: { $0.decl == calledDecl }) else {
             return nil
         }
-        let qualifiedMangledName = mangleFunction(decl.decl, parent: decl.parent, isStatic: decl.isStatic)
+        var qualifiedMangledName = mangleFunction(decl.decl, parent: decl.parent, isStatic: decl.isStatic)
         
         var argBuffer: [ZeileRuntimeObject] = []
         for (index, argument) in expr.arguments.enumerated() {
+            for attr in calledDecl.parameters.last!.attributes {
+                if attr.name == "_asyncContext" {
+                    _isEvaluatingAsyncContext = true
+                }
+            }
             if let value = _evaluateExpr(argument.expression, type: decl.decl.parameters[index].typeName, diags: &diags) {
                 argBuffer.append(value)
             }
+            _isEvaluatingAsyncContext = false
         }
-        if let closure = expr.trailingClosure,
-           let value = _evaluateClosureExpr(closure, diags: &diags) {
-            argBuffer.append(value)
+        if let closure = expr.trailingClosure {
+            for attr in calledDecl.parameters.last!.attributes {
+                if attr.name == "_asyncContext" {
+                    _isEvaluatingAsyncContext = true
+                }
+            }
+            if let value = _evaluateClosureExpr(closure, diags: &diags) {
+                argBuffer.append(value)
+            }
+            _isEvaluatingAsyncContext = false
         }
         var impSelf: ZeileRuntimeObject?
         if case .nonTrivial(let v) = calledValue.storages["_self"] {
             impSelf = v
+        }
+        
+        if let irgenNameAttr = calledDecl.attributes.first(where: { $0.name == "_irgen_name" }),
+           irgenNameAttr.arguments.count > 0 {
+            qualifiedMangledName = irgenNameAttr.arguments[0]
         }
         
         let args = ZeileFunctionArguments(implicitSelf: impSelf, buffer: argBuffer)

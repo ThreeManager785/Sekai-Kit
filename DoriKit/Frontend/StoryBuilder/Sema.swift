@@ -142,6 +142,7 @@ internal final class SemaEvaluator {
         internal var parameters: [Parameter]
         internal var returnType: String
         internal var isAsync: Bool
+        internal var attributes: [Attribute]
         
         static func == (lhs: Self, rhs: Self) -> Bool {
             lhs.hashValue == rhs.hashValue
@@ -155,11 +156,17 @@ internal final class SemaEvaluator {
         internal struct Parameter: Hashable {
             internal var name: String
             internal var typeName: String
+            internal var attributes: [Attribute]
             
             func hash(into hasher: inout Hasher) {
                 hasher.combine(name)
                 hasher.combine(typeName)
             }
+        }
+        
+        internal struct Attribute: Equatable {
+            internal var name: String
+            internal var arguments: [String]
         }
     }
     
@@ -267,9 +274,6 @@ extension SemaEvaluator {
     }
     
     internal func _typeCheckAnyFunctionDecl(_ decl: FunctionDeclSyntax, diags: inout [Diagnostic]) -> FunctionDeclaration {
-        if !decl.attributes.isEmpty {
-            diags.append(.init(node: decl.attributes, message: .attributesNotSupported))
-        }
         if !decl.modifiers.isEmpty {
             diags.append(.init(node: decl.modifiers, message: .declModifierNotSupported))
         }
@@ -303,12 +307,44 @@ extension SemaEvaluator {
             }
             
             if let resolvedType = _resolveType(parameter.type, diags: &diags) {
-                resultParams.append(
-                    .init(
-                        name: parameter.firstName.text,
-                        typeName: resolvedType
+                if let attrType = parameter.type.as(AttributedTypeSyntax.self) {
+                    var attributes: [FunctionDeclaration.Attribute] = []
+                    for attr in attrType.attributes {
+                        if let attr = attr.as(AttributeSyntax.self),
+                           let name = attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text {
+                            var args: [String] = []
+                            if let arguments = attr.arguments?.as(LabeledExprListSyntax.self) {
+                                for arg in arguments {
+                                    if let expr = arg.expression.as(StringLiteralExprSyntax.self) {
+                                        var result = ""
+                                        for seg in expr.segments {
+                                            if let seg = seg.as(StringSegmentSyntax.self) {
+                                                result += seg.content.text
+                                            }
+                                        }
+                                        args.append(result)
+                                    }
+                                }
+                            }
+                            attributes.append(.init(name: name, arguments: args))
+                        }
+                    }
+                    resultParams.append(
+                        .init(
+                            name: parameter.firstName.text,
+                            typeName: resolvedType,
+                            attributes: attributes
+                        )
                     )
-                )
+                } else {
+                    resultParams.append(
+                        .init(
+                            name: parameter.firstName.text,
+                            typeName: resolvedType,
+                            attributes: []
+                        )
+                    )
+                }
             }
         }
         
@@ -329,11 +365,34 @@ extension SemaEvaluator {
             returnTypeName = resolvedType
         }
         
+        var attributes: [FunctionDeclaration.Attribute] = []
+        for attr in decl.attributes {
+            if let attr = attr.as(AttributeSyntax.self),
+               let name = attr.attributeName.as(IdentifierTypeSyntax.self)?.name.text {
+                var args: [String] = []
+                if let arguments = attr.arguments?.as(LabeledExprListSyntax.self) {
+                    for arg in arguments {
+                        if let expr = arg.expression.as(StringLiteralExprSyntax.self) {
+                            var result = ""
+                            for seg in expr.segments {
+                                if let seg = seg.as(StringSegmentSyntax.self) {
+                                    result += seg.content.text
+                                }
+                            }
+                            args.append(result)
+                        }
+                    }
+                }
+                attributes.append(.init(name: name, arguments: args))
+            }
+        }
+        
         return .init(
             name: decl.name.text,
             parameters: resultParams,
             returnType: returnTypeName,
-            isAsync: isAsync
+            isAsync: isAsync,
+            attributes: attributes
         )
     }
     
@@ -527,6 +586,8 @@ extension SemaEvaluator {
             } else {
                 diags.append(.init(node: syntax, message: .cannotFindTypeInScope(typeName)))
             }
+        } else if let attrType = syntax.as(AttributedTypeSyntax.self) {
+            return _resolveType(attrType.baseType, diags: &diags)
         }
         
         return nil

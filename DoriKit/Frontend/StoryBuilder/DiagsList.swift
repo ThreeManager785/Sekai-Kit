@@ -387,4 +387,11 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
             id: "constant_used_before_initialized"
         )
     }
+    
+    static func funcNotAvailableFromAsync(_ name: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "function '\(name)' is not available in this context",
+            id: "function_not_available_from_async"
+        )
+    }
 }
