@@ -148,6 +148,9 @@
 		8CBC1BD32E32B898004023F7 /* InMemoryCaches.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */; };
 		8CBC1BDB2E334246004023F7 /* Searching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BDA2E334233004023F7 /* Searching.swift */; };
 		8CBC1BDF2E3408AB004023F7 /* FrontendCostume.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC1BDE2E3408A7004023F7 /* FrontendCostume.swift */; };
+		8CBC974E2EC0C965007A1E33 /* SwiftIDEUtils in Frameworks */ = {isa = PBXBuildFile; productRef = 8CBC974D2EC0C965007A1E33 /* SwiftIDEUtils */; };
+		8CBC97502EC0C98E007A1E33 /* SyntaxHighlight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBC974F2EC0C988007A1E33 /* SyntaxHighlight.swift */; };
+		8CBC97522EC0CEEE007A1E33 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8CBC97512EC0CEEE007A1E33 /* Assets.xcassets */; };
 		8CBCB1202EBF9CF3007A1E33 /* IR2Bestdori.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCB11F2EBF9CE8007A1E33 /* IR2Bestdori.swift */; };
 		8CBCB1222EBF9D13007A1E33 /* IRConversion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCB1212EBF9D0F007A1E33 /* IRConversion.swift */; };
 		8CBCBAF12EB9CBE3007A1E33 /* SwiftLexicalLookup in Frameworks */ = {isa = PBXBuildFile; productRef = 8CBCBAF02EB9CBE3007A1E33 /* SwiftLexicalLookup */; };
@@ -398,6 +401,8 @@
 		8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InMemoryCaches.swift; sourceTree = "<group>"; };
 		8CBC1BDA2E334233004023F7 /* Searching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Searching.swift; sourceTree = "<group>"; };
 		8CBC1BDE2E3408A7004023F7 /* FrontendCostume.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendCostume.swift; sourceTree = "<group>"; };
+		8CBC974F2EC0C988007A1E33 /* SyntaxHighlight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyntaxHighlight.swift; sourceTree = "<group>"; };
+		8CBC97512EC0CEEE007A1E33 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8CBCB11F2EBF9CE8007A1E33 /* IR2Bestdori.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IR2Bestdori.swift; sourceTree = "<group>"; };
 		8CBCB1212EBF9D0F007A1E33 /* IRConversion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRConversion.swift; sourceTree = "<group>"; };
 		8CBCBB552EB9DDCD007A1E33 /* VTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTable.swift; sourceTree = "<group>"; };
@@ -552,6 +557,7 @@
 				8C43486A2EB73EE100067FBD /* SwiftParser in Frameworks */,
 				8C7F6BF72E594EDF0040C206 /* libgssapi_krb5.tbd in Frameworks */,
 				8C7F6BF62E594EDF0040C206 /* GSS.framework in Frameworks */,
+				8CBC974E2EC0C965007A1E33 /* SwiftIDEUtils in Frameworks */,
 				8CBCBAF12EB9CBE3007A1E33 /* SwiftLexicalLookup in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -653,6 +659,7 @@
 			children = (
 				8C8E44752E5EE043005590F0 /* Documentation.docc */,
 				8C0C99B22E29766B00549B5C /* Localizable.xcstrings */,
+				8CBC97512EC0CEEE007A1E33 /* Assets.xcassets */,
 				8CBC1BD02E32B5B6004023F7 /* Constructor.swift */,
 				8CB76C852E60171D00229F6F /* Macros.swift */,
 				8CD13FC42E2FE2BF00673E15 /* Internal */,
@@ -856,6 +863,7 @@
 				8CBCBB552EB9DDCD007A1E33 /* VTable.swift */,
 				8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */,
 				8CBCB11E2EBF9CBE007A1E33 /* IRConversion */,
+				8CBC974F2EC0C988007A1E33 /* SyntaxHighlight.swift */,
 				8CBCCAFE2EBE39D0007A1E33 /* Stdlib.zeile */,
 			);
 			path = StoryBuilder;
@@ -1035,6 +1043,7 @@
 				8C4348692EB73EE100067FBD /* SwiftParser */,
 				8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */,
 				8CBCBAF02EB9CBE3007A1E33 /* SwiftLexicalLookup */,
+				8CBC974D2EC0C965007A1E33 /* SwiftIDEUtils */,
 			);
 			productName = DoriKit;
 			productReference = 8C0C99912E296A8C00549B5C /* DoriKit.framework */;
@@ -1251,6 +1260,7 @@
 				8CBCCAFF2EBE39DD007A1E33 /* Stdlib.zeile in Resources */,
 				8C2CCD402E3E06090014189F /* DoriEmoji.bundle in Resources */,
 				8C0C99B32E29766B00549B5C /* Localizable.xcstrings in Resources */,
+				8CBC97522EC0CEEE007A1E33 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1562,6 +1572,7 @@
 				8CBCB1202EBF9CF3007A1E33 /* IR2Bestdori.swift in Sources */,
 				8CD13FBD2E2FE2BF00673E15 /* DoriFrontend.swift in Sources */,
 				8C9474412E345BED003A90B4 /* Misc.swift in Sources */,
+				8CBC97502EC0C98E007A1E33 /* SyntaxHighlight.swift in Sources */,
 				8CA865C92EB4B7F9001464F7 /* Sema.swift in Sources */,
 				8C923D7A2E3046D0003AFC0A /* FrontendCharacter.swift in Sources */,
 				8CE186AF2E535DE0009C1C87 /* Asset.swift in Sources */,
@@ -3377,6 +3388,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 8C8E44F92E5F6867005590F0 /* XCRemoteSwiftPackageReference "swift-syntax" */;
 			productName = SwiftDiagnostics;
+		};
+		8CBC974D2EC0C965007A1E33 /* SwiftIDEUtils */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 8C8E44F92E5F6867005590F0 /* XCRemoteSwiftPackageReference "swift-syntax" */;
+			productName = SwiftIDEUtils;
 		};
 		8CBCBAF02EB9CBE3007A1E33 /* SwiftLexicalLookup */ = {
 			isa = XCSwiftPackageProductDependency;

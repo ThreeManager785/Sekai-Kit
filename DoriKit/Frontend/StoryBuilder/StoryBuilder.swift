@@ -12,6 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+import SwiftUI
 import Foundation
 internal import SwiftSyntax
 internal import SwiftParser
@@ -32,5 +33,20 @@ public final class DoriStoryBuilder: Sendable {
         }
         
         return nil
+    }
+    
+    public func syntaxHighlight(
+        for attributedString: NSMutableAttributedString,
+        config: SyntaxHighlightConfig = .init()
+    ) {
+        _highlightZeileCode(for: attributedString, config: config)
+    }
+    public func syntaxHighlight(
+        code: String,
+        config: SyntaxHighlightConfig = .init()
+    ) -> NSAttributedString {
+        let result = NSMutableAttributedString(string: code)
+        _highlightZeileCode(for: result, config: config)
+        return .init(attributedString: result)
     }
 }
