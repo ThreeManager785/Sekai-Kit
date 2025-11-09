@@ -26,8 +26,6 @@ public final class DoriStoryBuilder: Sendable {
         
         let sema = SemaEvaluator([source])
         if let ir = StoryIR(evaluator: sema, diags: &diags) {
-            print(ir._actions.map { "\($0)" }.joined(separator: "\n"))
-            
             if !diags.hasError {
                 return ir.binEncode()
             }
