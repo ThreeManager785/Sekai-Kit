@@ -17,6 +17,10 @@ import Foundation
 internal final class StoryIR {
     internal var _actions: [StepAction] = []
     
+    internal init(actions: [StepAction]) {
+        self._actions = actions
+    }
+    
     internal init?(evaluator: SemaEvaluator, diags: inout [Diagnostic]) {
         let semaDiags = evaluator.performSema()
         diags = semaDiags

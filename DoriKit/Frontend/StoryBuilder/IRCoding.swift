@@ -62,4 +62,54 @@ extension StoryIR {
         
         return compressedData
     }
+    
+    internal convenience init?(binary data: Data) {
+        guard unsafe data.prefix(4).bytes
+            .unsafeLoad(as: UInt32.self) == 0x52494c5a else {
+            return nil
+        }
+        guard unsafe data.suffix(4).bytes
+            .unsafeLoad(as: UInt32.self) == 0x2452495a else {
+            return nil
+        }
+        
+        var compressedData = data
+        var bvxHeader: UInt32 = 0x32787662
+        compressedData.replaceSubrange(
+            0..<4,
+            with: unsafe Data(bytes: &bvxHeader,
+                              count: MemoryLayout.size(ofValue: bvxHeader))
+        )
+        var bvxEof: UInt32 = 0x24787662
+        compressedData.replaceSubrange(
+            (compressedData.endIndex - 4)..<compressedData.endIndex,
+            with: unsafe Data(bytes: &bvxEof,
+                              count: MemoryLayout.size(ofValue: bvxEof))
+        )
+        
+        var decompressedData = Data()
+        do {
+            let pageSize = 1024
+            var index = 0
+            let bufferSize = compressedData.count
+            let filter = try InputFilter(.decompress, using: .lzfse) { length in
+                let rangeLength = min(length, bufferSize - index)
+                let subdata = compressedData.subdata(in: index..<index + rangeLength)
+                index += rangeLength
+                return subdata
+            }
+            while let page = try filter.readData(ofLength: pageSize) {
+                decompressedData.append(page)
+            }
+            
+            let decoder = PropertyListDecoder()
+            let actions = try decoder.decode(
+                [StepAction].self,
+                from: decompressedData
+            )
+            self.init(actions: actions)
+        } catch {
+            return nil
+        }
+    }
 }
