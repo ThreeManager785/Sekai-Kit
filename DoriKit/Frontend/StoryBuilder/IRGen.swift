@@ -275,6 +275,9 @@ extension IRGenEvaluator {
                 } else if let structDecl = item.as(StructDeclSyntax.self),
                           structDecl.name.text == name {
                     return .init(type: "\(name).Type", storages: [:])
+                } else if let enumDecl = item.as(EnumDeclSyntax.self),
+                          enumDecl.name.text == name {
+                    return .init(type: "\(name).Type", storages: [:])
                 }
             }
         }

@@ -962,6 +962,9 @@ extension SemaEvaluator {
         if _resolvedStructs[name] != nil {
             return name + ".Type"
         }
+        if _resolvedEnums[name] != nil {
+            return name + ".Type"
+        }
         if _resolvedTopFunctions.contains(where: { $0.name == name }) {
             return "~TOP/f" + name
         }
@@ -977,6 +980,9 @@ extension SemaEvaluator {
                    decl.name.text == name {
                     return "~TOP/f" + name
                 } else if let decl = item.as(StructDeclSyntax.self),
+                          decl.name.text == name {
+                    return name + ".Type"
+                } else if let decl = item.as(EnumDeclSyntax.self),
                           decl.name.text == name {
                     return name + ".Type"
                 } else if let decl = item.as(VariableDeclSyntax.self) {

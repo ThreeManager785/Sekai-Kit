@@ -29,7 +29,8 @@ let package = Package(
                 .product(name: "SwiftParser", package: "swift-syntax"),
                 .product(name: "SwiftParserDiagnostics", package: "swift-syntax"),
                 .product(name: "SwiftLexicalLookup", package: "swift-syntax"),
-                .product(name: "SwiftIDEUtils", package: "swift-syntax")
+                .product(name: "SwiftIDEUtils", package: "swift-syntax"),
+                .product(name: "SwiftSyntaxBuilder", package: "swift-syntax")
             ],
             path: "DoriKit/",
             resources: [

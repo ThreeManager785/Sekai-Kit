@@ -49,4 +49,11 @@ public final class DoriStoryBuilder: Sendable {
         _highlightZeileCode(for: result, config: config)
         return .init(attributedString: result)
     }
+    
+    public func completeCode(
+        _ code: String,
+        at index: String.Index
+    ) -> [CodeCompletionItem] {
+        _completeZeileCode(code, at: index)
+    }
 }
