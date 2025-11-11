@@ -96,6 +96,12 @@ internal func _completeZeileCode(
         }
     }
     
+    let tokenString = token.text
+    result.sort { lhs, rhs in
+        matchScore(for: lhs.displayName.string, query: tokenString)
+        > matchScore(for: rhs.displayName.string, query: tokenString)
+    }
+    
     return result
 }
 
@@ -491,6 +497,67 @@ private final class AttributeRemover: SyntaxRewriter {
         return DeclSyntax(node.with(\.attributes, []))
     }
 }
+
+private func matchScore(for candidate: String, query: String) -> Double {
+    let candChars = Array(candidate)
+    let queryChars = Array(query)
+    let lowerCand = Array(candidate.lowercased())
+    let lowerQuery = Array(query.lowercased())
+    
+    var indices: [Int] = []
+    var i = 0, j = 0
+    var caseMatchScore = 0.0
+    
+    while i < lowerCand.count, j < lowerQuery.count {
+        if lowerCand[i] == lowerQuery[j] {
+            indices.append(i)
+            
+            // 如果大小写完全一致，额外加分
+            if candChars[i] == queryChars[j] {
+                caseMatchScore += 1.0
+            } else {
+                // 大小写不同，稍微低一些
+                caseMatchScore += 0.5
+            }
+            
+            j += 1
+        }
+        i += 1
+    }
+    guard j == lowerQuery.count else { return 0 }
+    
+    var prefixScore = 0
+    for (a, b) in zip(lowerCand, lowerQuery) {
+        if a == b {
+            prefixScore += 1
+        } else {
+            break
+        }
+    }
+    
+    var maxConsecutive = 1
+    var current = 1
+    for k in 1..<indices.count {
+        if indices[k] == indices[k - 1] + 1 {
+            current += 1
+        } else {
+            maxConsecutive = max(maxConsecutive, current)
+            current = 1
+        }
+    }
+    maxConsecutive = max(maxConsecutive, current)
+    
+    let startOffset = Double(indices.first ?? candChars.count)
+    
+    let score =
+    Double(prefixScore) * 3.0 +
+    Double(maxConsecutive) * 2.0 +
+    caseMatchScore * 1.0 -
+    startOffset * 0.5
+    
+    return score
+}
+
 
 extension String {
     fileprivate func matchCompletionInput(
