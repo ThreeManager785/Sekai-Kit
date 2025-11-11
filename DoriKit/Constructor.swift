@@ -15,7 +15,6 @@
 // __attribute__((constructor))
 @_section("__DATA,__mod_init_func")
 private let __constructor: @convention(c) () -> Void = {
-    Task {
-        InMemoryCache.updateAll()
-    }
+    InMemoryCache.updateAll()
+    _prepareAssetListForZeileCompletion()
 }

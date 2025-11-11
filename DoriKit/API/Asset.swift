@@ -91,7 +91,7 @@ extension _DoriAPI.Assets {
     }
     
     /// A type that represents a path for assets.
-    public struct PathDescriptor: Sendable {
+    public struct PathDescriptor: Sendable, Hashable {
         @usableFromInline
         internal var _path: String
         

@@ -33,10 +33,20 @@ private let stdlibSource = {
     ))
 }()
 
+private let assetListLock = NSLock()
+nonisolated(unsafe) private var assetList: _DoriAPI.Assets.AssetList?
+private let bundleFileListCacheLock = NSLock()
+nonisolated(unsafe) private var cachedBundleFileList: [Int: [String]] = [:]
+
 internal func _completeZeileCode(
     _ code: String,
     at index: String.Index
 ) -> [CodeCompletionItem] {
+    assert(
+        !Thread.isMainThread,
+        "code completion should not be called on the main thread"
+    )
+    
     guard let position = index.samePosition(in: code.utf8) else {
         return []
     }
@@ -54,7 +64,7 @@ internal func _completeZeileCode(
     
     var result: [CodeCompletionItem] = []
     
-    if let fullParent = fullParent(of: token) {
+    lookup: if let fullParent = fullParent(of: token) {
         if fullParent.is(DeclReferenceExprSyntax.self) {
             result.append(contentsOf: lookupToken(token, in: allSources))
         } else if let memberAccess = fullParent.as(MemberAccessExprSyntax.self) {
@@ -91,6 +101,20 @@ internal func _completeZeileCode(
                     }
                 }
             }
+        } else if let stringLiteral = fullParent.as(StringLiteralExprSyntax.self),
+                  let stringParent = DoriKit.fullParent(of: stringLiteral),
+                  let funcCall = stringParent.as(FunctionCallExprSyntax.self) {
+            guard _prepareAssetListForZeileCompletion() else { break lookup }
+            
+            let sema = SemaEvaluator(allSources)
+            _ = sema.performSema()
+            
+            result.append(contentsOf: lookupPath(
+                token,
+                inside: stringLiteral,
+                in: funcCall,
+                with: sema
+            ))
         }
     }
     
@@ -98,8 +122,13 @@ internal func _completeZeileCode(
     
     let tokenString = token.text
     result.sort { lhs, rhs in
-        matchScore(for: lhs.displayName.string, query: tokenString)
-        > matchScore(for: rhs.displayName.string, query: tokenString)
+        let lscore = matchScore(for: lhs.displayName.string, query: tokenString)
+        let rscore = matchScore(for: rhs.displayName.string, query: tokenString)
+        if _fastPath(lscore != rscore) {
+            return lscore > rscore
+        } else {
+            return lhs.displayName.string < rhs.displayName.string
+        }
     }
     
     return result
@@ -109,9 +138,26 @@ public struct CodeCompletionItem: Hashable {
     public let itemType: ItemType
     public let declaration: NSAttributedString
     public let displayName: NSAttributedString
+    public let previewContent: PreviewContent?
     
     internal let currentSyntax: TokenSyntax
     internal let replacementSyntax: TokenSyntax
+    
+    internal init(
+        itemType: ItemType,
+        declaration: NSAttributedString,
+        displayName: NSAttributedString,
+        previewContent: PreviewContent? = nil,
+        currentSyntax: TokenSyntax,
+        replacementSyntax: TokenSyntax
+    ) {
+        self.itemType = itemType
+        self.declaration = declaration
+        self.displayName = displayName
+        self.previewContent = previewContent
+        self.currentSyntax = currentSyntax
+        self.replacementSyntax = replacementSyntax
+    }
     
     public var replacedCode: String {
         replacementSyntax.root.description
@@ -129,6 +175,30 @@ public struct CodeCompletionItem: Hashable {
         case enumeration
         case keyword
     }
+    
+    public enum PreviewContent: Hashable {
+        case image(URL)
+        case live2d(URL)
+    }
+}
+
+@discardableResult
+internal func _prepareAssetListForZeileCompletion() -> Bool {
+    assetListLock.lock()
+    guard unsafe assetList == nil else {
+        assetListLock.unlock()
+        return true
+    }
+    assetListLock.unlock()
+    
+    Task.detached {
+        if let list = await _DoriAPI.Assets.info(in: .jp) {
+            assetListLock.withLock {
+                unsafe assetList = list
+            }
+        }
+    }
+    return false
 }
 
 private func fullParent(of syntax: some SyntaxProtocol) -> Syntax? {
@@ -243,13 +313,14 @@ private func lookupToken(
                     
                     for member in decl.memberBlock.members {
                         if let initializer = member.decl.as(InitializerDeclSyntax.self) {
-                            let displayText = idText + initializer.signature
-                                .parameterClause.description
-                                .replacing("\n", with: " ")
-                            var replaceResult = decl.name.text
                             var params = initializer.signature.parameterClause
                             params = attributeRemover.rewrite(params)
                                 .cast(FunctionParameterClauseSyntax.self)
+                            
+                            let displayText = idText + params.description
+                                .replacing("\n", with: " ")
+                            
+                            var replaceResult = decl.name.text
                             var replacementParams: [FunctionParameterSyntax] = []
                             for parameter in params.parameters {
                                 var newParam = parameter
@@ -436,6 +507,170 @@ private func lookupMember(
     
     return result
 }
+private func lookupPath(
+    _ token: TokenSyntax,
+    inside argument: StringLiteralExprSyntax,
+    in funcCall: FunctionCallExprSyntax,
+    with sema: SemaEvaluator
+) -> [CodeCompletionItem] {
+    assert(unsafe assetList != nil)
+    guard let assetList = unsafe assetList else { return [] }
+    
+    guard let funcDecl = sema.resolvedFuncCalls[funcCall.hashValue] else {
+        return []
+    }
+    
+    var argIndex: Int?
+    for (index, arg) in funcCall.arguments.enumerated() {
+        if arg.expression.as(StringLiteralExprSyntax.self) == argument {
+            argIndex = index
+            break
+        }
+    }
+    guard let argIndex else { return [] }
+    
+    let argAttrs = funcDecl.parameters[argIndex].attributes
+    var pathPrefix: String?
+    for attr in argAttrs where attr.name == "_pathPrefix" {
+        pathPrefix = attr.arguments[0]
+        break
+    }
+    guard let pathPrefix else { return [] }
+    let path: String
+    if token.text.hasPrefix("jp/")
+        || token.text.hasPrefix("en/")
+        || token.text.hasPrefix("tw/")
+        || token.text.hasPrefix("cn/")
+        || token.text.hasPrefix("kr/") {
+        path = String(token.text.dropFirst(3))
+    } else if token.text.hasPrefix("http://")
+                || token.text.hasPrefix("https://") {
+        return []
+    } else {
+        path = pathPrefix + token.text
+    }
+    
+    var pathDesc = _DoriAPI.Assets.PathDescriptor(locale: .jp)
+    func resolveChild(
+        _ pathSeg: [String],
+        in list: _DoriAPI.Assets.AssetList
+    ) -> _DoriAPI.Assets.Child? {
+        guard !pathSeg.isEmpty else {
+            return .list(list)
+        }
+        
+        var nextSeg = pathSeg
+        let thisSeg = nextSeg.removeFirst()
+        guard let child = list.access(thisSeg, updatingPath: &pathDesc) else {
+            return nil
+        }
+        
+        if nextSeg.isEmpty {
+            return child
+        }
+        
+        if case .list(let assetList) = child {
+            return resolveChild(nextSeg, in: assetList)
+        } else {
+            return child
+        }
+    }
+    guard let child = resolveChild(
+        path.split(separator: "/", omittingEmptySubsequences: false)
+            .map { String($0) }
+            .dropLast()
+            .compactMap { $0.isEmpty ? nil : $0 },
+        in: assetList
+    ) else { return [] }
+    guard let _lastInput = token.text.split(
+        separator: "/",
+        omittingEmptySubsequences: false
+    ).last else { return [] }
+    let lastInput = _lastInput != "\"" ? String(_lastInput) : ""
+    //              ~~~~~~~~~~~~~~~^^~
+    // The token is \" if the string literal is empty
+    
+    var result: [CodeCompletionItem] = []
+    
+    switch child {
+    case .files:
+        @safe nonisolated(unsafe) var contents: [String]?
+        if let c = bundleFileListCacheLock
+            .withLock({ unsafe cachedBundleFileList[pathDesc.hashValue] }) {
+            contents = c
+        } else {
+            let semaphore = DispatchSemaphore(value: 0)
+            let desc = pathDesc
+            Task { @Sendable in
+                contents = await _DoriAPI.Assets.contentsOf(desc)
+                semaphore.signal()
+            }
+            semaphore.wait()
+            if let contents {
+                _ = bundleFileListCacheLock.withLock {
+                    unsafe cachedBundleFileList.updateValue(
+                        contents,
+                        forKey: pathDesc.hashValue
+                    )
+                }
+            }
+        }
+        if let contents {
+            for name in contents {
+                let match = name.matchCompletionInput(of: lastInput)
+                if !match.isEmpty || lastInput.isEmpty {
+                    var _replaceResult = token.text
+                        .split(separator: "/", omittingEmptySubsequences: false)
+                        .dropLast()
+                    _replaceResult += [Substring(name)]
+                    let replaceResult = _replaceResult.joined(separator: "/")
+                    
+                    var previewContent: CodeCompletionItem.PreviewContent?
+                    if name.hasSuffix(".png") {
+                        previewContent = .image(pathDesc.resourceURL(name: name))
+                    }
+                    
+                    result.append(.init(
+                        itemType: .variable,
+                        declaration: .init(),
+                        displayName: displayName(for: name, matched: match),
+                        previewContent: previewContent,
+                        currentSyntax: token,
+                        replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
+                    ))
+                }
+            }
+        }
+    case .list(let list):
+        let names = list.keys
+        for name in names {
+            let match = name.matchCompletionInput(of: lastInput)
+            if !match.isEmpty || lastInput.isEmpty {
+                var _replaceResult = token.text
+                    .split(separator: "/", omittingEmptySubsequences: false)
+                    .dropLast()
+                _replaceResult += [Substring(name)]
+                let replaceResult = _replaceResult.joined(separator: "/")
+                
+                var previewContent: CodeCompletionItem.PreviewContent?
+                if pathDesc._path.hasPrefix("/live2d/chara/") {
+                    previewContent = .live2d(.init(string: "https://bestdori.com/assets/jp/live2d/chara/\(name)_rip/buildData.asset")!)
+                }
+                
+                result.append(.init(
+                    itemType: .variable,
+                    declaration: .init(),
+                    displayName: displayName(for: name, matched: match),
+                    previewContent: previewContent,
+                    currentSyntax: token,
+                    replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
+                ))
+            }
+        }
+    }
+    
+    return result
+}
 private func lookupKeyword(_ token: TokenSyntax) -> [CodeCompletionItem] {
     let keywords = ["let"]
     
@@ -530,6 +765,16 @@ private final class AttributeRemover: SyntaxRewriter {
 }
 
 private func matchScore(for candidate: String, query: String) -> Double {
+    var query = query
+    if query.contains("/") {
+        // Consider path input
+        query = String(query
+            .split(separator: "/", omittingEmptySubsequences: false)
+            .last!)
+    }
+    
+    guard !query.isEmpty else { return 0 }
+    
     let candChars = Array(candidate)
     let queryChars = Array(query)
     let lowerCand = Array(candidate.lowercased())

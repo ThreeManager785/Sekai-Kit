@@ -80,10 +80,10 @@ struct Character {
     let live2dPath: String
     
     init(id: Int)
-    init(id: Int, live2d: String)
-    init(_: String, live2d: String)
+    init(id: Int, live2d: @_pathPrefix("live2d/chara/") String)
+    init(_: String, live2d: @_pathPrefix("live2d/chara/") String)
     init(id: Int, name: String)
-    init(id: Int, name: String, live2d: String)
+    init(id: Int, name: String, live2d: @_pathPrefix("live2d/chara/") String)
     
     func show(at: Position) async -> Character
     func move(to: Position) async -> Character
@@ -114,14 +114,14 @@ struct Voice {
 }
 
 struct Background {
-    static func change(to: String)
+    static func change(to: @_pathPrefix("bg/") String)
 }
 
 struct BGM {
-    static func change(to: String)
+    static func change(to: @_pathPrefix("sound/scenario/bgm/") String)
 }
 struct SE {
-    static func change(to: String)
+    static func change(to: @_pathPrefix("sound/se/") String)
 }
 
 struct Task {

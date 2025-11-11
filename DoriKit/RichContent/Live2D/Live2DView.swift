@@ -104,15 +104,25 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
         }
         .task {
             if !isModelLoaded {
-                isModelLoaded = true
-                Task {
-                    let result = await requestJSON(absoluteResourcePath)
-                    if case .success(let respJSON) = result {
-                        model = .init(json: respJSON)
-                    } else {
-                        isFailed = true
-                    }
-                }
+                loadModel()
+            }
+        }
+        .onChange(of: absoluteResourcePath) {
+            isModelLoaded = false
+            isFailed = false
+            loadModel()
+        }
+    }
+    
+    private func loadModel() {
+        model = nil
+        isModelLoaded = true
+        Task {
+            let result = await requestJSON(absoluteResourcePath)
+            if case .success(let respJSON) = result {
+                model = .init(json: respJSON)
+            } else {
+                isFailed = true
             }
         }
     }
