@@ -54,40 +54,38 @@ internal func _completeZeileCode(
     
     var result: [CodeCompletionItem] = []
     
-    guard let fullParent = fullParent(of: token) else {
-        return []
-    }
-    
-    if fullParent.is(DeclReferenceExprSyntax.self) {
-        result.append(contentsOf: lookupToken(token, in: allSources))
-    } else if let memberAccess = fullParent.as(MemberAccessExprSyntax.self) {
-        if memberAccess.declName.baseName == token || token.text == "." {
-            let sema = SemaEvaluator(allSources)
-            _ = sema.performSema()
-            
-            if let decl = memberAccess.base?.as(DeclReferenceExprSyntax.self) {
-                let declName = decl.baseName.text
-                if sema._resolvedStructs[declName] != nil
-                    || sema._resolvedEnums[declName] != nil {
-                    result.append(contentsOf: lookupMember(token, ofType: "\(declName).Type", in: sema))
-                } else if let type = sema._resolvedTopVariables[declName] {
-                    result.append(contentsOf: lookupMember(token, ofType: type, in: sema))
-                }
-            } else if memberAccess.base == nil {
-                if let accessParent = DoriKit.fullParent(of: memberAccess) {
-                    if let funcCall = accessParent.as(FunctionCallExprSyntax.self),
-                       let decl = sema.resolvedFuncCalls[funcCall.hashValue] {
-                        for (index, arg) in funcCall.arguments.enumerated() {
-                            guard decl.parameters.startIndex..<decl.parameters.endIndex ~= index else {
-                                break
-                            }
-                            if arg.expression.as(MemberAccessExprSyntax.self) == memberAccess {
-                                result.append(contentsOf: lookupMember(
-                                    token,
-                                    ofType: "\(decl.parameters[index].typeName).Type",
-                                    in: sema
-                                ))
-                                break
+    if let fullParent = fullParent(of: token) {
+        if fullParent.is(DeclReferenceExprSyntax.self) {
+            result.append(contentsOf: lookupToken(token, in: allSources))
+        } else if let memberAccess = fullParent.as(MemberAccessExprSyntax.self) {
+            if memberAccess.declName.baseName == token || token.text == "." {
+                let sema = SemaEvaluator(allSources)
+                _ = sema.performSema()
+                
+                if let decl = memberAccess.base?.as(DeclReferenceExprSyntax.self) {
+                    let declName = decl.baseName.text
+                    if sema._resolvedStructs[declName] != nil
+                        || sema._resolvedEnums[declName] != nil {
+                        result.append(contentsOf: lookupMember(token, ofType: "\(declName).Type", in: sema))
+                    } else if let type = sema._resolvedTopVariables[declName] {
+                        result.append(contentsOf: lookupMember(token, ofType: type, in: sema))
+                    }
+                } else if memberAccess.base == nil {
+                    if let accessParent = DoriKit.fullParent(of: memberAccess) {
+                        if let funcCall = accessParent.as(FunctionCallExprSyntax.self),
+                           let decl = sema.resolvedFuncCalls[funcCall.hashValue] {
+                            for (index, arg) in funcCall.arguments.enumerated() {
+                                guard decl.parameters.startIndex..<decl.parameters.endIndex ~= index else {
+                                    break
+                                }
+                                if arg.expression.as(MemberAccessExprSyntax.self) == memberAccess {
+                                    result.append(contentsOf: lookupMember(
+                                        token,
+                                        ofType: "\(decl.parameters[index].typeName).Type",
+                                        in: sema
+                                    ))
+                                    break
+                                }
                             }
                         }
                     }
@@ -95,6 +93,8 @@ internal func _completeZeileCode(
             }
         }
     }
+    
+    result.append(contentsOf: lookupKeyword(token))
     
     let tokenString = token.text
     result.sort { lhs, rhs in
@@ -360,15 +360,13 @@ private func lookupMember(
                     .init(stringLiteral: "func \(idText)")
                 )) ?? .init(name: .identifier(""), signature: .init(parameterClause: .init(parameters: []))))
             }
-            result.append(
-                .init(
-                    itemType: isStatic ? .staticMethod : .instanceMethod,
-                    declaration: highlight(for: decl),
-                    displayName: displayName(for: idText, matched: match),
-                    currentSyntax: token,
-                    replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
-                )
-            )
+            result.append(.init(
+                itemType: isStatic ? .staticMethod : .instanceMethod,
+                declaration: highlight(for: decl),
+                displayName: displayName(for: idText, matched: match),
+                currentSyntax: token,
+                replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
+            ))
         }
     }
     func addVariable(_ name: String, type: String) {
@@ -379,21 +377,17 @@ private func lookupMember(
             if text == "." {
                 replaceResult = "." + replaceResult
             }
-            result.append(
-                .init(
-                    itemType: isStatic ? .staticMethod : .instanceMethod,
-                    declaration: highlight(
-                        for: (try? VariableDeclSyntax(
-                                .init(stringLiteral: "let \(name): \(type)")
-                        )) ?? VariableDeclSyntax(.let,
-                            name: PatternSyntax(IdentifierPatternSyntax(identifier: .identifier("")))
-                        )
-                    ),
-                    displayName: displayName(for: idText, matched: match),
-                    currentSyntax: token,
-                    replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
-                )
-            )
+            result.append(.init(
+                itemType: isStatic ? .staticMethod : .instanceMethod,
+                declaration: highlight(
+                    for: (try? VariableDeclSyntax(
+                        .init(stringLiteral: "let \(name): \(type)")
+                    )) ?? .init(.let, name: PatternSyntax(IdentifierPatternSyntax(identifier: .identifier(""))))
+                ),
+                displayName: displayName(for: idText, matched: match),
+                currentSyntax: token,
+                replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
+            ))
         }
     }
     
@@ -425,20 +419,57 @@ private func lookupMember(
                 if text == "." {
                     replaceResult = "." + replaceResult
                 }
-                result.append(
-                    .init(
-                        itemType: .staticMethod,
-                        declaration: highlight(
-                            for: (try? EnumCaseDeclSyntax(
-                                .init(stringLiteral: "case \(c)")
-                            )) ?? .init(elements: [])
-                        ),
-                        displayName: displayName(for: idText, matched: match),
-                        currentSyntax: token,
-                        replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
-                    )
-                )
+                result.append(.init(
+                    itemType: .staticMethod,
+                    declaration: highlight(
+                        for: (try? EnumCaseDeclSyntax(
+                            .init(stringLiteral: "case \(c)")
+                        )) ?? .init(elements: [])
+                    ),
+                    displayName: displayName(for: idText, matched: match),
+                    currentSyntax: token,
+                    replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
+                ))
             }
+        }
+    }
+    
+    return result
+}
+private func lookupKeyword(_ token: TokenSyntax) -> [CodeCompletionItem] {
+    let keywords = ["let"]
+    
+    let text = token.text
+    
+    var result: [CodeCompletionItem] = []
+    
+    for keyword in keywords {
+        let match = keyword.matchCompletionInput(of: text)
+        if !match.isEmpty {
+            let decl = NSMutableAttributedString(string: "keyword \(keyword)")
+            #if os(macOS)
+            decl.addAttribute(
+                .font,
+                value: NSFont.monospacedSystemFont(ofSize: 12, weight: .medium),
+                range: .init(location: 0, length: decl.length)
+            )
+            decl.addAttribute(
+                .foregroundColor,
+                value: NSColor(named: "ZeileSyntaxHighlightKeyword", bundle: #bundle)!,
+                range: .init(location: 8, length: keyword.count)
+            )
+            #else
+            
+            #endif
+            result.append(
+                .init(
+                    itemType: .keyword,
+                    declaration: .init(attributedString: decl),
+                    displayName: displayName(for: keyword, matched: match),
+                    currentSyntax: token,
+                    replacementSyntax: token.with(\.tokenKind, .identifier(keyword))
+                )
+            )
         }
     }
     
