@@ -18,9 +18,53 @@ internal import SwiftDiagnostics
 
 public struct Diagnostic: Sendable {
     internal let _diag: SwiftDiagnostics.Diagnostic
+    internal var _lazySourceLocation: __Reference<SourceLocation?>
     
     internal init(_ diag: SwiftDiagnostics.Diagnostic) {
         self._diag = diag
+        self._lazySourceLocation = .init(nil)
+    }
+    
+    public var line: Int {
+        ensureLazySourceLocation()
+        return _lazySourceLocation.value!.line
+    }
+    public var column: Int {
+        ensureLazySourceLocation()
+        return _lazySourceLocation.value!.column
+    }
+    
+    public var message: String {
+        _diag.message
+    }
+    
+    public var severity: Severity {
+        .init(_diag.diagMessage.severity)
+    }
+    
+    private func ensureLazySourceLocation() {
+        if _lazySourceLocation.value != nil {
+            return
+        }
+        
+        let converter = SourceLocationConverter(fileName: "", tree: _diag.node.root)
+        _lazySourceLocation.value = converter.location(for: _diag.position)
+    }
+    
+    public enum Severity: Sendable {
+        case error
+        case warning
+        case note
+        case remark
+        
+        internal init(_ severity: DiagnosticSeverity) {
+            self = switch severity {
+            case .error: .error
+            case .warning: .warning
+            case .note: .note
+            case .remark: .remark
+            }
+        }
     }
 }
 extension Diagnostic {

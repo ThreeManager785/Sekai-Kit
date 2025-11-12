@@ -178,6 +178,8 @@ internal final class SemaEvaluator {
 // MARK: - Type-Check decls
 extension SemaEvaluator {
     internal func _typeCheckDecl(_ decl: DeclSyntax, diags: inout [Diagnostic]) {
+        if _slowPath(Task.isCancelled) { return }
+        
         if let enumDecl = decl.as(EnumDeclSyntax.self) {
             _typeCheckEnumDecl(enumDecl, diags: &diags)
         } else if let funcDecl = decl.as(FunctionDeclSyntax.self) {
@@ -567,6 +569,8 @@ extension SemaEvaluator {
 // MARK: - Type-Check exprs
 extension SemaEvaluator {
     internal func _typeCheckExpr(_ expr: ExprSyntax, diags: inout [Diagnostic]) {
+        if _slowPath(Task.isCancelled) { return }
+        
         _ = _resolveExprType(expr, diags: &diags)
     }
 }

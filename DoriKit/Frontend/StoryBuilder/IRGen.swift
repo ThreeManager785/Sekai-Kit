@@ -26,7 +26,6 @@ internal final class IRGenEvaluator {
         self.sema = semaResult
         self._symbolizer = .init(semaResult: semaResult)
         self.vtable = .init(ctx: self)
-        print(_symbolizer.symbolizeAll().joined(separator: "\n"), terminator: "\n\n")
     }
     
     internal var _isEvaluatingAsyncContext: Bool = false
@@ -49,6 +48,8 @@ internal final class IRGenEvaluator {
 
 extension IRGenEvaluator {
     internal func _emitExpr(_ expr: ExprSyntax, diags: inout [Diagnostic]) {
+        if _slowPath(Task.isCancelled) { return }
+        
         if let funcCallExpr = expr.as(FunctionCallExprSyntax.self) {
             _ = _emitFuncCallExpr(funcCallExpr, diags: &diags)
         } else if let awaitExpr = expr.as(AwaitExprSyntax.self) {
@@ -139,6 +140,8 @@ extension IRGenEvaluator {
 
 extension IRGenEvaluator {
     internal func _evaluateExpr(_ expr: ExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
+        if _slowPath(Task.isCancelled) { return nil }
+        
         if let awaitExpr = expr.as(AwaitExprSyntax.self) {
             return _evaluateAwaitExpr(awaitExpr.expression, type: type, diags: &diags)
         } else if let boolLiteralExpr = expr.as(BooleanLiteralExprSyntax.self) {

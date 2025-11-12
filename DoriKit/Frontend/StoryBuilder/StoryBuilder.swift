@@ -35,6 +35,17 @@ public final class DoriStoryBuilder: Sendable {
         return nil
     }
     
+    public func generateDiagnostics(for code: String) -> [Diagnostic] {
+        let source = Parser.parse(source: code)
+        
+        var diags: [Diagnostic] = []
+        
+        let sema = SemaEvaluator([source])
+        _ = StoryIR(evaluator: sema, diags: &diags)
+        
+        return diags
+    }
+    
     public func syntaxHighlight(
         for attributedString: NSMutableAttributedString,
         config: SyntaxHighlightConfig = .init()

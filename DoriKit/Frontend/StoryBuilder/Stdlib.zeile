@@ -129,9 +129,9 @@ struct Task {
 }
 
 @_unavailableFromAsync
-func say(_: String, speaker: Character)
+func say(_: String, by: Character)
 @_unavailableFromAsync
-func say(_: String, speaker: Character, voice: Voice)
+func say(_: String, by: Character, voice: Voice)
 
 @_unavailableFromAsync
 func telop(_: String)

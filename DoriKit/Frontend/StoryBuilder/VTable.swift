@@ -45,8 +45,8 @@ extension ZeileVTable {
             "$zp3BGMf6change2to6StringesrV": zeile_BGMChangeToPath,
             "$zp2SEf6change2to6StringesrV": zeile_SEChangeToPath,
             "$zp4Taskf4init1_7ClosureesrV": zeile_taskInitWithClosure,
-            "$zf3say1_6String7speaker9CharacterrV": zeile_sayWithTextFromSpeaker,
-            "$zf3say1_6String7speaker9Character5voice5VoicerV": zeile_sayWithTextFromSpeakerAndVoice,
+            "$zf3say1_6String2by9CharacterrV": zeile_sayWithTextFromSpeaker,
+            "$zf3say1_6String2by9Character5voice5VoicerV": zeile_sayWithTextFromSpeakerAndVoice,
             "$zf5telop1_6StringrV": zeile_telopWithText,
             "$zf13waitUntilDonerV": zeile_waitUntilDone,
             "$zf5sleep1_5FloatrV": zeile_sleepForSeconds
