@@ -103,18 +103,13 @@ extension IRConversion {
             return nil
         }
         
-        var wait = wait
-        if index > 0, case .talk = list[index - 1] {
-            wait = true
-        }
-        
         var result: [[String: Any]] = []
         switch action {
         case .talk(let content, characterIDs: let characterIDs, characterNames: let characterNames, voicePath: let voicePath):
             var r: [String: Any] = [:]
             r.updateValue("talk", forKey: "type")
             addDelay(to: &r)
-            r.updateValue(wait, forKey: "wait")
+            r.updateValue(true, forKey: "wait") // We always wait in the `talk` action
             r.updateValue(characterIDs, forKey: "characters")
             r.updateValue(characterNames.first ?? "", forKey: "name")
             r.updateValue(content, forKey: "body")

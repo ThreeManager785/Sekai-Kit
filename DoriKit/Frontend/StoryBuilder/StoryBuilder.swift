@@ -69,3 +69,17 @@ public final class DoriStoryBuilder: Sendable {
         _completeZeileCode(code, at: index)
     }
 }
+
+extension DoriStoryBuilder {
+    public enum Conversion {
+        public static func bestdoriJSON(fromIR ir: Data) -> String? {
+            guard let ir = StoryIR(binary: ir) else { return nil }
+            let rawResult = IRConversion.convertToBestdori(ir)
+            if let data = try? JSONSerialization.data(withJSONObject: rawResult) {
+                return .init(data: data, encoding: .utf8)
+            } else {
+                return nil
+            }
+        }
+    }
+}
