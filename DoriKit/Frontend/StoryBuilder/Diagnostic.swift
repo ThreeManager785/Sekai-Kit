@@ -51,7 +51,7 @@ public struct Diagnostic: Sendable {
         _lazySourceLocation.value = converter.location(for: _diag.position)
     }
     
-    public enum Severity: Sendable {
+    public enum Severity: Sendable, CaseIterable, Hashable {
         case error
         case warning
         case note

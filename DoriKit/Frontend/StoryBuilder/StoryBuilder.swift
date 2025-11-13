@@ -70,6 +70,7 @@ public final class DoriStoryBuilder: Sendable {
     }
 }
 
+@available(watchOS, unavailable)
 extension DoriStoryBuilder {
     public enum Conversion {
         public static func bestdoriJSON(fromIR ir: Data) -> String? {
