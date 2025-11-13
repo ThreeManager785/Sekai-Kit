@@ -17,6 +17,7 @@ import Foundation
 internal import SwiftSyntax
 internal import SwiftParser
 
+@available(watchOS, unavailable)
 public final class DoriStoryBuilder: Sendable {
     public init() {
         

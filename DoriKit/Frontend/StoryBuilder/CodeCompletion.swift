@@ -693,8 +693,20 @@ private func lookupKeyword(_ token: TokenSyntax) -> [CodeCompletionItem] {
                 value: NSColor(named: "ZeileSyntaxHighlightKeyword", bundle: #bundle)!,
                 range: .init(location: 8, length: keyword.count)
             )
-            #else
-            
+            #elseif os(iOS)
+            decl.addAttribute(
+                .font,
+                value: UIFont.monospacedSystemFont(ofSize: 12, weight: .medium),
+                range: .init(location: 0, length: decl.length)
+            )
+            decl.addAttribute(
+                .foregroundColor,
+                value: UIColor(
+                    resource: .init(name: "ZeileSyntaxHighlightKeyword",
+                                    bundle: #bundle)
+                ),
+                range: .init(location: 8, length: keyword.count)
+            )
             #endif
             result.append(
                 .init(
@@ -748,8 +760,26 @@ private func displayName(
             range: .init(index...index, in: text)
         )
     }
-    #else
-    
+    #elseif os(iOS)
+    result.addAttribute(
+        .foregroundColor,
+        value: UIColor(
+            resource: .init(name: "ZeileCompletionUnhit", bundle: #bundle)
+        ),
+        range: .init(location: 0, length: result.length)
+    )
+    result.addAttribute(
+        .font,
+        value: UIFont.monospacedSystemFont(ofSize: 12, weight: .medium),
+        range: .init(location: 0, length: result.length)
+    )
+    for index in indexs {
+        result.addAttribute(
+            .foregroundColor,
+            value: UIColor.label,
+            range: .init(index...index, in: text)
+        )
+    }
     #endif
     return .init(attributedString: result)
 }
