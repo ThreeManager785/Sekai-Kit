@@ -97,6 +97,20 @@ extension Array<Diagnostic> {
     }
 }
 
+extension Diagnostic: Hashable {
+    public static func == (lhs: Self, rhs: Self) -> Bool {
+        lhs._diag.node == rhs._diag.node
+        && lhs._diag.position == rhs._diag.position
+        && lhs._diag.diagnosticID == rhs._diag.diagnosticID
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(_diag.node)
+        hasher.combine(_diag.position)
+        hasher.combine(_diag.diagnosticID)
+    }
+}
+
 extension Diagnostic: CustomStringConvertible {
     public var description: String {
         _diag.debugDescription + "\n"
