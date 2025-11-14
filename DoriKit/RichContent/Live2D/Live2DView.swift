@@ -33,6 +33,7 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
     @State private var isModelLoaded = false
     @State private var model: Live2DModel?
     @State private var isFailed = false
+    @State private var isContentLoaded = false
     
     @inlinable
     public init(
@@ -90,16 +91,21 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
     }
     
     public var body: some View {
-        VStack { // data only
+        ZStack {
             if let model {
                 _Live2DNativeView(model: model)
                     .allowsHitTesting(false)
-            } else {
-                if !isFailed {
-                    makePlaceholder()
-                } else {
-                    makeErrorView()
-                }
+                    .environment(\.l2dOnFinishedLoadingInternal) {
+                        isContentLoaded = true
+                    }
+                    .environment(\.l2dOnFailedLoadingInternal) {
+                        isFailed = true
+                    }
+            } else if isFailed {
+                makeErrorView()
+            }
+            if !isContentLoaded && !isFailed {
+                makePlaceholder()
             }
         }
         .task {
@@ -108,6 +114,7 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
             }
         }
         .onChange(of: absoluteResourcePath) {
+            isContentLoaded = false
             isModelLoaded = false
             isFailed = false
             loadModel()
@@ -133,6 +140,10 @@ extension EnvironmentValues {
     @Entry fileprivate var l2dEyeBlinkEnabled = true
     @Entry fileprivate var l2dOnMotionsUpdate: (([Live2DMotion]) -> Void)?
     @Entry fileprivate var l2dOnExpressionsUpdate: (([Live2DExpression]) -> Void)?
+    @Entry fileprivate var l2dOnFinishedLoading: (() -> Void)?
+    @Entry fileprivate var l2dOnFailedLoading: (() -> Void)?
+    @Entry fileprivate var l2dOnFinishedLoadingInternal: (() -> Void)?
+    @Entry fileprivate var l2dOnFailedLoadingInternal: (() -> Void)?
     @Entry fileprivate var l2dCurrentMotion: Live2DMotion?
     @Entry fileprivate var l2dCurrentExpression: Live2DExpression?
     @Entry fileprivate var l2dParamBinding: (Bool, Binding<[Live2DParameter]>)?
@@ -348,6 +359,7 @@ private struct _Live2DNativeView: NSViewRepresentable {
         webView.underPageBackgroundColor = .clear
         webView.setValue(false, forKey: "drawsBackground")
         webView.configuration.userContentController.add(context.coordinator, name: "paramHandler")
+        webView.configuration.userContentController.add(context.coordinator, name: "launch")
         #if DEBUG
         webView.isInspectable = true
         #endif
@@ -399,6 +411,7 @@ private struct _Live2DNativeView: UIViewRepresentable {
         webView.scrollView.panGestureRecognizer.isEnabled = false
         webView.scrollView.bounces = false
         webView.configuration.userContentController.add(context.coordinator, name: "paramHandler")
+        webView.configuration.userContentController.add(context.coordinator, name: "launch")
         #if DEBUG
         webView.isInspectable = true
         #endif
@@ -465,6 +478,14 @@ private class _NativeViewCoordinator: NSObject, WKScriptMessageHandler {
         if _fastPath(message.name == "paramHandler") {
             if let binding = currentEnvrionment.l2dParamBinding, binding.0 || binding.1.wrappedValue.isEmpty {
                 binding.1.wrappedValue = .init(json: .init(parseJSON: message.body as! String))
+            }
+        } else if message.name == "launch", let content = message.body as? String {
+            if content == "Succeeded" {
+                currentEnvrionment.l2dOnFinishedLoadingInternal?()
+                currentEnvrionment.l2dOnFinishedLoading?()
+            } else {
+                currentEnvrionment.l2dOnFailedLoadingInternal?()
+                currentEnvrionment.l2dOnFailedLoading?()
             }
         }
     }
@@ -581,8 +602,7 @@ private func setupWebView(
                         cancelAnimationFrame(requestID);
                         e.preventDefault();
                     }, false);
-                    canvas.addEventListener("webglcontextrestored" , function(e){
-                        Simple.myerror("webglcontext restored");
+                    canvas.addEventListener("webglcontextrestored", function(e) {
                         Simple.initLoop(canvas);
                     }, false);
                     Simple.initLoop(canvas);
@@ -590,33 +610,34 @@ private func setupWebView(
                 
                 Simple.initLoop = function(canvas) {
                     var para = {
-                        premultipliedAlpha : true,
-                        alpha : false
+                        premultipliedAlpha: true,
+                        alpha: false
                     };
                     gl = Simple.getWebGLContext(canvas, para);
                     if (!gl) {
-                        console.log("Failed to create WebGL context.");
+                        window.webkit.messageHandlers.launch.postMessage("Failed to create WebGL context");
                         return;
                     }
                     gl.viewport(0, 0, canvas.width, canvas.height);
                     Live2D.setGL(gl);
-                    Simple.loadBytes(modelDef.model, function(buf){
+                    Simple.loadBytes(modelDef.model, function(buf) {
                         live2DModel = Live2DModelWebGL.loadModel(buf);
                     });
                     var loadCount = 0;
                     for(var i = 0; i < modelDef.textures.length; i++){
-                        (function ( tno ){
+                        (function (tno){
                             loadedImages[tno] = new Image();
                             loadedImages[tno].src = modelDef.textures[tno];
-                            loadedImages[tno].onload = function(){
+                            loadedImages[tno].onload = function() {
                                 if((++loadCount) == modelDef.textures.length) {
                                     loadLive2DCompleted = true;
+                                    window.webkit.messageHandlers.launch.postMessage("Succeeded");
                                 }
                             }
                             loadedImages[tno].onerror = function() {
-                                Simple.myerror("Failed to load image : " + modelDef.textures[tno]);
+                                window.webkit.messageHandlers.launch.postMessage("Failed to load image: " + modelDef.textures[tno]);
                             }
-                        })( i );
+                        })(i);
                     }
                     tick();
                 };
@@ -637,7 +658,7 @@ private func setupWebView(
                             s, 0, 0, 0,
                             0,-s, 0, 0,
                             0, 0, 1, 0,
-                            -7/8, 6/5, 0, 1
+                            -7/8, 8/7, 0, 1
                         ]
                         """);
                         live2DModel.setMatrix(matrix4x4);
@@ -696,37 +717,37 @@ private func setupWebView(
                     }
                 };
                 Simple.getWebGLContext = function(canvas) {
-                    var NAMES = [ "webgl" , "experimental-webgl" , "webkit-3d" , "moz-webgl"];
+                    var NAMES = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
                     var param = {
                         alpha : true,
                         premultipliedAlpha : true
                     };
-                    for( var i = 0; i < NAMES.length; i++ ){
+                    for(var i = 0; i < NAMES.length; i++){
                         try{
-                            var ctx = canvas.getContext( NAMES[i], param );
-                            if( ctx ) return ctx;
+                            var ctx = canvas.getContext(NAMES[i], param);
+                            if(ctx) return ctx;
                         }
-                        catch(e){}
+                        catch(e) {}
                     }
                     return null;
                 };
                 Simple.createTexture = function(gl, image) {
                     var texture = gl.createTexture();
                     if (!texture) {
-                        mylog("Failed to generate gl texture name.");
+                        console.log("Failed to generate gl texture name.");
                         return -1;
                     }
-                    if (live2DModel.isPremultipliedAlpha() == false){
+                    if (live2DModel.isPremultipliedAlpha() == false) {
                         gl.pixelStorei(gl.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 1);
                     }
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, 1);
-                    gl.activeTexture( gl.TEXTURE0 );
-                    gl.bindTexture( gl.TEXTURE_2D , texture );
-                    gl.texImage2D( gl.TEXTURE_2D , 0 , gl.RGBA , gl.RGBA , gl.UNSIGNED_BYTE , image);
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
                     gl.generateMipmap(gl.TEXTURE_2D);
-                    gl.bindTexture( gl.TEXTURE_2D , null );
+                    gl.bindTexture(gl.TEXTURE_2D, null);
                     return texture;
                 };
                 Simple.loadBytes = function(path, callback) {
