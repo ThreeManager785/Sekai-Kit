@@ -65,11 +65,11 @@ extension StoryIR {
     
     internal convenience init?(binary data: Data) {
         guard unsafe data.prefix(4).bytes
-            .unsafeLoad(as: UInt32.self) == 0x52494c5a else {
+            .unsafeLoadUnaligned(as: UInt32.self) == 0x52494c5a else {
             return nil
         }
         guard unsafe data.suffix(4).bytes
-            .unsafeLoad(as: UInt32.self) == 0x2452495a else {
+            .unsafeLoadUnaligned(as: UInt32.self) == 0x2452495a else {
             return nil
         }
         

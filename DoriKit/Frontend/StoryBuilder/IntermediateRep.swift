@@ -55,10 +55,16 @@ internal final class StoryIR {
         case moveModel(characterID: Int, position: Position)
         case act(characterID: Int, motionName: String)
         case express(characterID: Int, expressionName: String)
+        case horizontalShake(characterID: Int)
+        case verticalShake(characterID: Int)
+        
         case showBlackCover(duration: Double)
         case hideBlackCover(duration: Double)
         case showWhiteCover(duration: Double)
         case hideWhiteCover(duration: Double)
+        case shakeScreen(duration: Double)
+        case shakeDialogBox(duration: Double)
+        
         case changeBackground(path: String)
         case changeBGM(path: String)
         case changeSE(path: String)
@@ -82,6 +88,7 @@ extension StoryIR.StepAction {
             case leftBottom
             case leftInsideBottom
             case center
+            case centerBottom
             case rightOutside
             case right
             case rightInside

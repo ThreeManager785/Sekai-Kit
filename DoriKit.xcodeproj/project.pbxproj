@@ -78,6 +78,7 @@
 		8C3DEB652EAE4FF10004E1F5 /* UserInfoInits.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8C3DEB642EAE4FDF0004E1F5 /* UserInfoInits.swift.gyb */; };
 		8C4348682EB71E3F00067FBD /* SwiftOperators in Frameworks */ = {isa = PBXBuildFile; productRef = 8C4348672EB71E3F00067FBD /* SwiftOperators */; };
 		8C43486A2EB73EE100067FBD /* SwiftParser in Frameworks */ = {isa = PBXBuildFile; productRef = 8C4348692EB73EE100067FBD /* SwiftParser */; };
+		8C480C162EC7663200A8AE70 /* Bandori2IR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */; };
 		8C4C89412E620C63007F1E9F /* CopyOnWrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */; };
 		8C4C89432E620EC9007F1E9F /* CopyOnWriteMacro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */; };
 		8C59DBCD2E6296D60021317E /* SwiftOperators in Frameworks */ = {isa = PBXBuildFile; productRef = 8C59DBCC2E6296D60021317E /* SwiftOperators */; };
@@ -325,6 +326,7 @@
 		8C3D4E792EA6711E0034E831 /* FrontendPost.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendPost.swift; sourceTree = "<group>"; };
 		8C3D684D2EA6092A0034E831 /* RichContentMarkdown.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RichContentMarkdown.swift; sourceTree = "<group>"; };
 		8C3DEB642EAE4FDF0004E1F5 /* UserInfoInits.swift.gyb */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = UserInfoInits.swift.gyb; sourceTree = "<group>"; };
+		8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bandori2IR.swift; sourceTree = "<group>"; };
 		8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWrite.swift; sourceTree = "<group>"; };
 		8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWriteMacro.swift; sourceTree = "<group>"; };
 		8C59DBD42E62E3C60021317E /* macos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = macos.json; sourceTree = "<group>"; };
@@ -878,6 +880,7 @@
 			isa = PBXGroup;
 			children = (
 				8CBCB1212EBF9D0F007A1E33 /* IRConversion.swift */,
+				8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */,
 				8CBCB11F2EBF9CE8007A1E33 /* IR2Bestdori.swift */,
 			);
 			path = IRConversion;
@@ -1617,6 +1620,7 @@
 				8C2B9D242E9386F500D003D1 /* Live2DModel.swift in Sources */,
 				E9EFF2B82E61BEAB00991940 /* MatchedFilters.swift in Sources */,
 				8CDEAAE22E825B0D001397CC /* URLValidator.swift in Sources */,
+				8C480C162EC7663200A8AE70 /* Bandori2IR.swift in Sources */,
 				8CBC1BD12E32B5BA004023F7 /* Constructor.swift in Sources */,
 				8C8E43EA2E5D2AC4005590F0 /* OfflineAssetDispatch.swift in Sources */,
 				8C8E43EC2E5D3118005590F0 /* OfflineNetworking.swift in Sources */,

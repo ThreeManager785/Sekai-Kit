@@ -100,11 +100,12 @@ enum Position {
     case leftBottom // = 3
     case leftInsideBottom // = 4
     case center // = 5
-    case rightOutside // = 6
-    case right // = 7
-    case rightInside // = 8
-    case rightBottom // = 9
-    case rightInsideBottom // = 10
+    case centerBottom // = 6
+    case rightOutside // = 7
+    case right // = 8
+    case rightInside // = 9
+    case rightBottom // = 10
+    case rightInsideBottom // = 11
 }
 
 struct Voice {

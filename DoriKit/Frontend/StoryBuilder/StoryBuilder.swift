@@ -82,5 +82,18 @@ extension DoriStoryBuilder {
                 return nil
             }
         }
+        
+        public static func zeileIR(
+            fromBandori asset: _DoriAPI.Misc.StoryAsset,
+            in locale: _DoriAPI.Locale,
+            voiceBundlePath: String
+        ) -> Data {
+            let ir = IRConversion.convertFromBandori(
+                asset,
+                in: locale,
+                voiceBundlePath: voiceBundlePath
+            )
+            return ir.binEncode()
+        }
     }
 }

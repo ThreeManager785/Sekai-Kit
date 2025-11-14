@@ -689,12 +689,12 @@ extension _DoriAPI.Misc {
             public var isWaitForSkipMode: Bool // Int(JSON) -> Bool(Swift)
             
             public enum ActionType: Int, Sendable, Hashable, DoriCache.Cacheable {
-                case none // 0
+                case none
                 case talk
                 case layout
                 case input
                 case motion
-                case selectable // 5
+                case selectable
                 case effect
                 case sound
             }

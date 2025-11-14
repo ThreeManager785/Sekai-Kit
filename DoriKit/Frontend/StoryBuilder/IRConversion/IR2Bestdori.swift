@@ -308,6 +308,7 @@ extension IRConversion {
         case .leftBottom: "leftInside"
         case .leftInsideBottom: "leftInside"
         case .center: "center"
+        case .centerBottom: "center"
         case .rightOutside: "rightOver"
         case .right: "rightInside"
         case .rightInside: "rightInside"
