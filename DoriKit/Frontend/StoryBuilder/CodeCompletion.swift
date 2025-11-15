@@ -40,7 +40,8 @@ nonisolated(unsafe) private var cachedBundleFileList: [Int: [String]] = [:]
 
 internal func _completeZeileCode(
     _ code: String,
-    at index: String.Index
+    at index: String.Index,
+    in locale: _DoriAPI.Locale
 ) -> [CodeCompletionItem] {
     assert(
         !Thread.isMainThread,
@@ -69,7 +70,7 @@ internal func _completeZeileCode(
             result.append(contentsOf: lookupToken(token, in: allSources))
         } else if let memberAccess = fullParent.as(MemberAccessExprSyntax.self) {
             if memberAccess.declName.baseName == token || token.text == "." {
-                let sema = SemaEvaluator(allSources)
+                let sema = SemaEvaluator(allSources, in: locale)
                 _ = sema.performSema()
                 
                 if let decl = memberAccess.base?.as(DeclReferenceExprSyntax.self) {
@@ -106,7 +107,7 @@ internal func _completeZeileCode(
                   let funcCall = stringParent.as(FunctionCallExprSyntax.self) {
             guard _prepareAssetListForZeileCompletion() else { break lookup }
             
-            let sema = SemaEvaluator(allSources)
+            let sema = SemaEvaluator(allSources, in: locale)
             _ = sema.performSema()
             
             result.append(contentsOf: lookupPath(

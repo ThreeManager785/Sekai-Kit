@@ -14,14 +14,18 @@
 
 import Foundation
 
-internal final class StoryIR {
-    internal var _actions: [StepAction] = []
+public final class StoryIR {
+    public internal(set) var locale: _DoriAPI.Locale
+    public internal(set) var actions: [StepAction] = []
     
-    internal init(actions: [StepAction]) {
-        self._actions = actions
+    internal init(locale: _DoriAPI.Locale, actions: [StepAction]) {
+        self.locale = locale
+        self.actions = actions
     }
     
     internal init?(evaluator: SemaEvaluator, diags: inout [Diagnostic]) {
+        self.locale = evaluator.locale
+        
         let semaDiags = evaluator.performSema()
         diags = semaDiags
         if semaDiags.hasError {
@@ -35,10 +39,10 @@ internal final class StoryIR {
     }
     
     internal func emitAction(_ action: StepAction) {
-        _actions.append(action)
+        actions.append(action)
     }
     
-    internal enum StepAction: Codable {
+    public enum StepAction: Sendable, Codable {
         case talk(
             String,
             characterIDs: [Int],
@@ -77,11 +81,11 @@ internal final class StoryIR {
 }
 
 extension StoryIR.StepAction {
-    internal struct Position: Codable {
-        internal var base: Base
-        internal var offsetX: Double
+    public struct Position: Sendable, Hashable, Codable {
+        public var base: Base
+        public var offsetX: Double
         
-        internal enum Base: Int, Codable {
+        public enum Base: Int, Sendable, Hashable, Codable {
             case leftOutside
             case left
             case leftInside

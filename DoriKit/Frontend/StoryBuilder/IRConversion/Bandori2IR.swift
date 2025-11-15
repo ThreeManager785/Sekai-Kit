@@ -23,7 +23,7 @@ extension IRConversion {
     ) -> StoryIR {
         let bgmBasePath = "\(locale.rawValue)/sound/scenario/bgm/"
         
-        let ir = StoryIR(actions: [])
+        let ir = StoryIR(locale: locale, actions: [])
         
         ir.emitAction(.changeBGM(path: "\(bgmBasePath)/\(asset.firstBGM.lowercased())/\(asset.firstBGM).mp3"))
         ir.emitAction(.changeBackground(path: "\(locale.rawValue)/\(asset.firstBackgroundBundleName)/\(asset.firstBackground).png"))
@@ -218,7 +218,7 @@ extension IRConversion {
         }
         
         for snippet in asset.snippets {
-            ir._actions.append(contentsOf: actions(for: snippet))
+            ir.actions.append(contentsOf: actions(for: snippet))
         }
         
         return ir

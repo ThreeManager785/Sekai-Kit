@@ -19,9 +19,12 @@ internal import SwiftOperators
 internal import SwiftParserDiagnostics
 
 internal final class SemaEvaluator {
+    internal let locale: _DoriAPI.Locale
     internal let sources: [SourceFileSyntax]
     
-    internal init(_ sources: [SourceFileSyntax]) {
+    internal init(_ sources: [SourceFileSyntax], in locale: _DoriAPI.Locale) {
+        self.locale = locale
+        
         var sources = sources
         let stdlib = Parser.parse(source: try! .init(
             contentsOf: #bundle.url(
@@ -34,7 +37,6 @@ internal final class SemaEvaluator {
         self.sources = sources
     }
     
-    internal var locale: _DoriAPI.Locale = .jp
     internal var resolvedFuncCalls: [/*hashValue*/Int: FunctionDeclaration] = [:]
     
     internal var _resolvedStructs: [/*name*/String: ResolvedStruct] = [:]
@@ -67,39 +69,7 @@ internal final class SemaEvaluator {
     
     internal func _performTypeCheck(diags: inout [Diagnostic]) {
         for source in sources {
-            if let shebang = source.shebang {
-                _resolveShebang(shebang, diags: &diags)
-            }
-            
             _typeCheckSingle(source, diags: &diags)
-        }
-    }
-    
-    internal func _resolveShebang(_ shebang: TokenSyntax, diags: inout [Diagnostic]) {
-        var shebangText = shebang.text
-        shebangText.removeFirst(2)
-        let shebangSrc = Parser.parse(source: shebangText)
-        for statement in shebangSrc.statements {
-            let item = statement.item
-            if let seq = item.as(SequenceExprSyntax.self) {
-                let precedence = OperatorTable.standardOperators
-                if let foldedExpr = try? precedence.foldSingle(seq),
-                   let infix = foldedExpr.as(InfixOperatorExprSyntax.self),
-                   infix.operator.is(AssignmentExprSyntax.self) {
-                    if infix.leftOperand.as(DeclReferenceExprSyntax.self)?.baseName.text == "locale" {
-                        if let localeRef = infix.rightOperand.as(DeclReferenceExprSyntax.self)?.baseName.text,
-                           let locale = _DoriAPI.Locale(rawValue: localeRef) {
-                            self.locale = locale
-                        }
-                    } else {
-                        diags.append(.init(node: shebang, message: .invalidShebang))
-                    }
-                } else {
-                    diags.append(.init(node: shebang, message: .invalidShebang))
-                }
-            } else {
-                diags.append(.init(node: shebang, message: .invalidShebang))
-            }
         }
     }
     

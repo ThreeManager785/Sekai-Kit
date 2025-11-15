@@ -178,22 +178,22 @@ extension IRGenEvaluator {
     }
     
     internal func _evaluateAwaitExpr(_ expr: ExprSyntax, type: String? = nil, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
-        let actionsBefore = self.ir._actions
-        self.ir._actions = []
+        let actionsBefore = self.ir.actions
+        self.ir.actions = []
         defer {
-            let newActions = self.ir._actions
-            self.ir._actions = actionsBefore
+            let newActions = self.ir.actions
+            self.ir.actions = actionsBefore
             self.ir.emitAction(.blocking(newActions))
         }
         return _evaluateExpr(expr, type: type, diags: &diags)
     }
     
     internal func _evaluateClosureExpr(_ expr: ClosureExprSyntax, diags: inout [Diagnostic]) -> ZeileRuntimeObject? {
-        let actionsBefore = self.ir._actions
-        self.ir._actions = []
+        let actionsBefore = self.ir.actions
+        self.ir.actions = []
         _emitCodeBlock(expr.statements, diags: &diags)
-        let newActions = self.ir._actions
-        self.ir._actions = actionsBefore
+        let newActions = self.ir.actions
+        self.ir.actions = actionsBefore
         
         let retainNewActions = UnsafeMutablePointer<[StoryIR.StepAction]>
             .allocate(capacity: 1)

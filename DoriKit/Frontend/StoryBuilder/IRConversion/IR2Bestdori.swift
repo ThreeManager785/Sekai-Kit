@@ -20,14 +20,14 @@ extension IRConversion {
     internal static func convertToBestdori(_ ir: StoryIR) -> [String: Any] {
         var result: [String: Any] = [:]
         
-        var irActions = ir._actions
+        var irActions = ir.actions
         
         result.updateValue(0, forKey: "server")
         result.updateValue("", forKey: "voice")
         
         var removeIndexs: IndexSet = []
         // Find initial background & BGM
-        for (index, action) in ir._actions.enumerated() {
+        for (index, action) in ir.actions.enumerated() {
             if case .changeBackground(path: let path) = action {
                 result.updateValue(resolvePath(path, containsBundle: true, bundlePrefix: "bg/"), forKey: "background")
                 removeIndexs.insert(index)

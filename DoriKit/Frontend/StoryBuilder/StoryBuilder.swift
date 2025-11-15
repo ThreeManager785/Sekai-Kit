@@ -19,17 +19,19 @@ internal import SwiftParser
 
 @available(watchOS, unavailable)
 public final class DoriStoryBuilder: Sendable {
-    public init() {
-        
+    public let locale: _DoriAPI.Locale
+    
+    public init(for locale: _DoriAPI.Locale) {
+        self.locale = locale
     }
     
-    public func buildIR(from code: String, diags: inout [Diagnostic]) -> Data? {
+    public func buildIR(from code: String, diags: inout [Diagnostic]) -> StoryIR? {
         let source = Parser.parse(source: code)
         
-        let sema = SemaEvaluator([source])
+        let sema = SemaEvaluator([source], in: locale)
         if let ir = StoryIR(evaluator: sema, diags: &diags) {
             if !diags.hasError {
-                return ir.binEncode()
+                return ir
             }
         }
         
@@ -41,7 +43,7 @@ public final class DoriStoryBuilder: Sendable {
         
         var diags: [Diagnostic] = []
         
-        let sema = SemaEvaluator([source])
+        let sema = SemaEvaluator([source], in: locale)
         _ = StoryIR(evaluator: sema, diags: &diags)
         
         return diags
@@ -66,15 +68,14 @@ public final class DoriStoryBuilder: Sendable {
         _ code: String,
         at index: String.Index
     ) -> [CodeCompletionItem] {
-        _completeZeileCode(code, at: index)
+        _completeZeileCode(code, at: index, in: locale)
     }
 }
 
 @available(watchOS, unavailable)
 extension DoriStoryBuilder {
     public enum Conversion {
-        public static func bestdoriJSON(fromIR ir: Data) -> String? {
-            guard let ir = StoryIR(binary: ir) else { return nil }
+        public static func bestdoriJSON(fromIR ir: StoryIR) -> String? {
             let rawResult = IRConversion.convertToBestdori(ir)
             if let data = try? JSONSerialization.data(withJSONObject: rawResult) {
                 return .init(data: data, encoding: .utf8)
@@ -87,13 +88,13 @@ extension DoriStoryBuilder {
             fromBandori asset: _DoriAPI.Misc.StoryAsset,
             in locale: _DoriAPI.Locale,
             voiceBundlePath: String
-        ) -> Data {
+        ) -> StoryIR {
             let ir = IRConversion.convertFromBandori(
                 asset,
                 in: locale,
                 voiceBundlePath: voiceBundlePath
             )
-            return ir.binEncode()
+            return ir
         }
     }
 }
