@@ -902,7 +902,7 @@ extension _DoriAPI.Songs.DifficultyType {
         }
     }
     
-    var rawStringValue: String {
+    public var rawStringValue: String {
         switch self {
         case .easy: return "easy"
         case .normal: return "normal"
