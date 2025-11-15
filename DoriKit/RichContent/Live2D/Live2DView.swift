@@ -885,7 +885,11 @@ private func updateWebView(
         // We only update parameters when paused to prevent conflicts
         for param in binding.1.wrappedValue {
             webView.evaluateJavaScript("""
-            live2DModel.setParamFloat('\(param.id)', \(param.value))
+            live2DModel.setParamFloat('\(param.id)', \(param.value));
+            gl.clearColor(0.0, 0.0, 0.0, 0.0);
+            gl.clear(gl.COLOR_BUFFER_BIT);
+            live2DModel.update();
+            live2DModel.draw();
             """)
         }
     }
