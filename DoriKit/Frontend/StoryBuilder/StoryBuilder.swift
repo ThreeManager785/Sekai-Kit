@@ -96,5 +96,9 @@ extension DoriStoryBuilder {
             )
             return ir
         }
+        
+        public static func plainText(fromIR ir: StoryIR) -> String {
+            IRConversion.convertToPlainText(ir)
+        }
     }
 }
