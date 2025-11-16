@@ -13,6 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+internal import SwiftyJSON
 internal import SwiftSyntax
 internal import SwiftParser
 internal import SwiftSyntaxBuilder
@@ -37,6 +38,8 @@ private let assetListLock = NSLock()
 nonisolated(unsafe) private var assetList: _DoriAPI.Assets.AssetList?
 private let bundleFileListCacheLock = NSLock()
 nonisolated(unsafe) private var cachedBundleFileList: [Int: [String]] = [:]
+private let live2dModelCacheLock = NSLock()
+nonisolated(unsafe) private var cachedLive2dModelList: [String: Live2DModel] = [:]
 
 internal func _completeZeileCode(
     _ code: String,
@@ -105,6 +108,7 @@ internal func _completeZeileCode(
         } else if let stringLiteral = fullParent.as(StringLiteralExprSyntax.self),
                   let stringParent = DoriKit.fullParent(of: stringLiteral),
                   let funcCall = stringParent.as(FunctionCallExprSyntax.self) {
+            // Lookup Path
             guard _prepareAssetListForZeileCompletion() else { break lookup }
             
             let sema = SemaEvaluator(allSources, in: locale)
@@ -116,6 +120,19 @@ internal func _completeZeileCode(
                 in: funcCall,
                 with: sema
             ))
+            
+            #if canImport(SwiftUI) && canImport(WebKit)
+            if result.isEmpty {
+                // Lookup Live2D
+                result.append(contentsOf: lookUpLive2D(
+                    token,
+                    inside: stringLiteral,
+                    within: funcCall,
+                    in: locale,
+                    with: sema
+                ))
+            }
+            #endif // canImport(SwiftUI) && canImport(WebKit)
         }
     }
     
@@ -180,6 +197,8 @@ public struct CodeCompletionItem: Hashable {
     public enum PreviewContent: Hashable {
         case image(URL)
         case live2d(URL)
+        case live2dMotion(URL, Live2DMotion)
+        case live2dExpression(URL, Live2DExpression)
     }
 }
 
@@ -672,6 +691,123 @@ private func lookupPath(
     
     return result
 }
+#if canImport(SwiftUI) && canImport(WebKit)
+private func lookUpLive2D(
+    _ token: TokenSyntax,
+    inside argument: StringLiteralExprSyntax,
+    within funcCall: FunctionCallExprSyntax,
+    in locale: _DoriAPI.Locale,
+    with sema: SemaEvaluator
+) -> [CodeCompletionItem] {
+    guard let memberAccess = funcCall.calledExpression.as(MemberAccessExprSyntax.self),
+          let base = memberAccess.base else {
+        return []
+    }
+    
+    guard let funcDecl = sema.resolvedFuncCalls[funcCall.hashValue] else {
+        return []
+    }
+    
+    var argIndex: Int?
+    for (index, arg) in funcCall.arguments.enumerated() {
+        if arg.expression.as(StringLiteralExprSyntax.self) == argument {
+            argIndex = index
+            break
+        }
+    }
+    guard let argIndex else { return [] }
+    
+    let argAttrs = funcDecl.parameters[argIndex].attributes
+    var argType: String? // Either 'motion' or 'expression'
+    for attr in argAttrs {
+        if attr.name == "_live2dMotion" {
+            argType = "motion"
+            break
+        } else if attr.name == "_live2dExpression" {
+            argType = "expression"
+            break
+        }
+    }
+    guard let argType else { return [] }
+    
+    let _ir = StoryIR(locale: locale, actions: [])
+    var _diags: [Diagnostic] = []
+    let irEvaluator = IRGenEvaluator(_ir, semaResult: sema)
+    guard let baseObject = irEvaluator._evaluateExpr(base, diags: &_diags),
+          baseObject.type == "Character" else {
+        return []
+    }
+    let live2dPath = baseObject.storages["live2dPath"]!.castTrivial().asString()
+    let l2dAssetPath = "https://bestdori.com/assets/\(live2dPath)_rip/buildData.asset"
+    
+    @safe nonisolated(unsafe) var model: Live2DModel?
+    if let m = live2dModelCacheLock
+        .withLock({ unsafe cachedLive2dModelList[l2dAssetPath] }) {
+        model = m
+    } else {
+        let semaphore = DispatchSemaphore(value: 0)
+        Task { @Sendable in
+            let result = await requestJSON(l2dAssetPath)
+            if case let .success(json) = result {
+                model = .init(json: json)
+                _ = live2dModelCacheLock.withLock {
+                    unsafe cachedLive2dModelList.updateValue(
+                        model!,
+                        forKey: l2dAssetPath
+                    )
+                }
+            }
+            semaphore.signal()
+        }
+        semaphore.wait()
+    }
+    guard let model else { return [] }
+    
+    let files = argType == "motion" ? model.motions : model.expressions
+    
+    var result: [CodeCompletionItem] = []
+    
+    for file in files {
+        let fileBaseName = file.fileName
+            .components(separatedBy: ".")
+            .dropLast()
+            .joined(separator: ".")
+        let match = fileBaseName.matchCompletionInput(of: token.text)
+        if !match.isEmpty || token.text == "\"" {
+            var replaceResult = file.fileName
+            if token.text == "\"" {
+                replaceResult = "\"\(replaceResult)\""
+            }
+            
+            var previewContent: CodeCompletionItem.PreviewContent?
+            if argType == "motion" {
+                previewContent = .live2dMotion(
+                    .init(string: l2dAssetPath)!,
+                    .init(_file: file, preload: file.preload())
+                )
+            } else {
+                previewContent = .live2dExpression(
+                    .init(string: l2dAssetPath)!,
+                    .init(_file: file, preload: file.preload())
+                )
+            }
+            
+            result.append(
+                .init(
+                    itemType: .variable,
+                    declaration: .init(),
+                    displayName: displayName(for: fileBaseName, matched: match),
+                    previewContent: previewContent,
+                    currentSyntax: token,
+                    replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
+                )
+            )
+        }
+    }
+    
+    return result
+}
+#endif // canImport(SwiftUI) && canImport(WebKit)
 private func lookupKeyword(_ token: TokenSyntax) -> [CodeCompletionItem] {
     let keywords = ["let"]
     

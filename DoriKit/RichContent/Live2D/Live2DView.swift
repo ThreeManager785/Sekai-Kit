@@ -364,6 +364,8 @@ private struct _Live2DNativeView: NSViewRepresentable {
         webView.isInspectable = true
         #endif
         
+        context.coordinator.currentWebView = webView
+        
         var motions = [Live2DMotion]()
         for motion in model.motions {
             motions.append(.init(_file: motion, preload: motion.preload()))
@@ -416,6 +418,8 @@ private struct _Live2DNativeView: UIViewRepresentable {
         webView.isInspectable = true
         #endif
         
+        context.coordinator.currentWebView = webView
+        
         var motions = [Live2DMotion]()
         for motion in model.motions {
             motions.append(.init(_file: motion, preload: motion.preload()))
@@ -463,6 +467,7 @@ private class _NativeViewCoordinator: NSObject, WKScriptMessageHandler {
     }
     
     internal var currentEnvrionment: EnvironmentValues = .init()
+    internal weak var currentWebView: WKWebView?
     internal var temporaryWebpageURL: URL?
     
     deinit {
@@ -483,6 +488,22 @@ private class _NativeViewCoordinator: NSObject, WKScriptMessageHandler {
             if content == "Succeeded" {
                 currentEnvrionment.l2dOnFinishedLoadingInternal?()
                 currentEnvrionment.l2dOnFinishedLoading?()
+                
+                // Play motions and expressions if any
+                if let currentWebView {
+                    if let motion = currentEnvrionment.l2dCurrentMotion {
+                        playMotion(motion, on: currentWebView)
+                    }
+                    if let expression = currentEnvrionment.l2dCurrentExpression {
+                        playExpression(expression, on: currentWebView)
+                    }
+                } else {
+                    logger.log("""
+                    Live2D View indicates launching was finished, \
+                    but it's not available for the Coordinator. \
+                    Please file a bug report
+                    """)
+                }
             } else {
                 currentEnvrionment.l2dOnFailedLoadingInternal?()
                 currentEnvrionment.l2dOnFailedLoading?()
@@ -668,15 +689,14 @@ private func setupWebView(
                     gl.clear(gl.COLOR_BUFFER_BIT);
                     
                     live2DModel.loadParam();
-                    if (!motionManager.isFinished()) {
-                        motionManager.updateParam(live2DModel);
-                    }
+                    var playingMotion = false;
+                    playingMotion = motionManager.updateParam(live2DModel);
                     live2DModel.saveParam();
                     if (!expressionManager.isFinished()) {
                         expressionManager.updateParam(live2DModel);
                     }
                     
-                    if (eyeBlinkEnabled) {
+                    if (eyeBlinkEnabled && !playingMotion) {
                         eyeBlink.updateParam(live2DModel);
                     }
                     
@@ -805,69 +825,12 @@ private func updateWebView(
     
     if oldEnv.l2dCurrentMotion != newEnv.l2dCurrentMotion {
         if let motion = newEnv.l2dCurrentMotion {
-            Task {
-                _ = try? await webView.evaluateJavaScript("""
-                Simple.loadBytes('\(await motion.preload.value ?? "")', function(buf) {
-                    let motion = Live2DMotion.loadMotion(buf);
-                    motionManager.startMotionPrio(motion, false, 1);
-                });
-                """)
-            }
+            playMotion(motion, on: webView)
         }
     }
     if oldEnv.l2dCurrentExpression != newEnv.l2dCurrentExpression {
         if let expression = newEnv.l2dCurrentExpression {
-            Task {
-                if case .success(let json) = await requestJSON("file://\(await expression.preload.value ?? "")") {
-                    _ = try? await webView.evaluateJavaScript("""
-                    function f() {
-                        let motion = new AMotion();
-                        motion.setFadeIn(\(json["fade_in"].int ?? 1000));
-                        motion.setFadeOut(\(json["fade_out"].int ?? 1000));
-                        motion.params = \(json["params"].rawString()!);
-                        motion.paramList = motion.params.map((function(t) {
-                            switch (t.calc) {
-                            case "set":
-                                return {
-                                    type: "set",
-                                    id: t.id,
-                                    val: t.val
-                                };
-                            case "mult":
-                                return {
-                                    type: "mult",
-                                    id: t.id,
-                                    val: t.val / (t.def || 1)
-                                };
-                            default:
-                                return {
-                                    type: "add",
-                                    id: t.id,
-                                    val: t.val - (t.def || 0)
-                                }
-                            }
-                        }));
-                        motion.updateParamExe = function(t, e, a) {
-                            this.paramList.forEach((function(e) {
-                                switch (e.type) {
-                                case "set":
-                                    t.setParamFloat(e.id, e.val, a);
-                                    break;
-                                case "mult":
-                                    t.multParamFloat(e.id, e.val, a);
-                                    break;
-                                case "add":
-                                    t.addToParamFloat(e.id, e.val, a);
-                                    break
-                                }
-                            }))
-                        }
-                        expressionManager.startMotion(motion);
-                    }
-                    f();
-                    """)
-                }
-            }
+            playExpression(expression, on: webView)
         }
     }
     
@@ -890,6 +853,75 @@ private func updateWebView(
             gl.clear(gl.COLOR_BUFFER_BIT);
             live2DModel.update();
             live2DModel.draw();
+            """)
+        }
+    }
+}
+
+@MainActor
+private func playMotion(_ motion: Live2DMotion, on webView: WKWebView) {
+    Task {
+        _ = try? await webView.evaluateJavaScript("""
+        Simple.loadBytes('\(await motion.preload.value ?? "")', function(buf) {
+            let motion = Live2DMotion.loadMotion(buf);
+            motionManager.startMotionPrio(motion, false, 1);
+        });
+        """)
+    }
+}
+@MainActor
+private func playExpression(
+    _ expression: Live2DExpression,
+    on webView: WKWebView
+) {
+    Task {
+        if case .success(let json) = await requestJSON("file://\(await expression.preload.value ?? "")") {
+            _ = try? await webView.evaluateJavaScript("""
+            function f() {
+                let motion = new AMotion();
+                motion.setFadeIn(\(json["fade_in"].int ?? 1000));
+                motion.setFadeOut(\(json["fade_out"].int ?? 1000));
+                motion.params = \(json["params"].rawString()!);
+                motion.paramList = motion.params.map((function(t) {
+                    switch (t.calc) {
+                    case "set":
+                        return {
+                            type: "set",
+                            id: t.id,
+                            val: t.val
+                        };
+                    case "mult":
+                        return {
+                            type: "mult",
+                            id: t.id,
+                            val: t.val / (t.def || 1)
+                        };
+                    default:
+                        return {
+                            type: "add",
+                            id: t.id,
+                            val: t.val - (t.def || 0)
+                        }
+                    }
+                }));
+                motion.updateParamExe = function(t, e, a) {
+                    this.paramList.forEach((function(e) {
+                        switch (e.type) {
+                        case "set":
+                            t.setParamFloat(e.id, e.val, a);
+                            break;
+                        case "mult":
+                            t.multParamFloat(e.id, e.val, a);
+                            break;
+                        case "add":
+                            t.addToParamFloat(e.id, e.val, a);
+                            break
+                        }
+                    }))
+                }
+                expressionManager.startMotion(motion);
+            }
+            f();
             """)
         }
     }

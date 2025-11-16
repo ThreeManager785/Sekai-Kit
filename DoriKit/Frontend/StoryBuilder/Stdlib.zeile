@@ -89,8 +89,8 @@ struct Character {
     func move(to: Position) async -> Character
     func hide() async -> Character
     
-    func act(_: String) async -> Character
-    func emote(_: String) async -> Character
+    func act(_: @_live2dMotion String) async -> Character
+    func emote(_: @_live2dExpression String) async -> Character
 }
 
 enum Position {
