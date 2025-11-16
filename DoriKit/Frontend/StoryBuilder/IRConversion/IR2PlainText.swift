@@ -12,6 +12,40 @@
 //
 //===----------------------------------------------------------------------===//
 
+// IR text representation reference:
+//
+// Actions:
+// tlk: talk
+// tlp: telop
+// mds: showModel (MoDelShow)
+// mdh: hideModel (MoDelHide)
+// mdm: moveModel (MoDelMove)
+// act: act
+// exp: express
+// hsk: horizontalShake (HorizontalShaKe)
+// vsk: verticalShake (VerticalShaKe)
+// bcs: showBlackCover (BlackCoverShow)
+// bch: hideBlackCover (BlackCoverHide)
+// wcs: showWhiteCover (WhiteCoverShow)
+// wch: hideWhiteCover (WhiteCoverHide)
+// ssc: shakeScreen (ShakeSCreen)
+// sdb: shakeDialogBox (ShakeDialogBox)
+// cbg: changeBackground (ChangeBackGround)
+// cbm: changeBGM (ChangeBackgroundMusic)
+// cse: changeSE
+// blk: blocking
+// slp: delay (SLeeP)
+// tsk: forkTask (TaSK)
+// wfa: waitForAll
+// wft: waitForTap
+//
+// For arguments list of actions, see definitions in IntermediateRep.swift,
+// each arguments is passed respectively, separated by a comma(,),
+// with an optional spacing.
+// Numbers(Int and Float) are start with a hash(#).
+// Texts and Paths have to be defined before with a name for reference,
+// ending with a semicolon(;). Use a slash(\) to escape a semicolon in text.
+
 extension IRConversion {
     internal static func convertToPlainText(_ ir: StoryIR) -> String {
         var textList: [String] = []
@@ -137,6 +171,8 @@ extension IRConversion {
                     result += "tsk    $sub_\(subCodes.count - 1)\n"
                 case .waitForAll:
                     result += "wfa\n"
+                case .waitForTap:
+                    result += "wft\n"
                 }
             }
             return result

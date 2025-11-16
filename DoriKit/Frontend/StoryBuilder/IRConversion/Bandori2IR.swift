@@ -31,6 +31,10 @@ extension IRConversion {
         func actions(for snippet: _DoriAPI.Misc.StoryAsset.Snippet) -> [StoryIR.StepAction] {
             var result: [StoryIR.StepAction] = []
             
+            if snippet.progressType == 1 {
+                result.append(.waitForAll)
+            }
+            
             switch snippet.actionType {
             case .none:
                 break
@@ -204,10 +208,6 @@ extension IRConversion {
                         result.append(.changeSE(path: "https://bestdori.com/res/CommonSE/\(soundData.se).mp3"))
                     }
                 }
-            }
-            
-            if snippet.progressType == 1 {
-                result = [.blocking(result)]
             }
             
             if snippet.delay > 0 {

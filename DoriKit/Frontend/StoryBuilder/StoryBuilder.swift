@@ -37,6 +37,22 @@ public final class DoriStoryBuilder: Sendable {
         
         return nil
     }
+    public func buildIR(from code: [String], diags: inout [Diagnostic]) -> StoryIR? {
+        var sources: [SourceFileSyntax] = []
+        
+        for code in code {
+            sources.append(Parser.parse(source: code))
+        }
+        
+        let sema = SemaEvaluator(sources, in: locale)
+        if let ir = StoryIR(evaluator: sema, diags: &diags) {
+            if !diags.hasError {
+                return ir
+            }
+        }
+        
+        return nil
+    }
     
     public func generateDiagnostics(for code: String) -> [Diagnostic] {
         let source = Parser.parse(source: code)

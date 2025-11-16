@@ -225,6 +225,7 @@ private let zeile_taskInitWithClosure: ZeileVTable.Function = { vtable, args in
 nonisolated(unsafe)
 private let zeile_sayWithTextFromSpeaker: ZeileVTable.Function = { vtable, args in
     let buffer = args.buffer
+    vtable.ctx.ir.emitAction(.waitForTap)
     vtable.ctx.ir.emitAction(.talk(
         buffer[0].asTrivialString(),
         characterIDs: [buffer[1].storages["id"]!.castTrivial().asInt()],
@@ -237,6 +238,7 @@ private let zeile_sayWithTextFromSpeaker: ZeileVTable.Function = { vtable, args 
 nonisolated(unsafe)
 private let zeile_sayWithTextFromSpeakerAndVoice: ZeileVTable.Function = { vtable, args in
     let buffer = args.buffer
+    vtable.ctx.ir.emitAction(.waitForTap)
     vtable.ctx.ir.emitAction(.talk(
         buffer[0].asTrivialString(),
         characterIDs: [buffer[1].storages["id"]!.castTrivial().asInt()],
@@ -248,6 +250,7 @@ private let zeile_sayWithTextFromSpeakerAndVoice: ZeileVTable.Function = { vtabl
 
 nonisolated(unsafe)
 private let zeile_telopWithText: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.waitForTap)
     vtable.ctx.ir.emitAction(.telop(args.buffer[0].asTrivialString()))
     return .init(type: "", storages: [:])
 }

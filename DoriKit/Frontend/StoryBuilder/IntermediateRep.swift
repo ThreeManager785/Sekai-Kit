@@ -76,6 +76,7 @@ public final class StoryIR {
         case blocking([StepAction])
         case delay(seconds: Double)
         case forkTask([StepAction])
+        case waitForTap
         case waitForAll
     }
 }

@@ -109,6 +109,8 @@ extension IRGenEvaluator {
             }
             if let value = _evaluateExpr(argument.expression, type: decl.decl.parameters[index].typeName, diags: &diags) {
                 argBuffer.append(value)
+            } else {
+                return nil
             }
             _isEvaluatingAsyncContext = false
         }
@@ -120,6 +122,8 @@ extension IRGenEvaluator {
             }
             if let value = _evaluateClosureExpr(closure, diags: &diags) {
                 argBuffer.append(value)
+            } else {
+                return nil
             }
             _isEvaluatingAsyncContext = false
         }
