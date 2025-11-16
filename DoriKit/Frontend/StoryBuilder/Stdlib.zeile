@@ -108,12 +108,6 @@ enum Position {
     case rightInsideBottom // = 11
 }
 
-struct Voice {
-    let _path: String
-    
-    init(_: String)
-}
-
 struct Background {
     static func change(to: @_pathPrefix("bg/") String)
 }
@@ -132,7 +126,7 @@ struct Task {
 @_unavailableFromAsync
 func say(_: String, by: Character)
 @_unavailableFromAsync
-func say(_: String, by: Character, voice: Voice)
+func say(_: String, by: Character, voice: String)
 
 @_unavailableFromAsync
 func telop(_: String)
