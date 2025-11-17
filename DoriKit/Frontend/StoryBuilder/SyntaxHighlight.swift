@@ -26,16 +26,6 @@ internal func _highlightZeileCode(
     let source = Parser.parse(source: code)
     let classifications = source.classifications
     
-    attributedString.removeAttribute(
-        .foregroundColor,
-        range: .init(location: 0, length: attributedString.length)
-    )
-    attributedString.addAttribute(
-        .foregroundColor,
-        value: config.colors.others.resolveUI(),
-        range: .init(location: 0, length: attributedString.length)
-    )
-    
     for classification in classifications {
         let color = switch classification.kind {
         case .attribute: config.colors.attribute
@@ -70,6 +60,10 @@ internal func _highlightZeileCode(
         }
         
         let range = NSRange(start..<end, in: code)
+        attributedString.removeAttribute(
+            .foregroundColor,
+            range: range
+        )
         attributedString.addAttribute(
             .foregroundColor,
             value: color.resolveUI(),
@@ -78,12 +72,12 @@ internal func _highlightZeileCode(
     }
 }
 
-public struct SyntaxHighlightConfig {
+public struct SyntaxHighlightConfig: Sendable {
     public var colors: ColorConfig = .init()
     
     public init() {}
     
-    public struct ColorConfig {
+    public struct ColorConfig: Sendable {
         public var attribute: Color
         public var comment: Color
         public var editorPlaceholder: Color

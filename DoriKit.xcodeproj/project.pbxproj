@@ -80,6 +80,7 @@
 		8C43486A2EB73EE100067FBD /* SwiftParser in Frameworks */ = {isa = PBXBuildFile; productRef = 8C4348692EB73EE100067FBD /* SwiftParser */; };
 		8C480C162EC7663200A8AE70 /* Bandori2IR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */; };
 		8C48F2422EC8970C00A8AE70 /* IR2PlainText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C48F2412EC8970200A8AE70 /* IR2PlainText.swift */; };
+		8C48F2572ECB281A00A8AE70 /* StoryArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C48F2562ECB281100A8AE70 /* StoryArchive.swift */; };
 		8C4C89412E620C63007F1E9F /* CopyOnWrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */; };
 		8C4C89432E620EC9007F1E9F /* CopyOnWriteMacro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */; };
 		8C59DBCD2E6296D60021317E /* SwiftOperators in Frameworks */ = {isa = PBXBuildFile; productRef = 8C59DBCC2E6296D60021317E /* SwiftOperators */; };
@@ -329,6 +330,7 @@
 		8C3DEB642EAE4FDF0004E1F5 /* UserInfoInits.swift.gyb */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = UserInfoInits.swift.gyb; sourceTree = "<group>"; };
 		8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bandori2IR.swift; sourceTree = "<group>"; };
 		8C48F2412EC8970200A8AE70 /* IR2PlainText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IR2PlainText.swift; sourceTree = "<group>"; };
+		8C48F2562ECB281100A8AE70 /* StoryArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryArchive.swift; sourceTree = "<group>"; };
 		8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWrite.swift; sourceTree = "<group>"; };
 		8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWriteMacro.swift; sourceTree = "<group>"; };
 		8C59DBD42E62E3C60021317E /* macos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = macos.json; sourceTree = "<group>"; };
@@ -873,6 +875,7 @@
 				8CBCB11E2EBF9CBE007A1E33 /* IRConversion */,
 				8CBC974F2EC0C988007A1E33 /* SyntaxHighlight.swift */,
 				8CBC97562EC1C1F7007A1E33 /* CodeCompletion.swift */,
+				8C48F2562ECB281100A8AE70 /* StoryArchive.swift */,
 				8CBCCAFE2EBE39D0007A1E33 /* Stdlib.zeile */,
 			);
 			path = StoryBuilder;
@@ -1637,6 +1640,7 @@
 				8C7855972E48A811000EA06E /* LoginCampaign.swift in Sources */,
 				8CBC1BDB2E334246004023F7 /* Searching.swift in Sources */,
 				8CEA306F2EAD027E009D41C5 /* FrontendUser.swift in Sources */,
+				8C48F2572ECB281A00A8AE70 /* StoryArchive.swift in Sources */,
 				8CD13FB52E2FE2BF00673E15 /* Gacha.swift in Sources */,
 				8CD13FB62E2FE2BF00673E15 /* News.swift in Sources */,
 				8C3264062E3C69C900081F4F /* FrontendGacha.swift in Sources */,

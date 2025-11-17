@@ -295,7 +295,8 @@ private func _characterLive2D(byID id: Int, in ctx: IRGenEvaluator) -> String {
 }
 
 private func _resolvePath(_ path: String, base: String) -> String {
-    if path.hasPrefix("jp/")
+    if path.hasPrefix("/")
+        || path.hasPrefix("jp/")
         || path.hasPrefix("en/")
         || path.hasPrefix("tw/")
         || path.hasPrefix("cn/")

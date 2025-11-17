@@ -82,9 +82,15 @@ public final class DoriStoryBuilder: Sendable {
     
     public func completeCode(
         _ code: String,
-        at index: String.Index
+        at index: String.Index,
+        assetFolder: FileWrapper? = nil
     ) -> [CodeCompletionItem] {
-        _completeZeileCode(code, at: index, in: locale)
+        _completeZeileCode(
+            code,
+            at: index,
+            in: locale,
+            assetFolder: assetFolder
+        )
     }
 }
 

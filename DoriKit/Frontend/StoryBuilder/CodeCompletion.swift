@@ -44,7 +44,8 @@ nonisolated(unsafe) private var cachedLive2dModelList: [String: Live2DModel] = [
 internal func _completeZeileCode(
     _ code: String,
     at index: String.Index,
-    in locale: _DoriAPI.Locale
+    in locale: _DoriAPI.Locale,
+    assetFolder: FileWrapper? = nil
 ) -> [CodeCompletionItem] {
     assert(
         !Thread.isMainThread,
@@ -118,13 +119,14 @@ internal func _completeZeileCode(
                 token,
                 inside: stringLiteral,
                 in: funcCall,
-                with: sema
+                with: sema,
+                assetFolder: assetFolder
             ))
             
             #if canImport(SwiftUI) && canImport(WebKit)
             if result.isEmpty {
                 // Lookup Live2D
-                result.append(contentsOf: lookUpLive2D(
+                result.append(contentsOf: lookupLive2D(
                     token,
                     inside: stringLiteral,
                     within: funcCall,
@@ -192,6 +194,8 @@ public struct CodeCompletionItem: Hashable {
         case structure
         case enumeration
         case keyword
+        case file
+        case folder
     }
     
     public enum PreviewContent: Hashable {
@@ -531,7 +535,8 @@ private func lookupPath(
     _ token: TokenSyntax,
     inside argument: StringLiteralExprSyntax,
     in funcCall: FunctionCallExprSyntax,
-    with sema: SemaEvaluator
+    with sema: SemaEvaluator,
+    assetFolder: FileWrapper?
 ) -> [CodeCompletionItem] {
     assert(unsafe assetList != nil)
     guard let assetList = unsafe assetList else { return [] }
@@ -563,6 +568,8 @@ private func lookupPath(
         || token.text.hasPrefix("cn/")
         || token.text.hasPrefix("kr/") {
         path = String(token.text.dropFirst(3))
+    } else if token.text.hasPrefix("/") {
+        path = token.text
     } else if token.text.hasPrefix("http://")
                 || token.text.hasPrefix("https://") {
         return []
@@ -570,38 +577,6 @@ private func lookupPath(
         path = pathPrefix + token.text
     }
     
-    var pathDesc = _DoriAPI.Assets.PathDescriptor(locale: .jp)
-    func resolveChild(
-        _ pathSeg: [String],
-        in list: _DoriAPI.Assets.AssetList
-    ) -> _DoriAPI.Assets.Child? {
-        guard !pathSeg.isEmpty else {
-            return .list(list)
-        }
-        
-        var nextSeg = pathSeg
-        let thisSeg = nextSeg.removeFirst()
-        guard let child = list.access(thisSeg, updatingPath: &pathDesc) else {
-            return nil
-        }
-        
-        if nextSeg.isEmpty {
-            return child
-        }
-        
-        if case .list(let assetList) = child {
-            return resolveChild(nextSeg, in: assetList)
-        } else {
-            return child
-        }
-    }
-    guard let child = resolveChild(
-        path.split(separator: "/", omittingEmptySubsequences: false)
-            .map { String($0) }
-            .dropLast()
-            .compactMap { $0.isEmpty ? nil : $0 },
-        in: assetList
-    ) else { return [] }
     guard let _lastInput = token.text.split(
         separator: "/",
         omittingEmptySubsequences: false
@@ -610,33 +585,96 @@ private func lookupPath(
     //              ~~~~~~~~~~~~~~~^^~
     // The token is \" if the string literal is empty
     
-    var result: [CodeCompletionItem] = []
-    
-    switch child {
-    case .files:
-        @safe nonisolated(unsafe) var contents: [String]?
-        if let c = bundleFileListCacheLock
-            .withLock({ unsafe cachedBundleFileList[pathDesc.hashValue] }) {
-            contents = c
-        } else {
-            let semaphore = DispatchSemaphore(value: 0)
-            let desc = pathDesc
-            Task { @Sendable in
-                contents = await _DoriAPI.Assets.contentsOf(desc)
-                semaphore.signal()
+    if !path.hasPrefix("/") {
+        // Resolve from remote asset list
+        
+        var pathDesc = _DoriAPI.Assets.PathDescriptor(locale: .jp)
+        func resolveChild(
+            _ pathSeg: [String],
+            in list: _DoriAPI.Assets.AssetList
+        ) -> _DoriAPI.Assets.Child? {
+            guard !pathSeg.isEmpty else {
+                return .list(list)
             }
-            semaphore.wait()
-            if let contents {
-                _ = bundleFileListCacheLock.withLock {
-                    unsafe cachedBundleFileList.updateValue(
-                        contents,
-                        forKey: pathDesc.hashValue
-                    )
-                }
+            
+            var nextSeg = pathSeg
+            let thisSeg = nextSeg.removeFirst()
+            guard let child = list.access(thisSeg, updatingPath: &pathDesc) else {
+                return nil
+            }
+            
+            if nextSeg.isEmpty {
+                return child
+            }
+            
+            if case .list(let assetList) = child {
+                return resolveChild(nextSeg, in: assetList)
+            } else {
+                return child
             }
         }
-        if let contents {
-            for name in contents {
+        guard let child = resolveChild(
+            path.split(separator: "/", omittingEmptySubsequences: false)
+                .map { String($0) }
+                .dropLast()
+                .compactMap { $0.isEmpty ? nil : $0 },
+            in: assetList
+        ) else { return [] }
+        
+        var result: [CodeCompletionItem] = []
+        
+        switch child {
+        case .files:
+            @safe nonisolated(unsafe) var contents: [String]?
+            if let c = bundleFileListCacheLock
+                .withLock({ unsafe cachedBundleFileList[pathDesc.hashValue] }) {
+                contents = c
+            } else {
+                let semaphore = DispatchSemaphore(value: 0)
+                let desc = pathDesc
+                Task { @Sendable in
+                    contents = await _DoriAPI.Assets.contentsOf(desc)
+                    semaphore.signal()
+                }
+                semaphore.wait()
+                if let contents {
+                    _ = bundleFileListCacheLock.withLock {
+                        unsafe cachedBundleFileList.updateValue(
+                            contents,
+                            forKey: pathDesc.hashValue
+                        )
+                    }
+                }
+            }
+            if let contents {
+                for name in contents {
+                    let match = name.matchCompletionInput(of: lastInput)
+                    if !match.isEmpty || lastInput.isEmpty {
+                        var _replaceResult = token.text
+                            .split(separator: "/", omittingEmptySubsequences: false)
+                            .dropLast()
+                        _replaceResult += [Substring(name)]
+                        let replaceResult = _replaceResult.joined(separator: "/")
+                        
+                        var previewContent: CodeCompletionItem.PreviewContent?
+                        if name.hasSuffix(".png") {
+                            previewContent = .image(pathDesc.resourceURL(name: name))
+                        }
+                        
+                        result.append(.init(
+                            itemType: .file,
+                            declaration: .init(),
+                            displayName: displayName(for: name, matched: match),
+                            previewContent: previewContent,
+                            currentSyntax: token,
+                            replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
+                        ))
+                    }
+                }
+            }
+        case .list(let list):
+            let names = list.keys
+            for name in names {
                 let match = name.matchCompletionInput(of: lastInput)
                 if !match.isEmpty || lastInput.isEmpty {
                     var _replaceResult = token.text
@@ -646,12 +684,12 @@ private func lookupPath(
                     let replaceResult = _replaceResult.joined(separator: "/")
                     
                     var previewContent: CodeCompletionItem.PreviewContent?
-                    if name.hasSuffix(".png") {
-                        previewContent = .image(pathDesc.resourceURL(name: name))
+                    if pathDesc._path.hasPrefix("/live2d/chara/") {
+                        previewContent = .live2d(.init(string: "https://bestdori.com/assets/jp/live2d/chara/\(name)_rip/buildData.asset")!)
                     }
                     
                     result.append(.init(
-                        itemType: .variable,
+                        itemType: .folder,
                         declaration: .init(),
                         displayName: displayName(for: name, matched: match),
                         previewContent: previewContent,
@@ -661,38 +699,62 @@ private func lookupPath(
                 }
             }
         }
-    case .list(let list):
-        let names = list.keys
-        for name in names {
-            let match = name.matchCompletionInput(of: lastInput)
+        
+        return result
+    } else if let assetFolder {
+        // Resolve from local asset list
+        
+        var result: [CodeCompletionItem] = []
+        
+        var enclosingFolder = assetFolder
+        for componment in path.components(separatedBy: "/").dropLast() {
+            if !componment.isEmpty {
+                if let newWrapper = enclosingFolder.fileWrappers?[componment] {
+                    enclosingFolder = newWrapper
+                } else {
+                    break
+                }
+            } else {
+                break
+            }
+        }
+        
+        guard let contents = enclosingFolder.fileWrappers?.keys else {
+            return []
+        }
+        
+        for content in contents.sorted() {
+            let match = content.matchCompletionInput(of: lastInput)
             if !match.isEmpty || lastInput.isEmpty {
+                let wrapper = enclosingFolder.fileWrappers![content]!
+                
                 var _replaceResult = token.text
                     .split(separator: "/", omittingEmptySubsequences: false)
                     .dropLast()
-                _replaceResult += [Substring(name)]
-                let replaceResult = _replaceResult.joined(separator: "/")
+                _replaceResult += [Substring(content)]
+                var replaceResult = _replaceResult.joined(separator: "/")
                 
-                var previewContent: CodeCompletionItem.PreviewContent?
-                if pathDesc._path.hasPrefix("/live2d/chara/") {
-                    previewContent = .live2d(.init(string: "https://bestdori.com/assets/jp/live2d/chara/\(name)_rip/buildData.asset")!)
+                if wrapper.isDirectory {
+                    replaceResult += "/"
                 }
                 
                 result.append(.init(
-                    itemType: .variable,
+                    itemType: .file,
                     declaration: .init(),
-                    displayName: displayName(for: name, matched: match),
-                    previewContent: previewContent,
+                    displayName: displayName(for: content, matched: match),
                     currentSyntax: token,
                     replacementSyntax: token.with(\.tokenKind, .identifier(replaceResult))
                 ))
             }
         }
+        
+        return result
+    } else {
+        return []
     }
-    
-    return result
 }
 #if canImport(SwiftUI) && canImport(WebKit)
-private func lookUpLive2D(
+private func lookupLive2D(
     _ token: TokenSyntax,
     inside argument: StringLiteralExprSyntax,
     within funcCall: FunctionCallExprSyntax,
