@@ -840,9 +840,9 @@ private func lookupLive2D(
             .joined(separator: ".")
         let match = fileBaseName.matchCompletionInput(of: token.text)
         if !match.isEmpty || token.text == "\"" {
-            var replaceResult = file.fileName
+            var replaceResult = fileBaseName
             if token.text == "\"" {
-                replaceResult = "\"\(replaceResult)\""
+                replaceResult = "\"\(replaceResult)"
             }
             
             var previewContent: CodeCompletionItem.PreviewContent?

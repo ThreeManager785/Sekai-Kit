@@ -274,11 +274,14 @@ private func _characterName(byID id: Int, in ctx: IRGenEvaluator) -> String {
     if let character = DoriCache.preCache.characters.first(
         where: { $0.id == id }
     ) {
-        return (character.characterName
+        var name = character.characterName
             .forLocale(character.characterName.availableLocale(
                 prefer: ctx.sema.locale
-            ) ?? .jp) ?? "")
-            .replacing(" ", with: "")
+            ) ?? .jp) ?? ""
+        if ctx.sema.locale != .en {
+            name.replace(" ", with: "")
+        }
+        return name
     } else {
         return ""
     }

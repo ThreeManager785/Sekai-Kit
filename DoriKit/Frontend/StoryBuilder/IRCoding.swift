@@ -46,11 +46,11 @@ extension StoryIR {
             }
         }
         
-        var headerMagic: UInt32 = 0x52494c5a
+        var headerMagic: UInt32 = 0x52495a
         compressedData.replaceSubrange(
-            0..<4,
+            0..<3,
             with: unsafe Data(bytes: &headerMagic,
-                              count: MemoryLayout.size(ofValue: headerMagic))
+                              count: 3)
         )
         
         var eofMagic: UInt32 = 0x2452495a
@@ -76,8 +76,9 @@ extension StoryIR {
     }
     
     public convenience init?(binary data: Data) {
-        guard unsafe data.prefix(4).bytes
-            .unsafeLoadUnaligned(as: UInt32.self) == 0x52494c5a else {
+        guard unsafe data.prefix(2).bytes
+            .unsafeLoadUnaligned(as: UInt16.self) == 0x495a
+                && data[2] == 0x52 else {
             return nil
         }
         guard unsafe data.suffix(4).bytes
@@ -96,11 +97,11 @@ extension StoryIR {
             rawIntValue: Int(metadata & 0x00000000000000FF)
         ) else { return nil }
         
-        var bvxHeader: UInt32 = 0x32787662
+        var bvxHeader: UInt32 = 0x787662
         compressedData.replaceSubrange(
-            0..<4,
+            0..<3,
             with: unsafe Data(bytes: &bvxHeader,
-                              count: MemoryLayout.size(ofValue: bvxHeader))
+                              count: 3)
         )
         
         var bvxEof: UInt32 = 0x24787662
