@@ -38,8 +38,10 @@ private let assetListLock = NSLock()
 nonisolated(unsafe) private var assetList: _DoriAPI.Assets.AssetList?
 private let bundleFileListCacheLock = NSLock()
 nonisolated(unsafe) private var cachedBundleFileList: [Int: [String]] = [:]
+#if canImport(SwiftUI) && canImport(WebKit)
 private let live2dModelCacheLock = NSLock()
 nonisolated(unsafe) private var cachedLive2dModelList: [String: Live2DModel] = [:]
+#endif
 
 internal func _completeZeileCode(
     _ code: String,
@@ -201,8 +203,10 @@ public struct CodeCompletionItem: Hashable {
     public enum PreviewContent: Hashable {
         case image(URL)
         case live2d(URL)
+        #if canImport(SwiftUI) && canImport(WebKit)
         case live2dMotion(URL, Live2DMotion)
         case live2dExpression(URL, Live2DExpression)
+        #endif
     }
 }
 
