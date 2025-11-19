@@ -100,14 +100,18 @@ extension _DoriFrontend {
             
             let resultCharacters = characters.filter { character in event.characters.contains { $0.characterID == character.id } }
             
+            guard let eventLocale = event.startAt.availableLocale() else {
+                return nil
+            }
+            
             return .init(
                 id: id,
                 event: event,
                 bands: bands.filter { band in resultCharacters.contains { $0.bandID == band.id } },
                 characters: resultCharacters,
                 cards: cards.filter { card in event.rewardCards.contains(card.id) || event.members.contains { $0.situationID == card.id } },
-                gacha: gacha.filter { event.startAt.forPreferredLocale() == $0.publishedAt.forPreferredLocale() },
-                songs: songs.filter { event.startAt.forPreferredLocale() == $0.publishedAt.forPreferredLocale() },
+                gacha: gacha.filter { event.startAt.forLocale(eventLocale) == $0.publishedAt.forLocale(eventLocale) },
+                songs: songs.filter { event.startAt.forLocale(eventLocale) == $0.publishedAt.forLocale(eventLocale) },
                 degrees: degrees.filter { $0.baseImageName.forPreferredLocale() == "degree_event\(event.id)_point" }
             )
         }
