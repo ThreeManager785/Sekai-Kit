@@ -95,6 +95,11 @@ internal func _completeZeileCode(
     lookup: if let fullParent = fullParent(of: token) {
         if fullParent.is(DeclReferenceExprSyntax.self) {
             result.append(contentsOf: lookupToken(token, in: allSources))
+        } else if !(token.trimmedRange ~= .init(utf8Offset: offset)) {
+            result.append(contentsOf: lookupToken(
+                token.with(\.tokenKind, .identifier("")),
+                in: allSources
+            ))
         } else if let memberAccess = fullParent.as(MemberAccessExprSyntax.self) {
             if memberAccess.declName.baseName == token || token.text == "." {
                 if let decl = memberAccess.base?.as(DeclReferenceExprSyntax.self) {
@@ -287,7 +292,7 @@ private func lookupToken(
                         continue
                     }
                     let match = idText.matchCompletionInput(of: text)
-                    if !match.isEmpty {
+                    if !match.isEmpty || text.isEmpty {
                         result.append(.init(
                             itemType: .variable,
                             declaration: highlight(for: decl),
@@ -301,7 +306,7 @@ private func lookupToken(
                 var idText = decl.name.text
                 idText += decl.signature.parameterClause.description.replacing("\n", with: " ")
                 let match = idText.matchCompletionInput(of: text)
-                if !match.isEmpty {
+                if !match.isEmpty || text.isEmpty {
                     var replaceResult = decl.name.text
                     var params = decl.signature.parameterClause
                     params = attributeRemover.rewrite(params)
@@ -342,7 +347,7 @@ private func lookupToken(
             } else if let decl = item.as(StructDeclSyntax.self) {
                 let idText = decl.name.text
                 let match = idText.matchCompletionInput(of: text)
-                if !match.isEmpty {
+                if !match.isEmpty || text.isEmpty {
                     var cleanDecl = decl.with(\.memberBlock, .init(members: []))
                     cleanDecl = cleanDecl.with(\.memberBlock.leftBrace, .identifier(""))
                     cleanDecl = cleanDecl.with(\.memberBlock.rightBrace, .identifier(""))
@@ -402,7 +407,7 @@ private func lookupToken(
             } else if let decl = item.as(EnumDeclSyntax.self) {
                 let idText = decl.name.text
                 let match = idText.matchCompletionInput(of: text)
-                if !match.isEmpty {
+                if !match.isEmpty || text.isEmpty {
                     var cleanDecl = decl.with(\.memberBlock, .init(members: []))
                     cleanDecl = cleanDecl.with(\.memberBlock.leftBrace, .identifier(""))
                     cleanDecl = cleanDecl.with(\.memberBlock.rightBrace, .identifier(""))
@@ -942,7 +947,7 @@ private func lookupKeyword(_ token: TokenSyntax) -> [CodeCompletionItem] {
 }
 
 private func highlight(for syntax: some SyntaxProtocol) -> NSAttributedString {
-    var string = syntax.description.replacing("\n", with: " ")
+    var string = syntax.trimmed.description.replacing("\n", with: " ")
     while string.hasPrefix(" ") {
         string.removeFirst()
     }
