@@ -62,11 +62,18 @@ struct Character {
     static let rui      = Character(id: 30)
     
     // RAISE A SUILEN
-    static let rei      = Character(id: 31)
-    static let rokka    = Character(id: 32)
-    static let masuki   = Character(id: 33)
-    static let reona    = Character(id: 34)
-    static let chiyu    = Character(id: 35)
+    static let rei    = Character(id: 31)
+    static let rokka  = Character(id: 32)
+    static let masuki = Character(id: 33)
+    static let reona  = Character(id: 34)
+    static let chiyu  = Character(id: 35)
+    
+    // RAISE A SUILEN alias
+    static let layer   = Character.rei
+    static let lock    = Character.rokka
+    static let masking = Character.masuki
+    static let pareo   = Character.reona
+    static let chu2    = Character.chiyu
     
     // MyGO!!!!!
     static let tomori = Character(id: 36)
@@ -74,6 +81,22 @@ struct Character {
     static let rana   = Character(id: 38)
     static let soyo   = Character(id: 39)
     static let taki   = Character(id: 40)
+    
+    // Ave Mujica
+    static let uika    = Character(id: 337, live2d: "337_casual-2023_nocap")
+    static let mutsumi = Character(id: 338, live2d: "338_casual-2023")
+    static let umiri   = Character(id: 339, live2d: "339_casual-2023")
+    static let nyamu   = Character(id: 340, live2d: "340_casual-2023")
+    static let sakiko  = Character(id: 341, live2d: "341_casual-2023")
+    
+    // Ave Mujica alias
+    static let doloris    = Character.uika
+    static let mortis     = Character.mutsumi
+    static let timoris    = Character.umiri
+    static let amoris     = Character.nyamu
+    static let oblivionis = Character.sakiko
+    // Uika IS Hatsune
+    static let hatsune = Character.uika
     
     let id: Int
     let name: String

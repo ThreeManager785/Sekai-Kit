@@ -43,6 +43,9 @@ private let live2dModelCacheLock = NSLock()
 nonisolated(unsafe) private var cachedLive2dModelList: [String: Live2DModel] = [:]
 #endif
 
+private let semaResultCacheLock = NSLock()
+nonisolated(unsafe) private var cachedSemaResult: (Int, SemaEvaluator)?
+
 internal func _completeZeileCode(
     _ code: String,
     at index: String.Index,
@@ -71,14 +74,29 @@ internal func _completeZeileCode(
     
     var result: [CodeCompletionItem] = []
     
+    var lineBreakCount: Int?
+    var sema: SemaEvaluator {
+        let lf = lineBreakCount ?? code.count { $0 == "\n" }
+        lineBreakCount = lf
+        if let (expLf, sema) = semaResultCacheLock.withLock({
+            unsafe cachedSemaResult
+        }), expLf == lf {
+            return sema
+        } else {
+            let sema = SemaEvaluator(allSources, in: locale)
+            _ = sema.performSema()
+            semaResultCacheLock.withLock {
+                unsafe cachedSemaResult = (lf, sema)
+            }
+            return sema
+        }
+    }
+    
     lookup: if let fullParent = fullParent(of: token) {
         if fullParent.is(DeclReferenceExprSyntax.self) {
             result.append(contentsOf: lookupToken(token, in: allSources))
         } else if let memberAccess = fullParent.as(MemberAccessExprSyntax.self) {
             if memberAccess.declName.baseName == token || token.text == "." {
-                let sema = SemaEvaluator(allSources, in: locale)
-                _ = sema.performSema()
-                
                 if let decl = memberAccess.base?.as(DeclReferenceExprSyntax.self) {
                     let declName = decl.baseName.text
                     if sema._resolvedStructs[declName] != nil
@@ -113,9 +131,6 @@ internal func _completeZeileCode(
                   let funcCall = stringParent.as(FunctionCallExprSyntax.self) {
             // Lookup Path
             guard _prepareAssetListForZeileCompletion() else { break lookup }
-            
-            let sema = SemaEvaluator(allSources, in: locale)
-            _ = sema.performSema()
             
             result.append(contentsOf: lookupPath(
                 token,

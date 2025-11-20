@@ -46,6 +46,9 @@ internal final class SemaEvaluator {
     
     internal var _variablesUnderTypeChecking: Set<String> = []
     
+    internal var _cachedFuncDecls: [/*parent*/String: [FunctionDeclSyntax]] = [:]
+    internal var _cachedTopTypeNames: [String] = []
+    
     internal func performSema() -> [Diagnostic] {
         // Clean up
         resolvedFuncCalls.removeAll()
@@ -726,33 +729,53 @@ extension SemaEvaluator {
         let funcName = _splitType[1]
         
         var candidates: [FunctionDeclSyntax] = []
-        if superType == "~TOP" {
-            for source in self.sources {
-                for statement in source.statements {
-                    let item = statement.item
-                    if let decl = item.as(FunctionDeclSyntax.self),
-                       decl.name.text == funcName {
-                        candidates.append(decl)
-                    }
-                }
+        if let decls = _cachedFuncDecls[String(superType)] {
+            candidates = decls.filter {
+                $0.name.text == funcName
             }
         } else {
-            for source in self.sources {
-                for statement in source.statements {
-                    let item = statement.item
-                    if let decl = item.as(StructDeclSyntax.self),
-                       decl.name.text == superType {
-                        for member in decl.memberBlock.members {
-                            if let decl = member.decl.as(FunctionDeclSyntax.self),
-                               decl.name.text == funcName {
+            var foundNonCandidates: [FunctionDeclSyntax] = []
+            if superType == "~TOP" {
+                for source in self.sources {
+                    for statement in source.statements {
+                        let item = statement.item
+                        if let decl = item.as(FunctionDeclSyntax.self) {
+                            if decl.name.text == funcName {
                                 candidates.append(decl)
-                            } else if funcName == "init",
-                                      let decl = member.decl.as(InitializerDeclSyntax.self) {
-                                candidates.append(decl.asFunctionDecl(returns: String(superType)))
+                            } else {
+                                foundNonCandidates.append(decl)
                             }
                         }
                     }
                 }
+            } else {
+                outerSearch: for source in self.sources {
+                    for statement in source.statements {
+                        let item = statement.item
+                        if let decl = item.as(StructDeclSyntax.self),
+                           decl.name.text == superType {
+                            for member in decl.memberBlock.members {
+                                if let decl = member.decl.as(FunctionDeclSyntax.self) {
+                                    if decl.name.text == funcName {
+                                        candidates.append(decl)
+                                    } else {
+                                        foundNonCandidates.append(decl)
+                                    }
+                                } else if funcName == "init",
+                                          let decl = member.decl.as(InitializerDeclSyntax.self) {
+                                    candidates.append(decl.asFunctionDecl(returns: String(superType)))
+                                }
+                            }
+                            break outerSearch
+                        }
+                    }
+                }
+            }
+            if !candidates.isEmpty {
+                _cachedFuncDecls.updateValue(
+                    candidates + foundNonCandidates,
+                    forKey: String(superType)
+                )
             }
         }
         
@@ -910,19 +933,22 @@ extension SemaEvaluator {
             return true
         }
         
-        // We iterate over all root decls and do a quick check.
-        // Since this doesn't actually perform a fully type-check,
-        // we can't add results to resolved lists
-        for source in self.sources {
-            for statement in source.statements {
-                let item = statement.item
-                if let structDecl = item.as(StructDeclSyntax.self) {
-                    if typeName == structDecl.name.text {
-                        return true
-                    }
-                } else if let enumDecl = item.as(EnumDeclSyntax.self) {
-                    if typeName == enumDecl.name.text {
-                        return true
+        if _cachedTopTypeNames.contains(typeName) {
+            return true
+        } else {
+            for source in self.sources {
+                for statement in source.statements {
+                    let item = statement.item
+                    if let structDecl = item.as(StructDeclSyntax.self) {
+                        if typeName == structDecl.name.text {
+                            _cachedTopTypeNames.append(typeName)
+                            return true
+                        }
+                    } else if let enumDecl = item.as(EnumDeclSyntax.self) {
+                        if typeName == enumDecl.name.text {
+                            _cachedTopTypeNames.append(typeName)
+                            return true
+                        }
                     }
                 }
             }
