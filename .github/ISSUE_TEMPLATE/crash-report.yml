@@ -6,18 +6,18 @@
 # See https://greatdori.com/LICENSE.txt for license information
 # See https://greatdori.com/CONTRIBUTORS.txt for the list of Greatdori! project authors
 
-name: 🪲 Report a bug in library
+name: 💥 Report a crash in library
 description: >
-  Report a deviation from expected behavior, but not a crash, in library.
-labels: [bug, library, triage needed]
+  Report a unexpected program termination caused by an exception.
+labels: [bug, library, crash, triage needed]
 body:
   - type: textarea
     attributes:
       label: Description
       description: >
         A concise description of what causes the problem, in human language.
-        Though not required, it may help us to more accurately
-        triage the issue as well as understand a non-trivial test case.
+        Though not required, it may help us to more accurately triage the issue
+        as well as understand a non-trivial test case.
     validations:
       required: false
   - type: textarea
@@ -25,10 +25,9 @@ body:
       label: Reproduction
       description: >
         Provide a test case, preferably in a Markdown code block, and explain
-        how to build or run it to reproduce the problem.
-        Consider reducing the test case to the smallest amount of code
-        possible — a smaller test case is easier to reason about and more
-        appealing to contributors.
+        how to build or run it to reproduce the problem. Consider reducing the
+        test case to the smallest amount of code possible — a smaller test case
+        is easier to reason about and more appealing to contributors.
       value: |
         ```swift
         
@@ -37,9 +36,18 @@ body:
       required: true
   - type: textarea
     attributes:
+      label: Stack dump
+      description: >
+        Paste the stack dump as is, without formatting it into a Markdown
+        codeblock.
+      render: "text"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
       label: Expected behavior
       description: >
-        Describe the behavior you expected.
+        Describe the behavior you expected instead of the crash.
     validations:
       required: true
   - type: textarea
