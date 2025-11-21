@@ -155,5 +155,6 @@ func say(_: String, by: Character, voice: String)
 func telop(_: String)
 
 func waitUntilDone()
+func _waitForTap()
 
 func sleep(_: Float)

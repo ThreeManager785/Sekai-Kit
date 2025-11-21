@@ -49,6 +49,7 @@ extension ZeileVTable {
             "$zf3say1_6String2by9Character5voice6StringrV": zeile_sayWithTextFromSpeakerAndVoice,
             "$zf5telop1_6StringrV": zeile_telopWithText,
             "$zf13waitUntilDonerV": zeile_waitUntilDone,
+            "$zf11_waitForTaprV": zeile_waitForTap,
             "$zf5sleep1_5FloatrV": zeile_sleepForSeconds
         ]
     }
@@ -258,6 +259,12 @@ private let zeile_telopWithText: ZeileVTable.Function = { vtable, args in
 nonisolated(unsafe)
 private let zeile_waitUntilDone: ZeileVTable.Function = { vtable, args in
     vtable.ctx.ir.emitAction(.waitForAll)
+    return .init(type: "", storages: [:])
+}
+
+nonisolated(unsafe)
+private let zeile_waitForTap: ZeileVTable.Function = { vtable, args in
+    vtable.ctx.ir.emitAction(.waitForTap)
     return .init(type: "", storages: [:])
 }
 

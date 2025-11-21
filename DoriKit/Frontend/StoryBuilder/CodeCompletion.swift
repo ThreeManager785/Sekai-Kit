@@ -173,6 +173,11 @@ internal func _completeZeileCode(
         }
     }
     
+    // Remove leading underscored items
+    result.removeAll { item in
+        item.displayName.string.hasPrefix("_")
+    }
+    
     return result
 }
 
