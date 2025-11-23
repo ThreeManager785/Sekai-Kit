@@ -14,8 +14,11 @@
 
 import Foundation
 internal import SwiftSyntax
+#if !os(watchOS)
 internal import JavaScriptCore
+#endif
 
+#if !os(watchOS)
 private let _tsCompilerSource = {
     try! String(
         contentsOf: #bundle.url(
@@ -43,13 +46,17 @@ private let _tsLibrarySource = {
         encoding: .utf8
     )
 }()
+#endif // !os(watchOS)
 
 internal final class FunctionEvaluator {
+    #if !os(watchOS)
     internal let ir: StoryIR
     internal let jsVM: JSVirtualMachine
     internal let compilerContext: JSContext
+    #endif
     
     internal init(ir: StoryIR) {
+        #if !os(watchOS)
         self.ir = ir
         
         self.jsVM = .init()
@@ -62,6 +69,7 @@ internal final class FunctionEvaluator {
             _tsLibrarySource,
             forKeyedSubscript: "_tsLibrary" as NSString
         )
+        #endif
     }
     
     internal var sourceMap: [
@@ -74,6 +82,8 @@ internal final class FunctionEvaluator {
         node: StringLiteralExprSyntax,
         sourceCode: String
     ) -> [Diagnostic] {
+        #if !os(watchOS)
+        
         if sourceMap[mangledName] != nil {
             return []
         }
@@ -98,5 +108,9 @@ internal final class FunctionEvaluator {
         sourceMap.updateValue(result["jsCode"] as! String, forKey: mangledName)
         
         return diags
+        
+        #else
+        return []
+        #endif
     }
 }
