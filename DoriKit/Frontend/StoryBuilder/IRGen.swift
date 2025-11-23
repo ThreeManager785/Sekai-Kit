@@ -20,11 +20,13 @@ internal final class IRGenEvaluator {
     internal var sema: SemaEvaluator
     internal var _symbolizer: ZeileSymbolizer
     internal var vtable: ZeileVTable!
+    internal var funcEvaluator: FunctionEvaluator
     
     internal init(_ ir: StoryIR, semaResult: SemaEvaluator) {
         self.ir = ir
         self.sema = semaResult
         self._symbolizer = .init(semaResult: semaResult)
+        self.funcEvaluator = .init(ir: self.ir)
         self.vtable = .init(ctx: self)
     }
     
@@ -135,6 +137,15 @@ extension IRGenEvaluator {
         if let irgenNameAttr = calledDecl.attributes.first(where: { $0.name == "_irgen_name" }),
            irgenNameAttr.arguments.count > 0 {
             qualifiedMangledName = irgenNameAttr.arguments[0]
+        }
+        
+        if let impl = calledDecl.implementation,
+           let node = calledDecl.implementationNode {
+            diags.append(contentsOf: funcEvaluator.addFunction(
+                mangledName: qualifiedMangledName,
+                node: node,
+                sourceCode: impl
+            ))
         }
         
         let args = ZeileFunctionArguments(implicitSelf: impSelf, buffer: argBuffer)

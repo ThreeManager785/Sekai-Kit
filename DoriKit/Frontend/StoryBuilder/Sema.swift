@@ -116,6 +116,8 @@ internal final class SemaEvaluator {
         internal var returnType: String
         internal var isAsync: Bool
         internal var attributes: [Attribute]
+        internal var implementation: String? // TypeScript code
+        internal var implementationNode: StringLiteralExprSyntax?
         
         static func == (lhs: Self, rhs: Self) -> Bool {
             lhs.hashValue == rhs.hashValue
@@ -258,9 +260,6 @@ extension SemaEvaluator {
         if let clause = decl.genericWhereClause {
             diags.append(.init(node: clause, message: .whereClauseNotSupported))
         }
-        if let body = decl.body {
-            diags.append(.init(node: body, message: .functionUnexpectedBody))
-        }
         
         var resultParams: [FunctionDeclaration.Parameter] = []
         let parameters = decl.signature.parameterClause.parameters
@@ -362,12 +361,28 @@ extension SemaEvaluator {
             }
         }
         
+        var impl: String?
+        var implNode: StringLiteralExprSyntax?
+        if let body = decl.body,
+           let stringLiteral = body.statements.first?.item.as(StringLiteralExprSyntax.self) {
+            var content = ""
+            for segment in stringLiteral.segments {
+                if let seg = segment.as(StringSegmentSyntax.self) {
+                    content += seg.content.text
+                }
+            }
+            impl = content
+            implNode = stringLiteral
+        }
+        
         return .init(
             name: decl.name.text,
             parameters: resultParams,
             returnType: returnTypeName,
             isAsync: isAsync,
-            attributes: attributes
+            attributes: attributes,
+            implementation: impl,
+            implementationNode: implNode
         )
     }
     

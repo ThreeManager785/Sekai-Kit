@@ -394,4 +394,11 @@ extension DiagnosticMessage where Self == ZeileDiagnosticMessage {
             id: "function_not_available_from_async"
         )
     }
+    
+    static func typeScriptError(_ content: String) -> some DiagnosticMessage {
+        ZeileDiagnosticMessage.error(
+            "typescript error: '\(content)'",
+            id: "some_typescript_error"
+        )
+    }
 }

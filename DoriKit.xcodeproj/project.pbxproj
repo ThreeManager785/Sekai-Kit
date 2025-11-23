@@ -81,6 +81,9 @@
 		8C480C162EC7663200A8AE70 /* Bandori2IR.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */; };
 		8C48F2422EC8970C00A8AE70 /* IR2PlainText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C48F2412EC8970200A8AE70 /* IR2PlainText.swift */; };
 		8C48F2572ECB281A00A8AE70 /* StoryArchive.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C48F2562ECB281100A8AE70 /* StoryArchive.swift */; };
+		8C4C58012ED3556D0097F41F /* FunctionEvaluator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C58002ED355680097F41F /* FunctionEvaluator.swift */; };
+		8C4C58032ED357B70097F41F /* TSCompilerUtils.js in Resources */ = {isa = PBXBuildFile; fileRef = 8C4C58022ED357A40097F41F /* TSCompilerUtils.js */; };
+		8C4C58052ED365630097F41F /* TSLibrary.d.ts in Resources */ = {isa = PBXBuildFile; fileRef = 8C4C58042ED365510097F41F /* TSLibrary.d.ts */; };
 		8C4C89412E620C63007F1E9F /* CopyOnWrite.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */; };
 		8C4C89432E620EC9007F1E9F /* CopyOnWriteMacro.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */; };
 		8C59DBCD2E6296D60021317E /* SwiftOperators in Frameworks */ = {isa = PBXBuildFile; productRef = 8C59DBCC2E6296D60021317E /* SwiftOperators */; };
@@ -181,6 +184,7 @@
 		8CD13FCB2E2FEFCE00673E15 /* Date+.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FCA2E2FEFCC00673E15 /* Date+.swift */; };
 		8CD13FE72E300D2300673E15 /* FrontendNews.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FBB2E2FE2BF00673E15 /* FrontendNews.swift.gyb */; };
 		8CDEAAE22E825B0D001397CC /* URLValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CDEAAE12E825B02001397CC /* URLValidator.swift */; };
+		8CE0BBE22ED3492B00E22ED6 /* TypeScriptCompiler.js in Resources */ = {isa = PBXBuildFile; fileRef = 8CE0BBE12ED3492000E22ED6 /* TypeScriptCompiler.js */; };
 		8CE186AA2E5352D1009C1C87 /* CommandLineEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE186A82E5352D1009C1C87 /* CommandLineEntry.swift */; };
 		8CE186AD2E535324009C1C87 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 8CE186AC2E535324009C1C87 /* ArgumentParser */; };
 		8CE186AF2E535DE0009C1C87 /* Asset.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CE186AE2E535DDD009C1C87 /* Asset.swift */; };
@@ -331,6 +335,9 @@
 		8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bandori2IR.swift; sourceTree = "<group>"; };
 		8C48F2412EC8970200A8AE70 /* IR2PlainText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IR2PlainText.swift; sourceTree = "<group>"; };
 		8C48F2562ECB281100A8AE70 /* StoryArchive.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoryArchive.swift; sourceTree = "<group>"; };
+		8C4C58002ED355680097F41F /* FunctionEvaluator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FunctionEvaluator.swift; sourceTree = "<group>"; };
+		8C4C58022ED357A40097F41F /* TSCompilerUtils.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = TSCompilerUtils.js; sourceTree = "<group>"; };
+		8C4C58042ED365510097F41F /* TSLibrary.d.ts */ = {isa = PBXFileReference; explicitFileType = sourcecode.typescript; path = TSLibrary.d.ts; sourceTree = "<group>"; };
 		8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWrite.swift; sourceTree = "<group>"; };
 		8C4C89422E620EC3007F1E9F /* CopyOnWriteMacro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyOnWriteMacro.swift; sourceTree = "<group>"; };
 		8C59DBD42E62E3C60021317E /* macos.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = macos.json; sourceTree = "<group>"; };
@@ -437,6 +444,7 @@
 		8CD13FCA2E2FEFCC00673E15 /* Date+.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+.swift"; sourceTree = "<group>"; };
 		8CD13FE42E300AE700673E15 /* gyb.py */ = {isa = PBXFileReference; lastKnownFileType = text.script.python; path = gyb.py; sourceTree = "<group>"; };
 		8CDEAAE12E825B02001397CC /* URLValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = URLValidator.swift; sourceTree = "<group>"; };
+		8CE0BBE12ED3492000E22ED6 /* TypeScriptCompiler.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = TypeScriptCompiler.js; sourceTree = "<group>"; };
 		8CE1869D2E53529A009C1C87 /* OfflineResBundleGen */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = OfflineResBundleGen; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CE186A82E5352D1009C1C87 /* CommandLineEntry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandLineEntry.swift; sourceTree = "<group>"; };
 		8CE186AE2E535DDD009C1C87 /* Asset.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Asset.swift; sourceTree = "<group>"; };
@@ -736,6 +744,17 @@
 			path = DoriEmoji;
 			sourceTree = "<group>";
 		};
+		8C4C57FF2ED355270097F41F /* FunctionEvaluator */ = {
+			isa = PBXGroup;
+			children = (
+				8CE0BBE12ED3492000E22ED6 /* TypeScriptCompiler.js */,
+				8C4C58022ED357A40097F41F /* TSCompilerUtils.js */,
+				8C4C58042ED365510097F41F /* TSLibrary.d.ts */,
+				8C4C58002ED355680097F41F /* FunctionEvaluator.swift */,
+			);
+			path = FunctionEvaluator;
+			sourceTree = "<group>";
+		};
 		8C59DBCE2E62E0420021317E /* ABI */ = {
 			isa = PBXGroup;
 			children = (
@@ -872,6 +891,7 @@
 				8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */,
 				8CBCBB552EB9DDCD007A1E33 /* VTable.swift */,
 				8C2CFEF82EB88BDB00A8A149 /* IRGen.swift */,
+				8C4C57FF2ED355270097F41F /* FunctionEvaluator */,
 				8CBCB11E2EBF9CBE007A1E33 /* IRConversion */,
 				8CBC974F2EC0C988007A1E33 /* SyntaxHighlight.swift */,
 				8CBC97562EC1C1F7007A1E33 /* CodeCompletion.swift */,
@@ -1272,6 +1292,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				8C8E43FC2E5DAD1C005590F0 /* DoriResource.bundle in Resources */,
+				8CE0BBE22ED3492B00E22ED6 /* TypeScriptCompiler.js in Resources */,
+				8C4C58032ED357B70097F41F /* TSCompilerUtils.js in Resources */,
+				8C4C58052ED365630097F41F /* TSLibrary.d.ts in Resources */,
 				8CBCCAFF2EBE39DD007A1E33 /* Stdlib.zeile in Resources */,
 				8C2CCD402E3E06090014189F /* DoriEmoji.bundle in Resources */,
 				8C0C99B32E29766B00549B5C /* Localizable.xcstrings in Resources */,
@@ -1649,6 +1672,7 @@
 				8CD13FB72E2FE2BF00673E15 /* Resource.swift.gyb in Sources */,
 				8CEA20D52EACC0C1009D41C5 /* NetworkConfig.swift in Sources */,
 				8C0872BB2E72FCDA00447B05 /* DoriNotification.swift in Sources */,
+				8C4C58012ED3556D0097F41F /* FunctionEvaluator.swift in Sources */,
 				8CD13FB82E2FE2BF00673E15 /* Skill.swift in Sources */,
 				8CD13FB92E2FE2BF00673E15 /* Song.swift in Sources */,
 				8C3D4E7A2EA671240034E831 /* FrontendPost.swift in Sources */,

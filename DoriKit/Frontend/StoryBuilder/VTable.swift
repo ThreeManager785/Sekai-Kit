@@ -15,7 +15,7 @@
 internal final class ZeileVTable {
     internal typealias Function = (ZeileVTable, ZeileFunctionArguments) -> ZeileRuntimeObject
     
-    internal var ctx: IRGenEvaluator
+    internal unowned var ctx: IRGenEvaluator
     internal var table: [String: Function]
     
     internal init(ctx: IRGenEvaluator) {
