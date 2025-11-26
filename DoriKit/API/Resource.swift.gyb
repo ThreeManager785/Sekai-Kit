@@ -111,6 +111,14 @@ extension _DoriAPI.Events.EventCharacter {
         ?? .init(string: "https://bestdori.com/res/icon/chara_icon_\(self.characterID).png")!
     }
 }
+extension _DoriAPI.Events.Event.FestivalTeam {
+    % for property in properties:
+    @inlinable
+    public func iconImageURL(with event: ${property}) -> URL {
+        .init(string: "https://bestdori.com/assets/jp/event/\(event.assetBundleName)/images_rip/\(self.iconFileName).png")!.respectOfflineAssetContext()
+    }
+    % end
+}
 
 extension _DoriAPI.Bands.Band {
     @inlinable

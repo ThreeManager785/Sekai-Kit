@@ -414,6 +414,107 @@ extension _DoriAPI {
                             )
                         },
                     )
+                    
+                    // Live try missons
+                    var liveTryMissions: [Int: Event.LiveTryMission]?
+                    var liveTryMissionDetails: [Int: Event.LiveTryMissionDetail]?
+                    var liveTryMissionTypeSequences: [Event.LiveTryMissionType: Int]?
+                    var liveTryMissionRewards: [Int: [_DoriAPI.Item]]?
+                    if !respJSON["masterLiveTryMissionMap"]["entries"].isEmpty {
+                        liveTryMissions = respJSON["masterLiveTryMissionMap"]["entries"].map {
+                            (key: Int($0.0) ?? -1,
+                             value: Event.LiveTryMission(
+                                eventID: $0.1["eventId"].intValue,
+                                missionID: $0.1["liveTryMissionId"].intValue,
+                                missionDetailID: $0.1["liveTryMissionDetailId"].intValue,
+                                missionType: .init(rawValue: $0.1["liveTryMissionType"].stringValue) ?? .score,
+                                missionDifficultyType: .init(rawValue: $0.1["liveTryMissionDifficultyType"].stringValue) ?? .normal,
+                                level: $0.1["level"].intValue
+                             ))
+                        }.reduce(into: [Int: Event.LiveTryMission]()) {
+                            $0.updateValue($1.value, forKey: $1.key)
+                        }
+                    }
+                    if !respJSON["masterLiveTryMissionDetailMap"]["entries"].isEmpty {
+                        liveTryMissionDetails = respJSON["masterLiveTryMissionDetailMap"]["entries"].map {
+                            (key: Int($0.0) ?? -1,
+                             value: Event.LiveTryMissionDetail(
+                                musicDescription: .init(
+                                    jp: $0.1["musicDescription"][0].string,
+                                    en: $0.1["musicDescription"][1].string,
+                                    tw: $0.1["musicDescription"][2].string,
+                                    cn: $0.1["musicDescription"][3].string,
+                                    kr: $0.1["musicDescription"][4].string
+                                ),
+                                difficultyDescription: .init(
+                                    jp: $0.1["difficultyDescription"][0].string,
+                                    en: $0.1["difficultyDescription"][1].string,
+                                    tw: $0.1["difficultyDescription"][2].string,
+                                    cn: $0.1["difficultyDescription"][3].string,
+                                    kr: $0.1["difficultyDescription"][4].string
+                                ),
+                                description: .init(
+                                    jp: $0.1["description"][0].string,
+                                    en: $0.1["description"][1].string,
+                                    tw: $0.1["description"][2].string,
+                                    cn: $0.1["description"][3].string,
+                                    kr: $0.1["description"][4].string
+                                )
+                             ))
+                        }.reduce(into: [Int: Event.LiveTryMissionDetail]()) {
+                            $0.updateValue($1.value, forKey: $1.key)
+                        }
+                    }
+                    if !respJSON["masterLiveTryMissionTypeSequenceMap"]["entries"].isEmpty {
+                        liveTryMissionTypeSequences = respJSON["masterLiveTryMissionTypeSequenceMap"]["entries"].map {
+                            (key: Event.LiveTryMissionType(rawValue: $0.0) ?? .score,
+                             value: $0.1.intValue)
+                        }.reduce(into: [Event.LiveTryMissionType: Int]()) {
+                            $0.updateValue($1.value, forKey: $1.key)
+                        }
+                    }
+                    if !respJSON["masterLiveTryMissionRewardMap"]["entries"].isEmpty {
+                        liveTryMissionRewards = respJSON["masterLiveTryMissionRewardMap"]["entries"].map {
+                            (key: Int($0.0) ?? -1,
+                             value: $0.1["entries"].map {
+                                _DoriAPI.Item(
+                                    itemID: $0.1["resourceId"].int,
+                                    type: .init(rawValue: $0.1["resourceType"].stringValue) ?? .item,
+                                    quantity: $0.1["quantity"].intValue
+                                )}
+                            )
+                        }.reduce(into: [Int: [_DoriAPI.Item]]()) {
+                            $0.updateValue($1.value, forKey: $1.key)
+                        }
+                    }
+                    
+                    // Festival
+                    var teamList: [Event.FestivalTeam]?
+                    var teamRewards: [Event.FestivalTeamReward]?
+                    if !respJSON["teamList"]["entries"].isEmpty {
+                        teamList = respJSON["teamList"]["entries"].map {
+                            .init(
+                                eventID: $0.1["eventId"].intValue,
+                                teamID: $0.1["teamId"].intValue,
+                                teamName: $0.1["teamName"].stringValue,
+                                iconFileName: $0.1["iconFileName"].stringValue,
+                                themeTitle: $0.1["themeTitle"].stringValue
+                            )
+                        }
+                    }
+                    if !respJSON["teamRewards"]["entries"].isEmpty {
+                        teamRewards = respJSON["teamRewards"]["entries"].map {
+                            .init(
+                                festivalResult: .init(rawValue: $0.1["festivalResultType"].stringValue) ?? .win,
+                                item: .init(
+                                    itemID: $0.1["resourceId"].int,
+                                    type: .init(rawValue: $0.1["resourceType"].stringValue) ?? .item,
+                                    quantity: $0.1["quantity"].intValue
+                                )
+                            )
+                        }
+                    }
+                    
                     return Event(
                         id: id,
                         eventType: .init(rawValue: respJSON["eventType"].stringValue) ?? .story,
@@ -569,7 +670,13 @@ extension _DoriAPI {
                                 )
                             )
                         },
-                        rewardCards: respJSON["rewardCards"].map { $0.1.intValue }
+                        rewardCards: respJSON["rewardCards"].map { $0.1.intValue },
+                        liveTryMissions: liveTryMissions,
+                        liveTryMissionDetails: liveTryMissionDetails,
+                        liveTryMissionTypeSequences: liveTryMissionTypeSequences,
+                        liveTryMissionRewards: liveTryMissionRewards,
+                        teamList: teamList,
+                        teamRewards: teamRewards
                     )
                 }
                 return await task.value
@@ -906,6 +1013,12 @@ extension _DoriAPI.Events {
         public var stories: [Story]
         /// IDs of cards that can be gotten by participating this event.
         public var rewardCards: [Int]
+        public var liveTryMissions: [Int: LiveTryMission]?
+        public var liveTryMissionDetails: [Int: LiveTryMissionDetail]?
+        public var liveTryMissionTypeSequences: [LiveTryMissionType: Int]?
+        public var liveTryMissionRewards: [Int: [_DoriAPI.Item]]?
+        public var teamList: [FestivalTeam]?
+        public var teamRewards: [FestivalTeamReward]?
         
         internal init(
             id: Int,
@@ -932,7 +1045,13 @@ extension _DoriAPI.Events {
             members: [EventMember],
             limitBreaks: [EventLimitBreak],
             stories: [Story],
-            rewardCards: [Int]
+            rewardCards: [Int],
+            liveTryMissions: [Int: LiveTryMission]?,
+            liveTryMissionDetails: [Int: LiveTryMissionDetail]?,
+            liveTryMissionTypeSequences: [LiveTryMissionType: Int]?,
+            liveTryMissionRewards: [Int: [_DoriAPI.Item]]?,
+            teamList: [FestivalTeam]?,
+            teamRewards: [FestivalTeamReward]?
         ) {
             self.id = id
             self.eventType = eventType
@@ -959,6 +1078,12 @@ extension _DoriAPI.Events {
             self.limitBreaks = limitBreaks
             self.stories = stories
             self.rewardCards = rewardCards
+            self.liveTryMissions = liveTryMissions
+            self.liveTryMissionDetails = liveTryMissionDetails
+            self.liveTryMissionTypeSequences = liveTryMissionTypeSequences
+            self.liveTryMissionRewards = liveTryMissionRewards
+            self.teamList = teamList
+            self.teamRewards = teamRewards
         }
         
         public struct PointReward: Sendable, Hashable, DoriCache.Cacheable {
@@ -980,6 +1105,55 @@ extension _DoriAPI.Events {
             public var title: _DoriAPI.LocalizedData<String>
             public var synopsis: _DoriAPI.LocalizedData<String>
             public var releaseConditions: _DoriAPI.LocalizedData<String>
+        }
+        
+        public struct LiveTryMission: Sendable, Hashable, DoriCache.Cacheable {
+            public var eventID: Int
+            public var missionID: Int
+            public var missionDetailID: Int
+            public var missionType: LiveTryMissionType
+            public var missionDifficultyType: DifficultyType
+            public var level: Int
+            
+            public enum DifficultyType: String, Sendable, Hashable, DoriCache.Cacheable {
+                case normal
+                case extra
+            }
+        }
+        
+        public enum LiveTryMissionType: String, Sendable, Hashable, DoriCache.Cacheable {
+            case score
+            case life
+            case combo
+            case judge
+            case multi
+        }
+        
+        public struct LiveTryMissionDetail: Sendable, Hashable, DoriCache.Cacheable {
+            public var musicDescription: _DoriAPI.LocalizedData<String>
+            public var difficultyDescription: _DoriAPI.LocalizedData<String>
+            public var description: _DoriAPI.LocalizedData<String>
+        }
+        
+        public struct FestivalTeam: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
+            public var eventID: Int
+            public var teamID: Int
+            public var teamName: String
+            public var iconFileName: String
+            public var themeTitle: String
+            
+            @inlinable
+            public var id: Int { teamID }
+        }
+        
+        public struct FestivalTeamReward: Sendable, Hashable, DoriCache.Cacheable {
+            public var festivalResult: FestivalResult
+            public var item: _DoriAPI.Item
+        }
+        
+        public enum FestivalResult: String, Sendable, Hashable, DoriCache.Cacheable {
+            case win
+            case lose
         }
     }
     

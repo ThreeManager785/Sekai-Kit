@@ -582,6 +582,8 @@ extension _DoriAPI {
             case situation
             case costume3DMakingItem = "costume_3d_making_item"
             case degree
+            case eventPoint = "event_point"
+            case eventItem = "event_item"
         }
     }
     
