@@ -858,7 +858,7 @@ extension _DoriAPI.Cards.CardEpisode {
     public func standardized() -> _DoriAPI.Story {
         return _DoriAPI.Story(
             scenarioID: self.scenarioID,
-            caption: .init(forEveryLocale: self.episodeType.rawValue),
+            caption: .init(forEveryLocale: self.episodeType.localizedString),
             title: self.title,
             synopsis: .init(forEveryLocale: nil),
             voiceAssetBundleName: nil
