@@ -586,6 +586,7 @@ extension _DoriAPI.Cards {
         
         @frozen
         public enum EpisodeType: String, Hashable, DoriCache.Cacheable {
+            case animation
             case standard
             case memorial
         }
@@ -855,6 +856,12 @@ extension _DoriAPI.Cards.CardStat {
 
 extension _DoriAPI.Cards.CardEpisode {
     public func standardized() -> _DoriAPI.Story {
-        return _DoriAPI.Story(scenarioID: self.scenarioID, caption: LocalizedData(forEveryLocale: self.episodeType.rawValue), title: self.title, synopsis: LocalizedData(forEveryLocale: nil), voiceAssetBundleName: nil)
+        return _DoriAPI.Story(
+            scenarioID: self.scenarioID,
+            caption: .init(forEveryLocale: self.episodeType.rawValue),
+            title: self.title,
+            synopsis: .init(forEveryLocale: nil),
+            voiceAssetBundleName: nil
+        )
     }
 }

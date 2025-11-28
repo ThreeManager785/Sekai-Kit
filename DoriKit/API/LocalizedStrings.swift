@@ -40,6 +40,12 @@ extension _DoriAPI.Cards.CardType {
         NSLocalizedString("card" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
+extension _DoriAPI.Cards.CardEpisode.EpisodeType {
+    @inline(never)
+    public var localizedString: String {
+        NSLocalizedString("episode" + self.rawValue, bundle: #bundle, comment: "")
+    }
+}
 
 extension _DoriAPI.Characters.Character.Profile.Part {
     @inline(never)
