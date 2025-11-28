@@ -597,6 +597,16 @@ extension _DoriAPI {
         public var id: String { scenarioID }
     }
 }
+extension _DoriAPI.Story {
+    public init(_ eventStory: _DoriAPI.Events.Event.Story) {
+        self.init(
+            scenarioID: eventStory.scenarioID,
+            caption: eventStory.caption,
+            title: eventStory.title,
+            synopsis: eventStory.synopsis
+        )
+    }
+}
 
 // These declerations are less used so we define it in
 // extension of `DoriAPI.Misc`

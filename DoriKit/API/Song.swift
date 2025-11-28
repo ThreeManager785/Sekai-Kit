@@ -124,7 +124,7 @@ extension _DoriAPI {
                             bpm: bpm,
                             musicVideos: value["musicVideos"].exists() ? value["musicVideos"].map {
                                 (key: $0.0,
-                                 value: MusicVideoMetadata(
+                                 value: PreviewSong.MusicVideoMetadata(
                                     startAt: .init(
                                         jp: .init(apiTimeInterval: $0.1["startAt"][0].string),
                                         en: .init(apiTimeInterval: $0.1["startAt"][1].string),
@@ -133,7 +133,7 @@ extension _DoriAPI {
                                         kr: .init(apiTimeInterval: $0.1["startAt"][4].string)
                                     )
                                  ))
-                            }.reduce(into: [String: MusicVideoMetadata]()) {
+                            }.reduce(into: [String: PreviewSong.MusicVideoMetadata]()) {
                                 $0.updateValue($1.value, forKey: $1.key)
                             } : nil
                         ))
@@ -460,16 +460,40 @@ extension _DoriAPI {
                         bpm: bpm,
                         musicVideos: respJSON["musicVideos"].exists() ? respJSON["musicVideos"].map {
                             (key: $0.0,
-                             value: MusicVideoMetadata(
+                             value: Song.MusicVideoMetadata(
+                                assetBundleName: $0.1["assetBundleName"].stringValue,
+                                musicStartDelay: $0.1["musicStartDelayMilliseconds"].doubleValue / 1000,
+                                thumbAssetBundleName: $0.1["thumbAssetBundleName"].stringValue,
+                                title: .init(
+                                    jp: $0.1["title"][0].stringValue,
+                                    en: $0.1["title"][1].stringValue,
+                                    tw: $0.1["title"][2].stringValue,
+                                    cn: $0.1["title"][3].stringValue,
+                                    kr: $0.1["title"][4].stringValue
+                                ),
+                                description: .init(
+                                    jp: $0.1["description"][0].stringValue,
+                                    en: $0.1["description"][1].stringValue,
+                                    tw: $0.1["description"][2].stringValue,
+                                    cn: $0.1["description"][3].stringValue,
+                                    kr: $0.1["description"][4].stringValue
+                                ),
                                 startAt: .init(
                                     jp: .init(apiTimeInterval: $0.1["startAt"][0].string),
                                     en: .init(apiTimeInterval: $0.1["startAt"][1].string),
                                     tw: .init(apiTimeInterval: $0.1["startAt"][2].string),
                                     cn: .init(apiTimeInterval: $0.1["startAt"][3].string),
                                     kr: .init(apiTimeInterval: $0.1["startAt"][4].string)
+                                ),
+                                endAt: .init(
+                                    jp: .init(apiTimeInterval: $0.1["endAt"][0].string),
+                                    en: .init(apiTimeInterval: $0.1["endAt"][1].string),
+                                    tw: .init(apiTimeInterval: $0.1["endAt"][2].string),
+                                    cn: .init(apiTimeInterval: $0.1["endAt"][3].string),
+                                    kr: .init(apiTimeInterval: $0.1["endAt"][4].string)
                                 )
                              ))
-                        }.reduce(into: [String: MusicVideoMetadata]()) {
+                        }.reduce(into: [String: Song.MusicVideoMetadata]()) {
                             $0.updateValue($1.value, forKey: $1.key)
                         } : nil
                     )
@@ -633,6 +657,10 @@ extension _DoriAPI.Songs {
                 self.publishedAt = full.publishedAt
             }
         }
+        
+        public struct MusicVideoMetadata: Sendable, Hashable, DoriCache.Cacheable {
+            public var startAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        }
     }
     
     /// Represent detailed data of a song.
@@ -790,6 +818,16 @@ extension _DoriAPI.Songs {
                 }
             }
         }
+        
+        public struct MusicVideoMetadata: Sendable, Hashable, DoriCache.Cacheable {
+            public var assetBundleName: String
+            public var musicStartDelay: TimeInterval
+            public var thumbAssetBundleName: String
+            public var title: _DoriAPI.LocalizedData<String>
+            public var description: _DoriAPI.LocalizedData<String>
+            public var startAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var endAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        }
     }
     
     /// ```
@@ -828,10 +866,6 @@ extension _DoriAPI.Songs {
         public var bpm: Int
         public var start: Double
         public var end: Double
-    }
-    
-    public struct MusicVideoMetadata: Sendable, Hashable, DoriCache.Cacheable {
-        public var startAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
     }
     
     public enum Chart: Sendable, Hashable, DoriCache.Cacheable {
@@ -932,7 +966,9 @@ extension _DoriAPI.Songs.PreviewSong {
             length: full.length,
             notes: full.notes,
             bpm: full.bpm,
-            musicVideos: full.musicVideos
+            musicVideos: full.musicVideos?.mapValues {
+                .init(startAt: $0.startAt)
+            }
         )
     }
 }

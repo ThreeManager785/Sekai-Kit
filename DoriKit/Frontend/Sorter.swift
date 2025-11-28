@@ -465,15 +465,15 @@ extension _DoriAPI.Songs.PreviewSong: _DoriFrontend.Sortable {
             var finalReleaseDateForLHS: Date?
             var finalReleaseDateForRHS: Date?
             if let allMVDictForLHS = castedLHS.musicVideos {
-                let mvListForLHS: [_DoriAPI.Songs.MusicVideoMetadata?] = Array(allMVDictForLHS.values)
-                let mvDatesForLHS = mvListForLHS.compactMap{ $0?.startAt.forLocale(locale) }.sorted(by: <)
+                let mvListForLHS = Array(allMVDictForLHS.values)
+                let mvDatesForLHS = mvListForLHS.compactMap{ $0.startAt.forLocale(locale) }.sorted(by: <)
                 finalReleaseDateForLHS = mvDatesForLHS.first
             } else {
                 finalReleaseDateForLHS = nil
             }
             if let allMVDictForRHS = castedRHS.musicVideos {
-                let mvListForRHS: [_DoriAPI.Songs.MusicVideoMetadata?] = Array(allMVDictForRHS.values)
-                let mvDatesForRHS = mvListForRHS.compactMap{ $0?.startAt.forLocale(locale) }.sorted(by: <)
+                let mvListForRHS = Array(allMVDictForRHS.values)
+                let mvDatesForRHS = mvListForRHS.compactMap{ $0.startAt.forLocale(locale) }.sorted(by: <)
                 finalReleaseDateForRHS = mvDatesForRHS.first
             } else {
                 finalReleaseDateForRHS = nil
