@@ -643,6 +643,41 @@ extension _DoriAPI.Songs.${property} {
     }
 }
 % end
+extension _DoriAPI.Songs.Song.MusicVideoMetadata {
+    @inlinable
+    public var thumbImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/thumbnail/mv/\(self.thumbAssetBundleName)_rip/mvThumb.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func thumbImageURL(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/thumbnail/mv/\(self.thumbAssetBundleName)_rip/mvThumb.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public func videoURL(highQuality: Bool) -> URL {
+        var bundleName = self.assetBundleName
+        if highQuality {
+            bundleName += "_hq"
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/movie/mv/\(bundleName)_rip/\(bundleName).mp4")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func videoURL(highQuality: Bool, in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        var bundleName = self.assetBundleName
+        if highQuality {
+            bundleName += "_hq"
+        }
+        return if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/movie/mv/\(bundleName)_rip/\(bundleName).mp4")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
 
 @usableFromInline
 internal func _resLocale<T>(_ l: _DoriAPI.Locale, by d: _DoriAPI.LocalizedData<T>, allowsFallback f: Bool) -> String? {
