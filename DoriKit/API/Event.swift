@@ -722,7 +722,7 @@ extension _DoriAPI {
             //     "endAt": "1758535199000"
             // },
             // ...]
-            let request = await requestJSON("https://bestdori.com/api/festival/rotationMusics/\(id).json")
+            let request = await requestJSON("https://bestdori.com/api/festival/stages/\(id).json")
             if case let .success(respJSON) = request {
                 let task = Task.detached(priority: .userInitiated) {
                     respJSON.map {

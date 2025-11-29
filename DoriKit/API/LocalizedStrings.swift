@@ -81,6 +81,12 @@ extension _DoriAPI.Events.Event.LiveTryMissionType {
         NSLocalizedString(self.rawValue, bundle: #bundle, comment: "")
     }
 }
+extension _DoriAPI.Events.FestivalStage.StageType {
+    @inline(never)
+    public var localizedString: String {
+        NSLocalizedString(self.rawValue, bundle: #bundle, comment: "")
+    }
+}
 
 extension _DoriAPI.Gachas.GachaType {
     @inline(never)
