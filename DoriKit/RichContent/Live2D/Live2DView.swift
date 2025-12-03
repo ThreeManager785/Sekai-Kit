@@ -498,7 +498,7 @@ private class _NativeViewCoordinator: NSObject, WKScriptMessageHandler {
                         playExpression(expression, on: currentWebView)
                     }
                 } else {
-                    logger.log("""
+                    logger.fault("""
                     Live2D View indicates launching was finished, \
                     but it's not available for the Coordinator. \
                     Please file a bug report
