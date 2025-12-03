@@ -104,6 +104,28 @@ extension _DoriAPI.Events.${property} {
     }
 }
 % end
+extension _DoriAPI.Events.Event {
+    @inlinable
+    public var bgmURL: URL {
+        if self.bgmFileName.hasPrefix("bgm") && self.bgmFileName.hasSuffix("_chorus") {
+            let i = Double(String(Array(self.bgmFileName)[3...self.bgmFileName.count - 10]))!
+            return .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/musicscore/musicscore\(ceil(i / 10) * 10)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/\(self.bgmAssetBundleName)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func bgmURL(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            if self.bgmFileName.hasPrefix("bgm") && self.bgmFileName.hasSuffix("_chorus") {
+                let i = Double(String(Array(self.bgmFileName)[3...self.bgmFileName.count - 10]))!
+                return .init(string: "https://bestdori.com/assets/\(locale)/musicscore/musicscore\(ceil(i / 10) * 10)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+            }
+            return .init(string: "https://bestdori.com/assets/\(locale)/\(self.bgmAssetBundleName)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+        } else {
+            return nil
+        }
+    }
+}
 extension _DoriAPI.Events.EventCharacter {
     @inlinable
     public var iconImageURL: URL {
