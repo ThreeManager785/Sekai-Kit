@@ -80,7 +80,16 @@ extension _DoriFrontend {
                 return .init(
                     id: id,
                     gacha: gacha,
-                    events: events.filter { $0.startAt.forPreferredLocale() == gacha.publishedAt.forPreferredLocale() },
+                    events: events.reduce(into: _DoriAPI.LocalizedData(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)) {
+                        for locale in _DoriAPI.Locale.allCases {
+                            if let startAt = $1.startAt.forLocale(locale),
+                               let endAt = $1.endAt.forLocale(locale),
+                               let publishedAt = gacha.publishedAt.forLocale(locale),
+                               startAt...endAt ~= publishedAt {
+                                $0._set(($0.forLocale(locale) ?? []) + [$1], forLocale: locale)
+                            }
+                        }
+                    },
                     pickupCards: cards.filter { pickupCardIDs.contains($0.id) },
                     cardDetails: cardDetails.forPreferredLocale() ?? [:]
                 )
@@ -101,7 +110,7 @@ extension _DoriFrontend.Gachas {
         /// The base gacha information.
         public var gacha: Gacha
         /// The events that introduces this gacha.
-        public var events: [_DoriAPI.Events.PreviewEvent]
+        public var events: _DoriAPI.LocalizedData<[_DoriAPI.Events.PreviewEvent]>
         /// The pick-up cards in this gacha.
         public var pickupCards: [_DoriAPI.Cards.PreviewCard]
         /// All cards in this gacha.
