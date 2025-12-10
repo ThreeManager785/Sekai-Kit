@@ -415,6 +415,35 @@ extension _DoriAPI {
                         },
                     )
                     
+                    // Musics
+                    var musics: _DoriAPI.LocalizedData<[Event.Music]>?
+                    for locale in _DoriAPI.Locale.allCases {
+                        let objects = respJSON["musics"][locale.rawIntValue]
+                        guard !objects.isEmpty else { continue }
+                        
+                        if musics == nil {
+                            musics = .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
+                        }
+                        
+                        var result: [Event.Music] = []
+                        for (_, music) in objects {
+                            result.append(.init(
+                                id: music["musicId"].intValue,
+                                rankingRewards: music["musicRankingRewards"].map {
+                                    .init(
+                                        rankRange: $0.1["fromRank"].intValue...$0.1["toRank"].intValue,
+                                        reward: .init(
+                                            itemID: $0.1["rewardId"].int,
+                                            type: .init(rawValue: $0.1["rewardType"].stringValue) ?? .item,
+                                            quantity: $0.1["rewardQuantity"].intValue
+                                        )
+                                    )
+                                }
+                            ))
+                        }
+                        musics!._set(result, forLocale: locale)
+                    }
+                    
                     // Live try missons
                     var liveTryMissions: [Int: Event.LiveTryMission]?
                     var liveTryMissionDetails: [Int: Event.LiveTryMissionDetail]?
@@ -671,6 +700,7 @@ extension _DoriAPI {
                             )
                         },
                         rewardCards: respJSON["rewardCards"].map { $0.1.intValue },
+                        musics: musics,
                         liveTryMissions: liveTryMissions,
                         liveTryMissionDetails: liveTryMissionDetails,
                         liveTryMissionTypeSequences: liveTryMissionTypeSequences,
@@ -1013,6 +1043,7 @@ extension _DoriAPI.Events {
         public var stories: [Story]
         /// IDs of cards that can be gotten by participating this event.
         public var rewardCards: [Int]
+        public var musics: _DoriAPI.LocalizedData<[Music]>?
         public var liveTryMissions: [Int: LiveTryMission]?
         public var liveTryMissionDetails: [Int: LiveTryMissionDetail]?
         public var liveTryMissionTypeSequences: [LiveTryMissionType: Int]?
@@ -1046,6 +1077,7 @@ extension _DoriAPI.Events {
             limitBreaks: [EventLimitBreak],
             stories: [Story],
             rewardCards: [Int],
+            musics: _DoriAPI.LocalizedData<[Music]>?,
             liveTryMissions: [Int: LiveTryMission]?,
             liveTryMissionDetails: [Int: LiveTryMissionDetail]?,
             liveTryMissionTypeSequences: [LiveTryMissionType: Int]?,
@@ -1078,6 +1110,7 @@ extension _DoriAPI.Events {
             self.limitBreaks = limitBreaks
             self.stories = stories
             self.rewardCards = rewardCards
+            self.musics = musics
             self.liveTryMissions = liveTryMissions
             self.liveTryMissionDetails = liveTryMissionDetails
             self.liveTryMissionTypeSequences = liveTryMissionTypeSequences
@@ -1105,6 +1138,11 @@ extension _DoriAPI.Events {
             public var title: _DoriAPI.LocalizedData<String>
             public var synopsis: _DoriAPI.LocalizedData<String>
             public var releaseConditions: _DoriAPI.LocalizedData<String>
+        }
+        
+        public struct Music: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
+            public var id: Int
+            public var rankingRewards: [RankingReward]
         }
         
         public struct LiveTryMission: Sendable, Hashable, DoriCache.Cacheable {

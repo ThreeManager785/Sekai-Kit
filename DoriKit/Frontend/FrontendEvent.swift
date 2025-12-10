@@ -111,7 +111,18 @@ extension _DoriFrontend {
                 characters: resultCharacters,
                 cards: cards.filter { card in event.rewardCards.contains(card.id) || event.members.contains { $0.situationID == card.id } },
                 gacha: gacha.filter { event.startAt.forLocale(eventLocale) == $0.publishedAt.forLocale(eventLocale) },
-                songs: songs.filter { event.startAt.forLocale(eventLocale) == $0.publishedAt.forLocale(eventLocale) },
+                songs: songs.filter {
+                    event.startAt.forLocale(eventLocale)!...event.endAt.forLocale(eventLocale)!
+                    ~= ($0.publishedAt.forLocale(eventLocale) ?? .init(timeIntervalSince1970: 0))
+                },
+                eventSongs: event.musics?.map { musics in
+                    if let musics {
+                        let musicIDs = musics.map { $0.id }
+                        return songs.filter { musicIDs.contains($0.id) }
+                    } else {
+                        return nil
+                    }
+                },
                 degrees: degrees.filter { $0.baseImageName.forPreferredLocale() == "degree_event\(event.id)_point" }
             )
         }
@@ -394,6 +405,8 @@ extension _DoriFrontend.Events {
         public var gacha: [_DoriAPI.Gachas.PreviewGacha]
         /// The songs that were released during this event.
         public var songs: [_DoriAPI.Songs.PreviewSong]
+        /// The songs that presents in the `musics` property in the event.
+        public var eventSongs: _DoriAPI.LocalizedData<[_DoriAPI.Songs.PreviewSong]>?
         /// The degrees that related to this event.
         public var degrees: [_DoriAPI.Degrees.Degree]
     }
