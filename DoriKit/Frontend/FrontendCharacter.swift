@@ -236,9 +236,21 @@ extension _DoriFrontend.Characters.ExtendedCharacter {
 }
 
 extension _DoriFrontend.Characters.ExtendedCharacter {
+    /// Returns a random card of this character, using the given generator
+    /// as a source for randomness.
+    /// - Returns: A random card of this character.
+    @inlinable
+    public func randomCard<T: RandomNumberGenerator>(
+        using generator: inout T
+    ) -> _DoriAPI.Cards.PreviewCard? {
+        self.cards.randomElement(using: &generator)
+    }
+    
     /// Returns a random card of this character.
     /// - Returns: A random card of this character.
+    @inlinable
     public func randomCard() -> _DoriAPI.Cards.PreviewCard? {
-        self.cards.randomElement()
+        var g = SystemRandomNumberGenerator()
+        return self.randomCard(using: &g)
     }
 }
