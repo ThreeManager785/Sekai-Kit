@@ -465,6 +465,54 @@ extension _DoriAPI.Degrees.Degree {
             nil
         }
     }
+    
+    @inlinable
+    public var rankImageURL: URL? {
+        if let locale = self.rank.availableLocale(),
+           let rank = self.rank.forLocale(locale),
+           let type = self.degreeType.forLocale(locale) {
+            .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/degree_rip/\(type.rawValue)_\(rank).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func rankImageURL(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.rank, allowsFallback: allowsFallback) {
+            if let rank = self.rank.forLocale(.init(rawValue: locale)!),
+               let type = self.degreeType.forLocale(.init(rawValue: locale)!) {
+                .init(string: "https://bestdori.com/assets/\(locale)/thumb/degree_rip/\(type.rawValue)_\(rank).png")!.respectOfflineAssetContext()
+            } else {
+                nil
+            }
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var iconImageURL: URL? {
+        if let locale = self.iconImageName.availableLocale(),
+           let rank = self.rank.forLocale(locale),
+           let iconImageName = self.iconImageName.forLocale(locale) {
+            .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/degree_rip/\(iconImageName)_\(rank).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func iconImageURL(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.iconImageName, allowsFallback: allowsFallback) {
+            if let rank = self.rank.forLocale(.init(rawValue: locale)!),
+               let iconImageName = self.iconImageName.forLocale(.init(rawValue: locale)!) {
+                .init(string: "https://bestdori.com/assets/\(locale)/thumb/degree_rip/\(iconImageName)_\(rank).png")!.respectOfflineAssetContext()
+            } else {
+                nil
+            }
+        } else {
+            nil
+        }
+    }
 }
 
 %{
