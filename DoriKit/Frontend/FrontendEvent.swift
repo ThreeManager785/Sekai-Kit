@@ -13,6 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+internal import os
 
 extension _DoriFrontend {
     /// Request and fetch data about events in Bandori.
@@ -104,6 +105,50 @@ extension _DoriFrontend {
                 return nil
             }
             
+            var groupedDegrees: [[_DoriAPI.Degrees.Degree]] = []
+            if let rewards = event.rankingRewards.forLocale(
+                event.rankingRewards.availableLocale(prefer: .jp) ?? .jp
+            ) {
+                var partialResult: [_DoriAPI.Degrees.Degree] = []
+                for reward in rewards where reward.reward.type == .degree {
+                    if let degree = degrees.first(where: { $0.id == reward.reward.itemID }) {
+                        _onFastPath()
+                        partialResult.append(degree)
+                    } else {
+                        logger.fault("""
+                        Event info has declared a degree as reward, \
+                        but the degree doesn't appear in the list. \
+                        Please file a bug report.
+                        """)
+                    }
+                }
+                if !partialResult.isEmpty {
+                    groupedDegrees.append(partialResult)
+                }
+            }
+            if let musics = event.musics?.forLocale(
+                event.musics?.availableLocale(prefer: .jp) ?? .jp
+            ) {
+                for music in musics {
+                    var partialResult: [_DoriAPI.Degrees.Degree] = []
+                    for reward in music.rankingRewards where reward.reward.type == .degree {
+                        if let degree = degrees.first(where: { $0.id == reward.reward.itemID }) {
+                            _onFastPath()
+                            partialResult.append(degree)
+                        } else {
+                            logger.fault("""
+                            Event info has declared a degree as reward, \
+                            but the degree doesn't appear in the list. \
+                            Please file a bug report.
+                            """)
+                        }
+                    }
+                    if !partialResult.isEmpty {
+                        groupedDegrees.append(partialResult)
+                    }
+                }
+            }
+            
             return .init(
                 id: id,
                 event: event,
@@ -123,7 +168,7 @@ extension _DoriFrontend {
                         return nil
                     }
                 },
-                degrees: degrees.filter { $0.baseImageName.forPreferredLocale() == "degree_event\(event.id)_point" }
+                degrees: groupedDegrees
             )
         }
         
@@ -408,7 +453,10 @@ extension _DoriFrontend.Events {
         /// The songs that presents in the `musics` property in the event.
         public var eventSongs: _DoriAPI.LocalizedData<[_DoriAPI.Songs.PreviewSong]>?
         /// The degrees that related to this event.
-        public var degrees: [_DoriAPI.Degrees.Degree]
+        ///
+        /// The degrees are grouped into several arrays.
+        /// Degrees in the same inner array are related.
+        public var degrees: [[_DoriAPI.Degrees.Degree]]
     }
     
     /// Represent data of a user of top 10 in an event.
