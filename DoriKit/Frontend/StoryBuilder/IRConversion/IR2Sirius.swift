@@ -20,9 +20,7 @@ extension IRConversion {
         var result = ""
         
         result.append("# LOCALE: \(ir.locale.rawValue.uppercased())\n\n")
-        
         result.append(siriusParseActions(ir.actions, allowClosures: allowClosures))
-        
         result.append("\nEOF.")
         
         return result
@@ -32,13 +30,30 @@ extension IRConversion {
         var result = ""
         for index in 0..<actions.count {
             result.append("\(String(repeating: "  ", count: depth))\(index) ")
-            result.append(siriusParseActionFull(actions[index], depth: depth, allowClosures: allowClosures))
+            result.append(sirius2ParseAction(actions[index], depth: depth, allowClosures: allowClosures))
             result.append("\n")
         }
         return result
     }
     
-    private static func siriusParseActionFull(_ action: StoryIR.StepAction, depth: Int = 0, allowClosures: Bool) -> String {
+    private static func sirius2ParseAction(_ action: StoryIR.StepAction, depth: Int = 0, allowClosures: Bool) -> String {
+        if allowClosures {
+            switch action {
+            case .blocking(let array):
+                return siriusGiveClosure("Blocking", content: siriusParseActions(array, depth: depth+1, allowClosures: true), depth: depth)
+            case .forkTask(let array):
+                return siriusGiveClosure("ForkTask", content: siriusParseActions(array, depth: depth+1, allowClosures: true), depth: depth)
+            default:
+                return "\(action)".siriusFormatted()
+            }
+        } else {
+            return "\(action)".siriusFormatted()
+        }
+    }
+    
+    // NO USAGE
+    /*
+    private static func sirius1ParseActionFull(_ action: StoryIR.StepAction, depth: Int = 0, allowClosures: Bool) -> String {
         switch action {
         case .talk(let string, let characterIDs, let characterNames, let voicePath):
             return siriusCombineReadableOutput("Talk", ["": string.replacingOccurrences(of: "\n", with: "\\n"), "charID": characterIDs, "charName": characterNames, "voicePath": voicePath])
@@ -93,7 +108,7 @@ extension IRConversion {
             
         case .changeSE(let path):
             return siriusCombineReadableOutput("ChangeSE", ["path": path])
-            
+             
         case .blocking(let array):
             if allowClosures {
                 return siriusCombineReadableOutput("Blocking", ["closure": siriusParseActions(array, depth: depth+1, allowClosures: true)], closureDepth: depth)
@@ -110,17 +125,29 @@ extension IRConversion {
             } else {
                 return siriusCombineReadableOutput("ForkTask", ["array": array])
             }
-            
+           
         case .waitForTap:
             return siriusCombineReadableOutput("WaitForTap", [:])
             
         case .waitForAll:
             return siriusCombineReadableOutput("WaitForAll", [:])
         }
-//        return siriusCombineReadableOutput("Unknown", [:])
+    }
+     */
+    
+    private static func siriusGiveClosure(_ action: String, content: String, depth: Int = 0) -> String {
+        var output = ""
+        output.append("\(action)")
+        
+        if content.isEmpty {
+            output.append(" {}")
+        } else {
+            output.append(" {\n\(content)\(String(repeating: "  ", count: depth))}")
+        }
+        
+        return output
     }
     
-//    internal static func siriusCombineReadableOutput(_ input: (String, Dictionary<String, Any>)) -> String {
     private static func siriusCombineReadableOutput(_ action: String, _ params: Dictionary<String, Any>, closureDepth: Int = 0) -> String {
         var output = ""
         
@@ -152,5 +179,20 @@ extension IRConversion {
         }
         
         return output
+    }
+}
+
+fileprivate extension String {
+    func siriusFormatted() -> String {
+        guard !self.isEmpty else { return "" }
+        var mutableSelf = self
+        
+        mutableSelf = mutableSelf.first!.uppercased() + mutableSelf.dropFirst()
+        
+        if let firstOpenBracket = mutableSelf.firstIndex(where: { $0 == "(" }) {
+            mutableSelf.insert(" ", at: firstOpenBracket)
+        }
+        
+        return mutableSelf
     }
 }
