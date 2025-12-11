@@ -15,6 +15,7 @@
 import Foundation
 
 extension IRConversion {
+    @available(*, deprecated, renamed: "convertToPlainText", message: "Use plain text representation instead")
     internal static func convertToSirius(_ ir: StoryIR, allowClosures: Bool = true) -> String {
         var result = ""
         
@@ -27,7 +28,7 @@ extension IRConversion {
         return result
     }
     
-    internal static func siriusParseActions(_ actions: [StoryIR.StepAction], depth: Int = 0, allowClosures: Bool) -> String {
+    private static func siriusParseActions(_ actions: [StoryIR.StepAction], depth: Int = 0, allowClosures: Bool) -> String {
         var result = ""
         for index in 0..<actions.count {
             result.append("\(String(repeating: "  ", count: depth))\(index) ")
@@ -37,7 +38,7 @@ extension IRConversion {
         return result
     }
     
-    internal static func siriusParseActionFull(_ action: StoryIR.StepAction, depth: Int = 0, allowClosures: Bool) -> String {
+    private static func siriusParseActionFull(_ action: StoryIR.StepAction, depth: Int = 0, allowClosures: Bool) -> String {
         switch action {
         case .talk(let string, let characterIDs, let characterNames, let voicePath):
             return siriusCombineReadableOutput("Talk", ["": string.replacingOccurrences(of: "\n", with: "\\n"), "charID": characterIDs, "charName": characterNames, "voicePath": voicePath])
@@ -120,7 +121,7 @@ extension IRConversion {
     }
     
 //    internal static func siriusCombineReadableOutput(_ input: (String, Dictionary<String, Any>)) -> String {
-    internal static func siriusCombineReadableOutput(_ action: String, _ params: Dictionary<String, Any>, closureDepth: Int = 0) -> String {
+    private static func siriusCombineReadableOutput(_ action: String, _ params: Dictionary<String, Any>, closureDepth: Int = 0) -> String {
         var output = ""
         
         output.append("\(action)")

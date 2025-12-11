@@ -123,6 +123,7 @@ extension DoriStoryBuilder {
             IRConversion.convertToPlainText(ir)
         }
         
+        @available(*, deprecated, renamed: "plainText(fromIR:)", message: "Use plain text representation instead")
         public static func sirius(fromIR ir: StoryIR, allowClosureParsing: Bool = true) -> String {
             IRConversion.convertToSirius(ir, allowClosures: allowClosureParsing)
         }
