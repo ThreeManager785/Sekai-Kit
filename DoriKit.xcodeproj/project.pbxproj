@@ -200,6 +200,7 @@
 		E924ABA42E9A0672003BF482 /* FileDistribution.swift in Sources */ = {isa = PBXBuildFile; fileRef = E924ABA32E9A0647003BF482 /* FileDistribution.swift */; };
 		E935FF072E9CA6C900A1ECD1 /* InfoDetermination.swift in Sources */ = {isa = PBXBuildFile; fileRef = E935FF062E9CA6BE00A1ECD1 /* InfoDetermination.swift */; };
 		E949A5732EAA1E65007441A6 /* DriverTitleDescribable.swift in Sources */ = {isa = PBXBuildFile; fileRef = E949A5722EAA1E5A007441A6 /* DriverTitleDescribable.swift */; };
+		E97810BE2EE979E7000AD397 /* IR2Sirius.swift in Sources */ = {isa = PBXBuildFile; fileRef = E97810BD2EE979DC000AD397 /* IR2Sirius.swift */; };
 		E9A67EB42E72AF160047E6BA /* Sorter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9A67EB32E72AF160047E6BA /* Sorter.swift */; };
 		E9EFF2B82E61BEAB00991940 /* MatchedFilters.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9EFF2B72E61BEA800991940 /* MatchedFilters.swift */; };
 /* End PBXBuildFile section */
@@ -459,6 +460,7 @@
 		E924ABA32E9A0647003BF482 /* FileDistribution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileDistribution.swift; sourceTree = "<group>"; };
 		E935FF062E9CA6BE00A1ECD1 /* InfoDetermination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InfoDetermination.swift; sourceTree = "<group>"; };
 		E949A5722EAA1E5A007441A6 /* DriverTitleDescribable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DriverTitleDescribable.swift; sourceTree = "<group>"; };
+		E97810BD2EE979DC000AD397 /* IR2Sirius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IR2Sirius.swift; sourceTree = "<group>"; };
 		E9A67EB32E72AF160047E6BA /* Sorter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sorter.swift; sourceTree = "<group>"; };
 		E9EFF2B72E61BEA800991940 /* MatchedFilters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MatchedFilters.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -908,6 +910,7 @@
 				8C480C152EC7662B00A8AE70 /* Bandori2IR.swift */,
 				8CBCB11F2EBF9CE8007A1E33 /* IR2Bestdori.swift */,
 				8C48F2412EC8970200A8AE70 /* IR2PlainText.swift */,
+				E97810BD2EE979DC000AD397 /* IR2Sirius.swift */,
 			);
 			path = IRConversion;
 			sourceTree = "<group>";
@@ -1617,6 +1620,7 @@
 				8C923D892E305237003AFC0A /* FrontendEvent.swift in Sources */,
 				8CD13FB02E2FE2BF00673E15 /* Character.swift in Sources */,
 				8CD13FB12E2FE2BF00673E15 /* Costume.swift in Sources */,
+				E97810BE2EE979E7000AD397 /* IR2Sirius.swift in Sources */,
 				8C923D9D2E313B4A003AFC0A /* FrontendCard.swift in Sources */,
 				8CD13FB22E2FE2BF00673E15 /* Degree.swift in Sources */,
 				8CB4D46C2E4304A20085D57A /* FrontendSong.swift in Sources */,

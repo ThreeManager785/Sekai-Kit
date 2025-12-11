@@ -122,5 +122,9 @@ extension DoriStoryBuilder {
         public static func plainText(fromIR ir: StoryIR) -> String {
             IRConversion.convertToPlainText(ir)
         }
+        
+        public static func sirius(fromIR ir: StoryIR, allowClosureParsing: Bool = true) -> String {
+            IRConversion.convertToSirius(ir, allowClosures: allowClosureParsing)
+        }
     }
 }
