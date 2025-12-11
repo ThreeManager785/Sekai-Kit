@@ -433,9 +433,9 @@ extension _DoriAPI {
                                     .init(
                                         rankRange: $0.1["fromRank"].intValue...$0.1["toRank"].intValue,
                                         reward: .init(
-                                            itemID: $0.1["rewardId"].int,
-                                            type: .init(rawValue: $0.1["rewardType"].stringValue) ?? .item,
-                                            quantity: $0.1["rewardQuantity"].intValue
+                                            itemID: $0.1["resourceId"].int,
+                                            type: .init(rawValue: $0.1["resourceType"].stringValue) ?? .item,
+                                            quantity: $0.1["quantity"].intValue
                                         )
                                     )
                                 }
