@@ -155,7 +155,10 @@ extension _DoriFrontend {
                 bands: bands.filter { band in resultCharacters.contains { $0.bandID == band.id } },
                 characters: resultCharacters,
                 cards: cards.filter { card in event.rewardCards.contains(card.id) || event.members.contains { $0.situationID == card.id } },
-                gacha: gacha.filter { event.startAt.forLocale(eventLocale) == $0.publishedAt.forLocale(eventLocale) },
+                gacha: gacha.filter {
+                    event.startAt.forLocale(eventLocale)!...event.endAt.forLocale(eventLocale)!
+                    ~= ($0.publishedAt.forLocale(eventLocale) ?? .init(timeIntervalSince1970: 0))
+                },
                 songs: songs.filter {
                     event.startAt.forLocale(eventLocale)!...event.endAt.forLocale(eventLocale)!
                     ~= ($0.publishedAt.forLocale(eventLocale) ?? .init(timeIntervalSince1970: 0))

@@ -599,7 +599,7 @@ extension Array where Element: _DoriFrontend.Sortable {
         return result
     }
     
-    mutating func sort(withDoriSorter sorter: _DoriFrontend.Sorter) {
+    public mutating func sort(withDoriSorter sorter: _DoriFrontend.Sorter) {
         self = self.sorted(withDoriSorter: sorter)
     }
 }

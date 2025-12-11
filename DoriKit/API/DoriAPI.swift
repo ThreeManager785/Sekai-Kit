@@ -194,6 +194,28 @@ public final class _DoriAPI {
             case .kr: self.kr = newValue
             }
         }
+        
+        @inlinable
+        @inline(__always)
+        public subscript(_ locale: Locale) -> T? {
+            forLocale(locale)
+        }
+        
+        @inlinable
+        public subscript(_mutating locale: Locale) -> T? {
+            @inline(__always)
+            get { forLocale(locale) }
+            
+            _modify {
+                switch locale {
+                case .jp: yield &jp
+                case .en: yield &en
+                case .tw: yield &tw
+                case .cn: yield &cn
+                case .kr: yield &kr
+                }
+            }
+        }
     }
     
     /// Represent a constellation
