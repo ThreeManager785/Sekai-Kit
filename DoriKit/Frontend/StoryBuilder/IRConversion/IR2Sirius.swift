@@ -15,7 +15,6 @@
 import Foundation
 
 extension IRConversion {
-    @available(*, deprecated, renamed: "convertToPlainText", message: "Use plain text representation instead")
     internal static func convertToSirius(_ ir: StoryIR, allowClosures: Bool = true) -> String {
         var result = ""
         
