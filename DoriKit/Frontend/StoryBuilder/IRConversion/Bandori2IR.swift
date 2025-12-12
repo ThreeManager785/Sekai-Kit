@@ -28,7 +28,12 @@ extension IRConversion {
         ir.emitAction(.changeBGM(path: "\(bgmBasePath)/\(asset.firstBGM.lowercased())/\(asset.firstBGM).mp3"))
         ir.emitAction(.changeBackground(path: "\(locale.rawValue)/\(asset.firstBackgroundBundleName)/\(asset.firstBackground).png"))
         
-        func actions(for snippet: _DoriAPI.Misc.StoryAsset.Snippet) -> [StoryIR.StepAction] {
+        func actions(
+            at index: Int,
+            in snippets: [_DoriAPI.Misc.StoryAsset.Snippet]
+        ) -> [StoryIR.StepAction] {
+            let snippet = snippets[index]
+            
             var result: [StoryIR.StepAction] = []
             
             if snippet.progressType == 1 {
@@ -211,14 +216,27 @@ extension IRConversion {
             }
             
             if snippet.delay > 0 {
-                result.insert(.delay(seconds: snippet.delay), at: 0)
+                var previousDelay = 0.0
+                if index > 0 {
+                    for snippet in snippets[0..<index].reversed() {
+                        if snippet.progressType == 1 {
+                            break
+                        }
+                        
+                        if snippet.delay > 0 {
+                            previousDelay = snippet.delay
+                            break
+                        }
+                    }
+                }
+                result.insert(.delay(seconds: snippet.delay - previousDelay), at: 0)
             }
             
             return result
         }
         
-        for snippet in asset.snippets {
-            ir.actions.append(contentsOf: actions(for: snippet))
+        for i in 0..<asset.snippets.count {
+            ir.actions.append(contentsOf: actions(at: i, in: asset.snippets))
         }
         
         return ir
