@@ -33,38 +33,24 @@ extension Date {
     internal func interval(to date: Date) -> DateComponents {
         if self <= date {
             calendar.dateComponents([
-                .era,
                 .year,
                 .month,
                 .day,
                 .hour,
                 .minute,
                 .second,
-                .weekday,
-                .weekdayOrdinal,
-                .quarter,
-                .weekOfMonth,
-                .weekOfYear,
-                .yearForWeekOfYear,
                 .nanosecond,
                 .calendar,
                 .timeZone
             ], from: self, to: date)
         } else {
             calendar.dateComponents([
-                .era,
                 .year,
                 .month,
                 .day,
                 .hour,
                 .minute,
                 .second,
-                .weekday,
-                .weekdayOrdinal,
-                .quarter,
-                .weekOfMonth,
-                .weekOfYear,
-                .yearForWeekOfYear,
                 .nanosecond,
                 .calendar,
                 .timeZone
