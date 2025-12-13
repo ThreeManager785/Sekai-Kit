@@ -543,6 +543,98 @@ extension _DoriAPI {
             }
             return nil
         }
+        
+        public static func decoFrames() async -> [DecoFrame]? {
+            let request = await requestJSON("https://bestdori.com/api/deco/frames.all.3.json")
+            if case let .success(respJSON) = request {
+                let task = Task.detached(priority: .userInitiated) {
+                    respJSON.map {
+                        DecoFrame(
+                            id: Int($0.0) ?? 0,
+                            assetBundleName: $0.1["assetBundleName"].stringValue,
+                            decoFrameName: .init(
+                                jp: $0.1["decoFrameName"][0].string,
+                                en: $0.1["decoFrameName"][1].string,
+                                tw: $0.1["decoFrameName"][2].string,
+                                cn: $0.1["decoFrameName"][3].string,
+                                kr: $0.1["decoFrameName"][4].string
+                            )
+                        )
+                    }
+                }
+                return await task.value
+            }
+            return nil
+        }
+        
+        public static func decoPins() async -> [DecoPin]? {
+            let request = await requestJSON("https://bestdori.com/api/deco/pins.all.3.json")
+            if case let .success(respJSON) = request {
+                let task = Task.detached(priority: .userInitiated) {
+                    respJSON.map {
+                        DecoPin(
+                            id: Int($0.0) ?? 0,
+                            assetBundleName: $0.1["assetBundleName"].stringValue,
+                            decoPinName: .init(
+                                jp: $0.1["decoPinsName"][0].string,
+                                en: $0.1["decoPinsName"][1].string,
+                                tw: $0.1["decoPinsName"][2].string,
+                                cn: $0.1["decoPinsName"][3].string,
+                                kr: $0.1["decoPinsName"][4].string
+                            )
+                        )
+                    }
+                }
+                return await task.value
+            }
+            return nil
+        }
+        
+        public static func decoPinSets() async -> [DecoPinSet]? {
+            let request = await requestJSON("https://bestdori.com/api/deco/pinSets.all.3.json")
+            if case let .success(respJSON) = request {
+                let task = Task.detached(priority: .userInitiated) {
+                    respJSON.map {
+                        DecoPinSet(
+                            id: Int($0.0) ?? 0,
+                            assetBundleName: $0.1["assetBundleName"].stringValue,
+                            decoPinSetName: .init(
+                                jp: $0.1["decoPinsSetName"][0].string,
+                                en: $0.1["decoPinsSetName"][1].string,
+                                tw: $0.1["decoPinsSetName"][2].string,
+                                cn: $0.1["decoPinsSetName"][3].string,
+                                kr: $0.1["decoPinsSetName"][4].string
+                            )
+                        )
+                    }
+                }
+                return await task.value
+            }
+            return nil
+        }
+        
+        public static func gameLaneSkins() async -> [GameLaneSkin]? {
+            let request = await requestJSON("https://bestdori.com/api/skin/lanes.all.3.json")
+            if case let .success(respJSON) = request {
+                let task = Task.detached(priority: .userInitiated) {
+                    respJSON.map {
+                        GameLaneSkin(
+                            id: Int($0.0) ?? 0,
+                            assetBundleName: $0.1["assetBundleName"].stringValue,
+                            skinName: .init(
+                                jp: $0.1["skinName"][0].string,
+                                en: $0.1["skinName"][1].string,
+                                tw: $0.1["skinName"][2].string,
+                                cn: $0.1["skinName"][3].string,
+                                kr: $0.1["skinName"][4].string
+                            )
+                        )
+                    }
+                }
+                return await task.value
+            }
+            return nil
+        }
     }
 }
 
@@ -584,6 +676,11 @@ extension _DoriAPI {
             case degree
             case eventPoint = "event_point"
             case eventItem = "event_item"
+            case michelleSeal = "michelle_seal"
+            case decoFrame = "deco_frame"
+            case decoPins = "deco_pins"
+            case decoPinsSet = "deco_pins_set"
+            case inGameSkinLane = "in_game_skin_lane"
         }
     }
     
@@ -929,5 +1026,27 @@ extension _DoriAPI.Misc {
             public var fullComboMusicCount: Int
             public var allPerfectMusicCount: Int
         }
+    }
+    
+    public struct DecoFrame: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
+        public var id: Int
+        public var assetBundleName: String
+        public var decoFrameName: _DoriAPI.LocalizedData<String>
+    }
+    public struct DecoPin: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
+        public var id: Int
+        public var assetBundleName: String
+        public var decoPinName: _DoriAPI.LocalizedData<String>
+    }
+    public struct DecoPinSet: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
+        public var id: Int
+        public var assetBundleName: String
+        public var decoPinSetName: _DoriAPI.LocalizedData<String>
+    }
+    
+    public struct GameLaneSkin: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
+        public var id: Int
+        public var assetBundleName: String
+        public var skinName: _DoriAPI.LocalizedData<String>
     }
 }

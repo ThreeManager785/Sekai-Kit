@@ -13,6 +13,7 @@
 //===----------------------------------------------------------------------===//
 
 import Foundation
+private import Builtin
 
 extension _DoriFrontend {
     /// Other uncatogorized requests in Bandori.
@@ -26,28 +27,80 @@ extension _DoriFrontend {
         ) async -> [ExtendedItem]? where T: RandomAccessCollection, T.Element == Item {
             guard let texts = await _DoriAPI.Misc.itemTexts() else { return nil }
             
+            // These data may or may not be used, we fetch them on demand
+            var failureFlag: UInt8 = 0 // If something failed,
+                                       // we don't try it anymore
+            var degrees: [_DoriAPI.Degrees.Degree]?
+            var decoFrames: [_DoriAPI.Misc.DecoFrame]?
+            var decoPins: [_DoriAPI.Misc.DecoPin]?
+            var decoPinSets: [_DoriAPI.Misc.DecoPinSet]?
+            var gameLaneSkins: [_DoriAPI.Misc.GameLaneSkin]?
+            
             var result = [ExtendedItem]()
             for item in items {
                 var text: _DoriAPI.Misc.ItemText?
+                var iconImageURL: URL?
+                
                 switch item.type {
-                case .item, .practiceTicket, .liveBoostRecoveryItem, .gachaTicket, .miracleTicket:
+                case .item, .practiceTicket, .liveBoostRecoveryItem,
+                        .gachaTicket, .miracleTicket:
                     // These types of items are included in itemTexts result,
                     // we get it directly.
-                    if let id = item.itemID {
-                        text = texts["\(item.type.rawValue)_\(id)"]
+                    if let id = item.itemID,
+                       let t = texts["\(item.type.rawValue)_\(id)"] {
+                        text = t
+                        
+                        let locale = t.name.availableLocale() ?? .jp
+                        switch item.type {
+                        case .item:
+                            iconImageURL = .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/material_rip/material\(unsafe String(format: "%03d", t.resourceID)).png")
+                        case .practiceTicket:
+                            switch t.type {
+                            case .practice:
+                                iconImageURL = .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/practiceTicket\(t.resourceID).png")
+                            case .skillPractice:
+                                iconImageURL = .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/skillticket_\(t.resourceID).png")
+                            default: break
+                            }
+                        case .liveBoostRecoveryItem:
+                            iconImageURL = .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/boostdrink_\(t.resourceID).png")
+                        case .gachaTicket:
+                            iconImageURL = .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/gachaTicket\(id).png")
+                        case .miracleTicket:
+                            iconImageURL = .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/miracleTicket\(t.resourceID).png")
+                        default:
+                            // cases in this `switch` statement are matched to
+                            // the outer case matching list
+                            Builtin.unreachable()
+                        }
                     }
                 case .star:
-                    text = .init(
-                        name: .init(
-                            jp: "スター (無償)",
-                            en: "Star (Free)",
-                            tw: "Star (免費)",
-                            cn: "星石 (免费)",
-                            kr: "스타 (무료)"
-                        ),
-                        type: nil,
-                        resourceID: -1
-                    )
+                    if [0, nil].contains(item.itemID) {
+                        text = .init(
+                            name: .init(
+                                jp: "スター (無償)",
+                                en: "Star (Free)",
+                                tw: "Star (免費)",
+                                cn: "星石 (免费)",
+                                kr: "스타 (무료)"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "スター (有償)",
+                                en: "Star (Paid)",
+                                tw: "Star (付費)",
+                                cn: "星石 (付费)",
+                                kr: "스타 (유료)"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                    }
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/star.png")
                 case .coin:
                     text = .init(
                         name: .init(
@@ -60,6 +113,7 @@ extension _DoriFrontend {
                         type: nil,
                         resourceID: -1
                     )
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/coin.png")
                 case .stamp:
                     text = .init(
                         name: .init(
@@ -73,20 +127,179 @@ extension _DoriFrontend {
                         resourceID: -1
                     )
                 case .degree:
+                    if degrees == nil && failureFlag & 1 == 0 {
+                        let list = await _DoriAPI.Degrees.all()
+                        if list != nil {
+                            degrees = list
+                        } else {
+                            failureFlag |= 1
+                        }
+                    }
+                    if let degrees,
+                       let degree = degrees.first(where: { $0.id == item.itemID }) {
+                        text = .init(
+                            name: degree.degreeName,
+                            type: nil,
+                            resourceID: -1
+                        )
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "称号",
+                                en: "Title",
+                                tw: "稱號",
+                                cn: "称号",
+                                kr: "제목"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                    }
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/degree.png")
+                case .michelleSeal:
                     text = .init(
                         name: .init(
-                            jp: "Title",
-                            en: "称号",
-                            tw: "稱號",
-                            cn: "称号",
-                            kr: "제목"
+                            jp: "ミッシェルシール",
+                            en: "Michelle Sticker",
+                            tw: "米歇爾貼紙",
+                            cn: "米歇尔贴纸",
+                            kr: "미라클 스티커"
                         ),
                         type: nil,
                         resourceID: -1
                     )
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/michelle_seal.png")
+                case .decoFrame:
+                    if decoFrames == nil && failureFlag & 1 << 1 == 0 {
+                        let list = await _DoriAPI.Misc.decoFrames()
+                        if list != nil {
+                            decoFrames = list
+                        } else {
+                            failureFlag |= 1 << 1
+                        }
+                    }
+                    if let decoFrames,
+                       let frame = decoFrames.first(where: { $0.id == item.itemID }) {
+                        text = .init(
+                            name: frame.decoFrameName,
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/frame_rip/\(frame.assetBundleName).png")
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "フレーム",
+                                en: "Frame",
+                                tw: "外框",
+                                cn: "名片框",
+                                kr: "액자"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/frame_rip/deco_frame007.png")
+                    }
+                case .decoPins:
+                    if decoPins == nil && failureFlag & 1 << 2 == 0 {
+                        let list = await _DoriAPI.Misc.decoPins()
+                        if list != nil {
+                            decoPins = list
+                        } else {
+                            failureFlag |= 1 << 2
+                        }
+                    }
+                    if let decoPins,
+                       let pin = decoPins.first(where: { $0.id == item.itemID }) {
+                        text = .init(
+                            name: pin.decoPinName,
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/\(pin.assetBundleName).png")
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "ピンズ",
+                                en: "Pins",
+                                tw: "別針",
+                                cn: "装饰",
+                                kr: "핀즈"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/deco_pins_single.png")
+                    }
+                case .decoPinsSet:
+                    if decoPinSets == nil && failureFlag & 1 << 3 == 0 {
+                        let list = await _DoriAPI.Misc.decoPinSets()
+                        if list != nil {
+                            decoPinSets = list
+                        } else {
+                            failureFlag |= 1 << 3
+                        }
+                    }
+                    if let decoPinSets,
+                       let pinSet = decoPinSets.first(where: { $0.id == item.itemID }) {
+                        text = .init(
+                            name: pinSet.decoPinSetName,
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/\(pinSet.assetBundleName).png")
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "ピンズセット",
+                                en: "Pins",
+                                tw: "別針套組",
+                                cn: "装饰组合",
+                                kr: "핀즈 세트"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/deco_pins_shuffle.png")
+                    }
+                case .inGameSkinLane:
+                    if gameLaneSkins == nil && failureFlag & 1 << 4 == 0 {
+                        let list = await _DoriAPI.Misc.gameLaneSkins()
+                        if list != nil {
+                            gameLaneSkins = list
+                        } else {
+                            failureFlag |= 1 << 4
+                        }
+                    }
+                    if let gameLaneSkins,
+                       let skin = gameLaneSkins.first(where: { $0.id == item.itemID }) {
+                        text = .init(
+                            name: skin.skinName,
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/liveskinlane_rip/\(skin.assetBundleName).png")
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "レーンスキン",
+                                en: "Lane",
+                                tw: "軌跡外觀",
+                                cn: "按键条皮肤",
+                                kr: "레인 스킨"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/liveskinlane_rip/skin05.png")
+                    }
                 default: break
                 }
-                result.append(.init(item: item, text: text))
+                result.append(.init(
+                    item: item,
+                    text: text,
+                    iconImageURL: iconImageURL
+                ))
             }
             return result
         }
@@ -152,14 +365,26 @@ extension _DoriFrontend {
     public struct ExtendedItem: Identifiable, Hashable, DoriCache.Cacheable {
         public var item: Item
         public var text: _DoriAPI.Misc.ItemText?
+        public var _iconImageURL: URL?
         
+        @inlinable
         public var id: String {
             item.id
         }
         
-        internal init(item: Item, text: _DoriAPI.Misc.ItemText?) {
+        @inlinable
+        public var iconImageURL: URL? {
+            _iconImageURL?.respectOfflineAssetContext()
+        }
+        
+        internal init(
+            item: Item,
+            text: _DoriAPI.Misc.ItemText?,
+            iconImageURL: URL?
+        ) {
             self.item = item
             self.text = text
+            self._iconImageURL = iconImageURL
         }
     }
 }
