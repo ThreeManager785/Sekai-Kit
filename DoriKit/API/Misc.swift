@@ -613,6 +613,22 @@ extension _DoriAPI {
             return nil
         }
         
+        public static func stamps() async -> [Stamp]? {
+            let request = await requestJSON("https://bestdori.com/api/stamps/all.2.json")
+            if case let .success(respJSON) = request {
+                let task = Task.detached(priority: .userInitiated) {
+                    respJSON.map {
+                        Stamp(
+                            id: Int($0.0) ?? 0,
+                            imageName: $0.1["imageName"].stringValue
+                        )
+                    }
+                }
+                return await task.value
+            }
+            return nil
+        }
+        
         public static func gameLaneSkins() async -> [GameLaneSkin]? {
             let request = await requestJSON("https://bestdori.com/api/skin/lanes.all.3.json")
             if case let .success(respJSON) = request {
@@ -1042,6 +1058,11 @@ extension _DoriAPI.Misc {
         public var id: Int
         public var assetBundleName: String
         public var decoPinSetName: _DoriAPI.LocalizedData<String>
+    }
+    
+    public struct Stamp: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
+        public var id: Int
+        public var imageName: String
     }
     
     public struct GameLaneSkin: Sendable, Identifiable, Hashable, DoriCache.Cacheable {

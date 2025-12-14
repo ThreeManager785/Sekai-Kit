@@ -35,11 +35,14 @@ extension _DoriFrontend {
             var decoPins: [_DoriAPI.Misc.DecoPin]?
             var decoPinSets: [_DoriAPI.Misc.DecoPinSet]?
             var gameLaneSkins: [_DoriAPI.Misc.GameLaneSkin]?
+            var stamps: [_DoriAPI.Misc.Stamp]?
+            var cards: [_DoriAPI.Cards.PreviewCard]?
             
             var result = [ExtendedItem]()
             for item in items {
                 var text: _DoriAPI.Misc.ItemText?
                 var iconImageURL: URL?
+                var relatedItemSource: ExtendedItem.ItemSource?
                 
                 switch item.type {
                 case .item, .practiceTicket, .liveBoostRecoveryItem,
@@ -126,6 +129,18 @@ extension _DoriFrontend {
                         type: nil,
                         resourceID: -1
                     )
+                    if stamps == nil && failureFlag & 1 << 5 == 0 {
+                        let list = await _DoriAPI.Misc.stamps()
+                        if let list {
+                            stamps = list
+                        } else {
+                            failureFlag |= 1 << 5
+                        }
+                    }
+                    if let stamps,
+                       let stamp = stamps.first(where: { $0.id == item.itemID }) {
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/stamp/01_rip/\(stamp.imageName).png")
+                    }
                 case .degree:
                     if degrees == nil && failureFlag & 1 == 0 {
                         let list = await _DoriAPI.Degrees.all()
@@ -293,12 +308,44 @@ extension _DoriFrontend {
                         )
                         iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/liveskinlane_rip/skin05.png")
                     }
+                case .situation:
+                    if cards == nil && failureFlag & 1 << 6 == 0 {
+                        let list = await _DoriAPI.Cards.all()
+                        if list != nil {
+                            cards = list
+                        } else {
+                            failureFlag |= 1 << 6
+                        }
+                    }
+                    if let cards,
+                       let card = cards.first(where: { $0.id == item.itemID }) {
+                        text = .init(
+                            name: card.prefix,
+                            type: nil,
+                            resourceID: -1
+                        )
+                        iconImageURL = card.coverNormalImageURL
+                        relatedItemSource = .card(card)
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "カード",
+                                en: "Card",
+                                tw: "卡片",
+                                cn: "卡牌",
+                                kr: "카드"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                    }
                 default: break
                 }
                 result.append(.init(
                     item: item,
                     text: text,
-                    iconImageURL: iconImageURL
+                    iconImageURL: iconImageURL,
+                    relatedItemSource: relatedItemSource
                 ))
             }
             return result
@@ -362,10 +409,11 @@ extension _DoriFrontend {
 extension _DoriFrontend {
     public typealias Item = _DoriAPI.Item
     
-    public struct ExtendedItem: Identifiable, Hashable, DoriCache.Cacheable {
+    public struct ExtendedItem: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var item: Item
         public var text: _DoriAPI.Misc.ItemText?
         public var _iconImageURL: URL?
+        public var relatedItemSource: ItemSource?
         
         @inlinable
         public var id: String {
@@ -380,11 +428,17 @@ extension _DoriFrontend {
         internal init(
             item: Item,
             text: _DoriAPI.Misc.ItemText?,
-            iconImageURL: URL?
+            iconImageURL: URL?,
+            relatedItemSource: ItemSource?
         ) {
             self.item = item
             self.text = text
             self._iconImageURL = iconImageURL
+            self.relatedItemSource = relatedItemSource
+        }
+        
+        public enum ItemSource: Sendable, Hashable, DoriCache.Cacheable {
+            case card(_DoriAPI.Cards.PreviewCard)
         }
     }
 }
