@@ -75,6 +75,12 @@ extension _DoriAPI.Events.EventType {
         NSLocalizedString("event" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
+extension _DoriAPI.Events.Event.FestivalResult {
+    @inline(never)
+    public var localizedString: String {
+        NSLocalizedString("festivalresult" + self.rawValue, bundle: #bundle, comment: "")
+    }
+}
 extension _DoriAPI.Events.Event.LiveTryMissionType {
     @inline(never)
     public var localizedString: String {
