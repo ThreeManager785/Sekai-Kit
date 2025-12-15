@@ -615,7 +615,7 @@ extension _DoriAPI.LoginCampaigns.${property} {
     }
     @inlinable
     public func backgroundImageURL(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
-        if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
+        if let locale = _resLocale(locale, by: self.assetBundleName, allowsFallback: allowsFallback) {
             .init(string: "https://bestdori.com/assets/\(locale)/event/loginbonus/\(self.assetBundleName.forLocale(.init(rawValue: locale)!)!)_rip/background.png")!.respectOfflineAssetContext()
         } else {
             nil
