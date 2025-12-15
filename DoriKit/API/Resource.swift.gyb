@@ -610,7 +610,7 @@ extension _DoriAPI.Gachas.Gacha.PaymentMethod.Method {
 extension _DoriAPI.LoginCampaigns.${property} {
     @inlinable
     public var backgroundImageURL: URL {
-        let locale = self.publishedAt.availableLocale()!
+        let locale = self.assetBundleName.availableLocale()!
         return .init(string: "https://bestdori.com/assets/\(locale.rawValue)/event/loginbonus/\(self.assetBundleName.forLocale(locale)!)_rip/background.png")!.respectOfflineAssetContext()
     }
     @inlinable
