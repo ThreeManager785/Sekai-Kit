@@ -339,6 +339,19 @@ extension _DoriFrontend {
                             resourceID: -1
                         )
                     }
+                case .costume3DMakingItem:
+                    text = .init(
+                        name: .init(
+                            jp: "裁縫セット",
+                            en: "Sewing Set",
+                            tw: "裁縫工具組",
+                            cn: "裁缝套装",
+                            kr: "재봉 세트"
+                        ),
+                        type: nil,
+                        resourceID: -1
+                    )
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/material_rip/costume3dmakingitem001.png")
                 default: break
                 }
                 result.append(.init(
