@@ -117,18 +117,33 @@ extension _DoriFrontend {
                         resourceID: -1
                     )
                     iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/coin.png")
-                case .stamp:
-                    text = .init(
-                        name: .init(
-                            jp: "レアスタンプ",
-                            en: "Rare Stamp",
-                            tw: "稀有貼圖",
-                            cn: "稀有表情",
-                            kr: "레어 스탬프"
-                        ),
-                        type: nil,
-                        resourceID: -1
-                    )
+                case .stamp, .voiceStamp:
+                    if item.type == .stamp {
+                        text = .init(
+                            name: .init(
+                                jp: "レアスタンプ",
+                                en: "Rare Stamp",
+                                tw: "稀有貼圖",
+                                cn: "稀有表情",
+                                kr: "레어 스탬프"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                    } else {
+                        text = .init(
+                            name: .init(
+                                jp: "レアスタンプ（ボイス付き）",
+                                en: "Rare Stamp (Voiced)",
+                                tw: "稀有貼圖（有聲音）",
+                                cn: "稀有表情（附带语音）",
+                                kr: "레어 스탬프（소리와 함께）"
+                            ),
+                            type: nil,
+                            resourceID: -1
+                        )
+                    }
+                    
                     if stamps == nil && failureFlag & 1 << 5 == 0 {
                         let list = await _DoriAPI.Misc.stamps()
                         if let list {
@@ -140,6 +155,10 @@ extension _DoriFrontend {
                     if let stamps,
                        let stamp = stamps.first(where: { $0.id == item.itemID }) {
                         iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/stamp/01_rip/\(stamp.imageName).png")
+                        
+                        if item.type == .voiceStamp {
+                            relatedItemSource = .stampVoice(URL(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/sound/voice_stamp_rip/\(stamp.imageName).mp3")!)
+                        }
                     }
                 case .degree:
                     if degrees == nil && failureFlag & 1 == 0 {
@@ -452,6 +471,7 @@ extension _DoriFrontend {
         
         public enum ItemSource: Sendable, Hashable, DoriCache.Cacheable {
             case card(_DoriAPI.Cards.PreviewCard)
+            case stampVoice(URL)
         }
     }
 }
