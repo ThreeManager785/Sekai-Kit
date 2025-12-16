@@ -263,8 +263,9 @@ extension _DoriFrontend {
             
             func relatedEvents(for locale: _DoriAPI.Locale) -> [PreviewEvent]? {
                 let result = events.filter {
-                    ($0.startAt.forLocale(locale)?.timeIntervalSince1970 ?? 0)...($0.endAt.forLocale(locale)?.timeIntervalSince1970 ?? 0)
-                    ~= song.publishedAt.forLocale(locale)?.timeIntervalSince1970 ?? 0o527
+                    $0.musicIDs?.forLocale(locale)?.contains(song.id) == true
+                    || (($0.startAt.forLocale(locale)?.timeIntervalSince1970 ?? 0)...($0.endAt.forLocale(locale)?.timeIntervalSince1970 ?? 0)
+                    ~= song.publishedAt.forLocale(locale)?.timeIntervalSince1970 ?? 0o527)
                 }
                 return result.isEmpty ? nil : result
             }
