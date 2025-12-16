@@ -331,7 +331,7 @@ extension _DoriFrontend.Songs {
     public struct ExtendedSong: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var song: Song
         public var band: _DoriAPI.Bands.Band?
-        public var events: [_DoriAPI.Events.PreviewEvent]
+        public var events: _DoriAPI.LocalizedData<[_DoriAPI.Events.PreviewEvent]>
         public var meta: [_DoriAPI.Songs.DifficultyType: Meta]
         public var metaFever: [_DoriAPI.Songs.DifficultyType: Meta]
         

@@ -73,11 +73,27 @@ extension _DoriAPI {
             //     },
             //     ...
             // }
-            let request = await requestJSON("https://bestdori.com/api/events/all.5.json")
+            let request = await requestJSON("https://bestdori.com/api/events/all.6.json")
             if case let .success(respJSON) = request {
                 let task = Task.detached(priority: .userInitiated) {
                     var result = [PreviewEvent]()
                     for (key, value) in respJSON {
+                        var musicIDs: _DoriAPI.LocalizedData<[Int]>?
+                        for locale in _DoriAPI.Locale.allCases {
+                            let objects = value["musics"][locale.rawIntValue]
+                            guard !objects.isEmpty else { continue }
+                            
+                            if musicIDs == nil {
+                                musicIDs = .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
+                            }
+                            
+                            var result: [Int] = []
+                            for (_, music) in objects {
+                                result.append(music["musicId"].intValue)
+                            }
+                            musicIDs!._set(result, forLocale: locale)
+                        }
+                        
                         result.append(.init(
                             id: Int(key) ?? 0,
                             eventType: .init(rawValue: value["eventType"].stringValue) ?? .story,
@@ -144,6 +160,7 @@ extension _DoriAPI {
                                     percent: $0.1["percent"].doubleValue
                                 )
                             },
+                            musicIDs: musicIDs,
                             rewardCards: value["rewardCards"].map { $0.1.intValue }
                         ))
                     }
@@ -997,8 +1014,43 @@ extension _DoriAPI.Events {
         /// A *member* related to event is a card with bonus during the event.
         public var members: [EventMember]
         public var limitBreaks: [EventLimitBreak]
+        public var musicIDs: _DoriAPI.LocalizedData<[Int]>?
         /// IDs of cards that can be gotten by participating this event.
         public var rewardCards: [Int]
+        
+        internal init(
+            id: Int,
+            eventType: EventType,
+            eventName: _DoriAPI.LocalizedData<String>,
+            assetBundleName: String,
+            bannerAssetBundleName: String,
+            startAt: _DoriAPI.LocalizedData<Date>,
+            endAt: _DoriAPI.LocalizedData<Date>,
+            attributes: [EventAttribute],
+            characters: [EventCharacter],
+            eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?,
+            eventCharacterParameterBonus: _DoriAPI.Cards.Stat?,
+            members: [EventMember],
+            limitBreaks: [EventLimitBreak],
+            musicIDs: _DoriAPI.LocalizedData<[Int]>?,
+            rewardCards: [Int]
+        ) {
+            self.id = id
+            self.eventType = eventType
+            self.eventName = eventName
+            self.assetBundleName = assetBundleName
+            self.bannerAssetBundleName = bannerAssetBundleName
+            self.startAt = startAt
+            self.endAt = endAt
+            self.attributes = attributes
+            self.characters = characters
+            self.eventAttributeAndCharacterBonus = eventAttributeAndCharacterBonus
+            self.eventCharacterParameterBonus = eventCharacterParameterBonus
+            self.members = members
+            self.limitBreaks = limitBreaks
+            self.musicIDs = musicIDs
+            self.rewardCards = rewardCards
+        }
     }
     
     /// Represent detailed data of an event.
@@ -1342,8 +1394,11 @@ extension _DoriAPI.Events.PreviewEvent {
             endAt: full.endAt,
             attributes: full.attributes,
             characters: full.characters,
+            eventAttributeAndCharacterBonus: full.eventAttributeAndCharacterBonus,
+            eventCharacterParameterBonus: full.eventCharacterParameterBonus,
             members: full.members,
             limitBreaks: full.limitBreaks,
+            musicIDs: full.musics?.map { $0?.map { $0.id } },
             rewardCards: full.rewardCards
         )
     }
