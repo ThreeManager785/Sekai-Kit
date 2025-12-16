@@ -92,7 +92,7 @@ public final class _DoriAPI {
     /// Generally, if data is not available in a locale,
     /// you can use the `jp`'s as fallback.
     /// However, not all data availables in `jp`,
-    /// such as events related to Bilibili are only available in China.
+    /// such as events related to Bilibili are only available in China Mainland.
     @_eagerMove
     public struct LocalizedData<T>: _DestructorSafeContainer {
         public var jp: T?
