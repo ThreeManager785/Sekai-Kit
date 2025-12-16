@@ -246,6 +246,7 @@ public final class _DoriAPI {
 }
 
 extension _DoriAPI.Locale {
+    @usableFromInline
     internal init?(rawIntValue value: Int) {
         switch value {
         case 0: self = .jp
@@ -335,6 +336,12 @@ extension _DoriAPI.LocalizedData {
             }
         }
         return result
+    }
+}
+extension _DoriAPI.LocalizedData {
+    @inlinable
+    public func enumerated() -> [(locale: _DoriAPI.Locale, element: T?)] {
+        compactMap { $0 }.enumerated().map { (.init(rawIntValue: $0.offset)!, $0.element) }
     }
 }
 extension _DoriAPI.LocalizedData {
