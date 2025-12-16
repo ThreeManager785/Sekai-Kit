@@ -261,10 +261,24 @@ extension _DoriFrontend {
             guard let meta = metaResult.0 else { return nil }
             guard let metaFever = metaResult.1 else { return nil }
             
+            func relatedEvents(for locale: _DoriAPI.Locale) -> [PreviewEvent]? {
+                let result = events.filter {
+                    ($0.startAt.forLocale(locale)?.timeIntervalSince1970 ?? 0)...($0.endAt.forLocale(locale)?.timeIntervalSince1970 ?? 0)
+                    ~= song.publishedAt.forLocale(locale)?.timeIntervalSince1970 ?? 0o527
+                }
+                return result.isEmpty ? nil : result
+            }
+            
             return .init(
                 song: song,
                 band: bands.first { $0.id == song.bandID },
-                events: events.filter { ($0.startAt.forPreferredLocale() ?? .now)...($0.endAt.forPreferredLocale() ?? .now) ~= song.publishedAt.forPreferredLocale() ?? .init(timeIntervalSince1970: 0) },
+                events: .init(
+                    jp: relatedEvents(for: .jp),
+                    en: relatedEvents(for: .en),
+                    tw: relatedEvents(for: .tw),
+                    cn: relatedEvents(for: .cn),
+                    kr: relatedEvents(for: .kr)
+                ),
                 meta: meta,
                 metaFever: metaFever
             )
