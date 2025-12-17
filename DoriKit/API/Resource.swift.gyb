@@ -653,16 +653,31 @@ extension _DoriAPI.Songs.DifficultyType {
 }%
 % for property in properties:
 extension _DoriAPI.Songs.${property} {
+    @available(*, deprecated, renamed: "jacketImageURLs", message: "Use 'jacketImageURLs' instead.")
     @inlinable
     public var jacketImageURL: URL {
-        let jacketID = Int(ceil(Double(self.id) / 10) * 10)
-        return .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale()!.rawValue)/musicjacket/musicjacket\(jacketID)_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket\(jacketID)-\(self.jacketImage[0])-jacket.png")!.respectOfflineAssetContext()
+        jacketImageURLs[0]
     }
+    @available(*, deprecated, renamed: "jacketImageURLs(in:allowsFallback:)", message: "Use 'jacketImageURLs(in:allowsFallback:)' instead.")
     @inlinable
     public func jacketImageURL(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        jacketImageURLs(in: locale, allowsFallback: allowsFallback)?[0]
+    }
+    
+    @inlinable
+    public var jacketImageURLs: [URL] {
+        let jacketID = Int(ceil(Double(self.id) / 10) * 10)
+        return self.jacketImage.map {
+            .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale()!.rawValue)/musicjacket/musicjacket\(jacketID)_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket\(jacketID)-\($0)-jacket.png")!.respectOfflineAssetContext()
+        }
+    }
+    @inlinable
+    public func jacketImageURLs(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> [URL]? {
         let jacketID = Int(ceil(Double(self.id) / 10) * 10)
         return if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
-            .init(string: "https://bestdori.com/assets/\(locale)/musicjacket/musicjacket\(jacketID)_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket\(jacketID)-\(self.jacketImage[0])-jacket.png")!.respectOfflineAssetContext()
+            self.jacketImage.map {
+                .init(string: "https://bestdori.com/assets/\(locale)/musicjacket/musicjacket\(jacketID)_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket\(jacketID)-\($0)-jacket.png")!.respectOfflineAssetContext()
+            }
         } else {
             nil
         }
