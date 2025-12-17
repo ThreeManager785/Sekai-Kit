@@ -91,13 +91,18 @@ extension _DoriFrontend {
                     % end
                         if startDate > .now {
                             // Not started yet
-                            let comparing = if startDate.assertSameDay(to: .now) <= .now {
+                            var comparing = if startDate.assertSameDay(to: .now) <= .now {
                                 // Show as published today
                                 Date.now
                             } else {
                                 // Show as published yesterday
                                 Date(timeIntervalSince1970: Date.now.timeIntervalSince1970 - 86400)
                             }
+                            comparing = comparing.componentsRewritten(
+                                hour: startDate.components.hour,
+                                minute: startDate.components.minute,
+                                second: startDate.components.second
+                            )
                             let interval = startDate.interval(to: comparing).day!
                             if interval != 0 {
                                 unsortedResult.append(.init(
@@ -108,11 +113,7 @@ extension _DoriFrontend {
                                         bundle: #bundle
                                     ),
                                     author: "Bestdori! Update Bot",
-                                    timestamp: comparing.componentsRewritten(
-                                        hour: startDate.components.hour,
-                                        minute: startDate.components.minute,
-                                        second: startDate.components.second
-                                    ),
+                                    timestamp: comparing,
                                     tags: ["Update", "GBP", locale.rawValue.uppercased(), "${tagsOfSubcategory[subcategory]}"],
                                     subject: item.${namePropOfSubgategory[subcategory]}.forLocale(locale)!,
                                     locale: locale,
@@ -127,11 +128,7 @@ extension _DoriFrontend {
                                         bundle: #bundle
                                     ),
                                     author: "Bestdori! Update Bot",
-                                    timestamp: comparing.componentsRewritten(
-                                        hour: startDate.components.hour,
-                                        minute: startDate.components.minute,
-                                        second: startDate.components.second
-                                    ),
+                                    timestamp: comparing,
                                     tags: ["Update", "GBP", locale.rawValue.uppercased(), "${tagsOfSubcategory[subcategory]}"],
                                     subject: item.${namePropOfSubgategory[subcategory]}.forLocale(locale)!,
                                     locale: locale,
@@ -163,13 +160,18 @@ extension _DoriFrontend {
                                 ))
                             } else {
                                 // Not ended yet
-                                let comparing = if endDate.assertSameDay(to: .now) <= .now {
+                                var comparing = if endDate.assertSameDay(to: .now) <= .now {
                                     // Show as published today
                                     Date.now
                                 } else {
                                     // Show as published yesterday
                                     Date(timeIntervalSince1970: Date.now.timeIntervalSince1970 - 86400)
                                 }
+                                comparing = comparing.componentsRewritten(
+                                    hour: endDate.components.hour,
+                                    minute: endDate.components.minute,
+                                    second: endDate.components.second
+                                )
                                 let interval = endDate.interval(to: comparing).day!
                                 if interval != 0 {
                                     unsortedResult.append(.init(
@@ -180,11 +182,7 @@ extension _DoriFrontend {
                                             bundle: #bundle
                                         ),
                                         author: "Bestdori! Update Bot",
-                                        timestamp: comparing.componentsRewritten(
-                                            hour: endDate.components.hour,
-                                            minute: endDate.components.minute,
-                                            second: endDate.components.second
-                                        ),
+                                        timestamp: comparing,
                                         tags: ["Update", "GBP", locale.rawValue.uppercased(), "${tagsOfSubcategory[subcategory]}"],
                                         subject: item.${namePropOfSubgategory[subcategory]}.forLocale(locale)!,
                                         locale: locale,
@@ -199,11 +197,7 @@ extension _DoriFrontend {
                                             bundle: #bundle
                                         ),
                                         author: "Bestdori! Update Bot",
-                                        timestamp: comparing.componentsRewritten(
-                                            hour: endDate.components.hour,
-                                            minute: endDate.components.minute,
-                                            second: endDate.components.second
-                                        ),
+                                        timestamp: comparing,
                                         tags: ["Update", "GBP", locale.rawValue.uppercased(), "${tagsOfSubcategory[subcategory]}"],
                                         subject: item.${namePropOfSubgategory[subcategory]}.forLocale(locale)!,
                                         locale: locale,
