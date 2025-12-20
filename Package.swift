@@ -5,7 +5,7 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "Greatdori",
+    name: "DoriKit",
     platforms: [.iOS(.v17), .macCatalyst(.v17), .macOS(.v14), .visionOS(.v1), .watchOS(.v10)],
     products: [
         .library(name: "DoriKit", type: .dynamic, targets: ["DoriKit"])
