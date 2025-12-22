@@ -3328,7 +3328,32 @@
       }
     },
     "FILTER_KEY_CHARACTER_MATCHES_OTHERS" : {
-
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Characters Match Others"
+          }
+        },
+        "ja" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "キャラは他とマッチする"
+          }
+        },
+        "zh-Hans" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "角色匹配其他"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "角色匹配其他"
+          }
+        }
+      }
     },
     "FILTER_KEY_CHARACTER_REQUIRES_MATCH_ALL" : {
       "localizations" : {
