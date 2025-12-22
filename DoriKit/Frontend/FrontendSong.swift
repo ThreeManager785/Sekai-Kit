@@ -303,6 +303,23 @@ extension _DoriFrontend {
                 }
             }
         }
+        
+        public static func _lyrics(of id: Int) async -> Lyrics? {
+            await withCheckedContinuation { continuation in
+                AF.request("https://kashi.greatdori.com/\(id).plist").response { response in
+                    if let data = response.data {
+                        let decoder = PropertyListDecoder()
+                        if let result = try? decoder.decode(Lyrics.self, from: data) {
+                            continuation.resume(returning: result)
+                        } else {
+                            continuation.resume(returning: nil)
+                        }
+                    } else {
+                        continuation.resume(returning: nil)
+                    }
+                }
+            }
+        }
     }
 }
 
