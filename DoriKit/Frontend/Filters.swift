@@ -34,6 +34,7 @@ extension _DoriFrontend {
         public var attribute: Set<Attribute> = .init(Attribute.allCases)  { didSet { store() } }
         public var rarity: Set<Rarity> = [1, 2, 3, 4, 5]  { didSet { store() } }
         public var character: Set<Character> = .init(Character.allCases)  { didSet { store() } }
+        public var characterMatchesOthers: CharacterMatchesOthers = .includeOthers { didSet { store() } }
         public var characterRequiresMatchAll: Bool = false  { didSet { store() } }
         public var server: Set<Server> = .init(Server.allCases)  { didSet { store() } }
         public var released: Set<ReleaseStatus> = [false, true]  { didSet { store() } }
@@ -53,6 +54,7 @@ extension _DoriFrontend {
             attribute: Set<Attribute> = .init(Attribute.allCases),
             rarity: Set<Rarity> = [1, 2, 3, 4, 5],
             character: Set<Character> = .init(Character.allCases),
+            characterMatchesOthers: CharacterMatchesOthers = .includeOthers,
             characterRequiresMatchAll: Bool = false,
             server: Set<Server> = .init(Server.allCases),
             released: Set<ReleaseStatus> = [false, true],
@@ -71,6 +73,7 @@ extension _DoriFrontend {
             self.attribute = attribute
             self.rarity = rarity
             self.character = character
+            self.characterMatchesOthers = characterMatchesOthers
             self.characterRequiresMatchAll = characterRequiresMatchAll
             self.server = server
             self.released = released
@@ -110,6 +113,7 @@ extension _DoriFrontend {
             || attribute.count != Attribute.allCases.count
             || rarity.count != 5
             || character.count != Character.allCases.count
+            || characterMatchesOthers == .excludeOthers
             || characterRequiresMatchAll
             || server.count != Server.allCases.count
             || released.count != 2
@@ -136,6 +140,7 @@ extension _DoriFrontend {
             \(attribute.sorted { $0.rawValue < $1.rawValue })\
             \(rarity.sorted { $0 < $1 })\
             \(character.sorted { $0.rawValue < $1.rawValue })\
+            \(characterMatchesOthers)\
             \(characterRequiresMatchAll)\
             \(server.sorted { $0.rawValue < $1.rawValue })\
             \(released.sorted { $1.boolValue })\
@@ -158,6 +163,7 @@ extension _DoriFrontend {
             attribute = .init(Attribute.allCases)
             rarity = [1, 2, 3, 4, 5]
             character = .init(Character.allCases)
+            characterMatchesOthers = .includeOthers
             characterRequiresMatchAll = false
             server = .init(Server.allCases)
             released = [false, true]
@@ -250,7 +256,11 @@ extension _DoriFrontend.Filter {
         }
     }
     @frozen
-    public enum BandMatchesOthers: Codable, Hashable {
+    public enum BandMatchesOthers: Codable, Hashable, Sendable {
+        case includeOthers
+        case excludeOthers
+    }
+    public enum CharacterMatchesOthers: Codable, Hashable, Sendable {
         case includeOthers
         case excludeOthers
     }
@@ -378,6 +388,7 @@ extension _DoriFrontend.Filter {
         case attribute
         case rarity
         case character
+        case characterMatchesOthers
         case characterRequiresMatchAll
         case server
         case released
@@ -418,6 +429,7 @@ extension _DoriFrontend.Filter.Key {
         case .attribute: String(localized: "FILTER_KEY_ATTRIBUTE", bundle: #bundle)
         case .rarity: String(localized: "FILTER_KEY_RARITY", bundle: #bundle)
         case .character: String(localized: "FILTER_KEY_CHARACTER", bundle: #bundle)
+        case .characterMatchesOthers: String(localized: "FILTER_KEY_CHARACTER_MATCHES_OTHERS", bundle: #bundle)
         case .characterRequiresMatchAll: String(localized: "FILTER_KEY_CHARACTER_REQUIRES_MATCH_ALL", bundle: #bundle)
         case .server: String(localized: "FILTER_KEY_SERVER", bundle: #bundle)
         case .released: String(localized: "FILTER_KEY_RELEASED", bundle: #bundle)
@@ -461,6 +473,7 @@ extension _DoriFrontend.Filter: MutableCollection {
             case .attribute: self.attribute
             case .rarity: self.rarity
             case .character: self.character
+            case .characterMatchesOthers: self.characterMatchesOthers
             case .characterRequiresMatchAll: self.characterRequiresMatchAll
             case .server: self.server
             case .released: self.released
@@ -510,6 +523,8 @@ extension _DoriFrontend.Filter: MutableCollection {
             self.rarity = value as! Set<Rarity>
         case .character:
             self.character = value as! Set<Character>
+        case .characterMatchesOthers:
+            self.characterMatchesOthers = value as! CharacterMatchesOthers
         case .characterRequiresMatchAll:
             self.characterRequiresMatchAll = value as! Bool
         case .server:
@@ -684,6 +699,7 @@ extension _DoriFrontend.Filter.TimelineStatus: _DoriFrontend.Filter._Selectable 
     }
 }
 extension _DoriFrontend.Filter.Key {
+    
     /// Get a selector for key.
     ///
     /// You use `type` of selector to check whether this key should be treat as single or multiple selection,
@@ -745,6 +761,10 @@ extension _DoriFrontend.Filter.Key {
             })
         case .character:
             (.multiple, _DoriFrontend.Filter.Character.allCases.map {
+                SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
+            })
+        case .characterMatchesOthers:
+            (.single, [false, true].map {
                 SelectorItem(_DoriFrontend.Filter._AnySelectable($0))
             })
         case .characterRequiresMatchAll:

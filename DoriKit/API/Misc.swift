@@ -780,7 +780,7 @@ extension _DoriAPI.Misc {
         public var characterIDs: [Int]
         public var actionSetType: ActionSetType
         
-        public enum ActionSetType: String, Sendable, Hashable, DoriCache.Cacheable {
+        public enum ActionSetType: String, CaseIterable, Sendable, Hashable, DoriCache.Cacheable {
             case normal
             case birthday
             case areaItem = "area_item"

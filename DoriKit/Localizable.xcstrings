@@ -3327,6 +3327,9 @@
         }
       }
     },
+    "FILTER_KEY_CHARACTER_MATCHES_OTHERS" : {
+
+    },
     "FILTER_KEY_CHARACTER_REQUIRES_MATCH_ALL" : {
       "localizations" : {
         "en" : {
