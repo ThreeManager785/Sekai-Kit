@@ -135,6 +135,13 @@ extension _DoriAPI.LoginCampaigns.CampaignType {
     }
 }
 
+extension _DoriAPI.Misc.ActionSet.ActionSetType {
+    @inline(never)
+    public var localizedString: String {
+        NSLocalizedString("areatype" + self.rawValue, bundle: #bundle, comment: "")
+    }
+}
+
 #if HAS_BINARY_RESOURCE_BUNDLES
 extension _DoriAPI.Posts.Post.StoryMetadata.AgeRating {
     @inline(never)
