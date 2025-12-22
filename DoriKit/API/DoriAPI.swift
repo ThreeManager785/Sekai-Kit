@@ -110,13 +110,39 @@ public final class _DoriAPI {
             self.kr = kr
         }
         
-        @usableFromInline
-        internal init(forEveryLocale item: T?) {
-            self.init(jp: item, en: item, tw: item, cn: item, kr: item)
+        @inlinable
+        public init(builder: (Locale) -> T?) {
+            self.init(
+                jp: builder(.jp),
+                en: builder(.en),
+                tw: builder(.tw),
+                cn: builder(.cn),
+                kr: builder(.kr)
+            )
         }
         
         @inlinable
-        public init(_jp: T?, en: T?, tw: T?, cn: T?, kr: T?) {
+        public init(
+            repeating item: T?,
+            forLocale locales: Set<Locale> = .init(_DoriAPI.Locale.allCases)
+        ) {
+            if _fastPath(locales.count == 5) {
+                self.init(jp: item, en: item, tw: item, cn: item, kr: item)
+            } else {
+                self.init {
+                    locales.contains($0) ? item : nil
+                }
+            }
+        }
+        
+        @inlinable
+        public init(
+            _jp: T? = nil,
+            en: T? = nil,
+            tw: T? = nil,
+            cn: T? = nil,
+            kr: T? = nil
+        ) {
             self.init(jp: _jp, en: en, tw: tw, cn: cn, kr: kr)
         }
         
@@ -185,7 +211,7 @@ public final class _DoriAPI {
         }
         
         @inlinable
-        public mutating func _set(_ newValue: T?, forLocale locale: Locale) {
+        public mutating func set(_ newValue: T?, forLocale locale: Locale) {
             switch locale {
             case .jp: self.jp = newValue
             case .en: self.en = newValue
@@ -195,14 +221,15 @@ public final class _DoriAPI {
             }
         }
         
+        @available(*, deprecated, renamed: "set(_:forLocale:)")
         @inlinable
         @inline(__always)
-        public subscript(_ locale: Locale) -> T? {
-            forLocale(locale)
+        public mutating func _set(_ newValue: T?, forLocale locale: Locale) {
+            set(newValue, forLocale: locale)
         }
         
         @inlinable
-        public subscript(_mutating locale: Locale) -> T? {
+        public subscript(_ locale: Locale) -> T? {
             @inline(__always)
             get { forLocale(locale) }
             
@@ -215,6 +242,19 @@ public final class _DoriAPI {
                 case .kr: yield &kr
                 }
             }
+        }
+        
+        @available(
+            *,
+             deprecated,
+             renamed: "subscript(_:)",
+             message: "Use subscript without argument label instead."
+        )
+        @inlinable
+        @inline(__always)
+        public subscript(_mutating locale: Locale) -> T? {
+            _read { yield self[locale] }
+            _modify { yield &self[locale] }
         }
     }
     
