@@ -624,6 +624,22 @@ extension _DoriAPI.LoginCampaigns.${property} {
 }
 % end
 
+extension _DoriAPI.Misc.Area {
+    @inlinable
+    public var iconImageURL: URL {
+        let locale = self.areaName.availableLocale()!
+        return .init(string: "https://bestdori.com/assets/\(locale.rawValue)/worldmap_rip/area_icon\(unsafe String(format: "%03d", self.id)).png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func iconImageURL(in locale: _DoriAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.areaName, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/worldmap_rip/area_icon\(unsafe String(format: "%03d", self.id)).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+
 extension _DoriAPI.Songs.DifficultyType {
     @inlinable
     public var color: Color {
