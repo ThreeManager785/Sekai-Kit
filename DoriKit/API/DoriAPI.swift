@@ -256,6 +256,19 @@ public final class _DoriAPI {
             _read { yield self[locale] }
             _modify { yield &self[locale] }
         }
+        
+        public var allAvailableLocales: Set<Locale> {
+            var result: Set<Locale> = []
+            for locale in Locale.allCases where availableInLocale(locale) {
+                result.insert(locale)
+            }
+            return result
+        }
+        
+        @inlinable
+        public var allUnavailableLocales: Set<Locale> {
+            Set(Locale.allCases).subtracting(allAvailableLocales)
+        }
     }
     
     /// Represent a constellation
