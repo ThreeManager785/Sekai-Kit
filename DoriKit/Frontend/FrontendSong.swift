@@ -285,15 +285,13 @@ extension _DoriFrontend {
             )
         }
         
-        public static func _allMatches() async -> [Int: _SongMatchResult]? {
+        public static func _allMatches() async -> [Int: _NeoSongMatchResult]? {
             await withCheckedContinuation { continuation in
                 AF.request("https://kashi.greatdori.com/MappedSongs.plist").response { response in
                     if let data = response.data {
                         let decoder = PropertyListDecoder()
-                        if let result = try? decoder.decode([_DoriAPI.Songs.PreviewSong: _SongMatchResult].self, from: data) {
-                            continuation.resume(returning: result
-                                .map { ($0.key.id, $0.value) }
-                                .reduce(into: [Int: _SongMatchResult]()) { $0.updateValue($1.1, forKey: $1.0) })
+                        if let result = try? decoder.decode([Int: _NeoSongMatchResult].self, from: data) {
+                            continuation.resume(returning: result)
                         } else {
                             continuation.resume(returning: nil)
                         }
@@ -447,31 +445,65 @@ extension _DoriFrontend.Songs {
 }
 
 extension _DoriFrontend.Songs {
-    public enum _SongMatchResult: Sendable, Hashable, DoriCache.Cacheable {
-        case some([MatchItem])
-        case none(String)
+    public enum _NeoSongMatchResult: Sendable, Hashable, DoriCache.Cacheable {
+        case success([MatchItem])
+        case failure(String)
+        case expectedEmpty
         
-        public struct MatchItem: Sendable, Hashable, DoriCache.Cacheable {
-            public let confidence: Float
-            public let matchOffset: TimeInterval
-            public let predictedCurrentMatchOffset: TimeInterval
-            public let frequencySkew: Float
-            public let timeRanges: [Range<TimeInterval>]
-            public let frequencySkewRanges: [Range<Float>]
-            public let title: String?
-            public let subtitle: String?
-            public let artist: String?
+        public struct MatchItem: Codable, Hashable, Sendable, DoriCache.Cacheable {
+            public let titleJP: String
+            public let titleEN: String?
+            public let artistJP: String
+            public let artistEN: String?
             public let artworkURL: URL?
-            public let videoURL: URL?
-            public let genres: [String]
-            public let explicitContent: Bool
-            public let creationDate: Date?
-            public let isrc: String?
-            public let id: UUID
-            public let appleMusicURL: URL?
-            public let appleMusicID: String?
-            public let webURL: URL?
-            public let shazamID: String?
+            public let appleMusicID: Int?
+            public let shazamID: Int?
+            
+            public init(titleJP: String, titleEN: String? = nil, artistJP: String, artistEN: String? = nil, artworkURL: URL? = nil, appleMusicID: Int? = nil, shazamID: Int? = nil) {
+                self.titleJP = titleJP
+                self.titleEN = titleEN
+                self.artistJP = artistJP
+                self.artistEN = artistEN
+                self.artworkURL = artworkURL
+                self.appleMusicID = appleMusicID
+                self.shazamID = shazamID
+            }
+            
+            @inlinable
+            public var appleMusicURL: URL? {
+                if let appleMusicID {
+                    return URL(string: "https://music.apple.com/us/song/\(appleMusicID)")
+                } else {
+                    return nil
+                }
+            }
+            
+            @inlinable
+            public var shazamURL: URL? {
+                if let shazamID {
+                    return URL(string: "https://www.shazam.com/song/\(shazamID)")
+                } else {
+                    return nil
+                }
+            }
+            
+            @inlinable
+            public func title(preferringEN: Bool = false) -> String {
+                if preferringEN, let titleEN {
+                    return titleEN
+                } else {
+                    return titleJP
+                }
+            }
+            
+            @inlinable
+            public func artist(preferringEN: Bool = false) -> String {
+                if preferringEN, let artistEN {
+                    return artistEN
+                } else {
+                    return artistJP
+                }
+            }
         }
     }
 }

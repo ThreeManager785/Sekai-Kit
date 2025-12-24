@@ -390,19 +390,38 @@ extension _DoriAPI.LocalizedData {
         }
         return result
     }
-}
-extension _DoriAPI.LocalizedData {
+    
     @inlinable
     public func enumerated() -> [(locale: _DoriAPI.Locale, element: T?)] {
         compactMap { $0 }.enumerated().map { (.init(rawIntValue: $0.offset)!, $0.element) }
     }
-}
-extension _DoriAPI.LocalizedData {
+
     @inlinable
     public var isEmpty: Bool {
         self.jp == nil && self.en == nil && self.tw == nil && self.cn == nil && self.kr == nil
     }
+    
+    @inlinable
+    public func contains(where method: (T?) -> Bool) -> Bool {
+        for locale in DoriLocale.allCases {
+            if method(self.forLocale(locale)) {
+                return true
+            }
+        }
+        return false
+    }
+    
+    @inlinable
+    public func allSatisfy(_ method: (T?) -> Bool) -> Bool {
+        for locale in DoriLocale.allCases {
+            if !method(self.forLocale(locale)) {
+                return false
+            }
+        }
+        return true
+    }
 }
+
 extension _DoriAPI.LocalizedData where T: Collection {
     @inlinable
     public var isValueEmpty: Bool {
@@ -411,5 +430,17 @@ extension _DoriAPI.LocalizedData where T: Collection {
         && self.tw?.isEmpty != false
         && self.cn?.isEmpty != false
         && self.kr?.isEmpty != false
+    }
+}
+
+extension _DoriAPI.LocalizedData where T: Equatable {
+    @inlinable
+    public func contains(_ element: T?) -> Bool {
+        for locale in DoriLocale.allCases {
+            if self.forLocale(locale) == element {
+                return true
+            }
+        }
+        return false
     }
 }
