@@ -488,8 +488,8 @@ extension _DoriFrontend.Songs {
             }
             
             @inlinable
-            public func title(preferringEN: Bool = false) -> String {
-                if preferringEN, let titleEN {
+            public func title(preferEN: Bool = false) -> String {
+                if preferEN, let titleEN {
                     return titleEN
                 } else {
                     return titleJP
@@ -497,8 +497,8 @@ extension _DoriFrontend.Songs {
             }
             
             @inlinable
-            public func artist(preferringEN: Bool = false) -> String {
-                if preferringEN, let artistEN {
+            public func artist(preferEN: Bool = false) -> String {
+                if preferEN, let artistEN {
                     return artistEN
                 } else {
                     return artistJP
