@@ -552,7 +552,7 @@ extension _DoriAPI {
                             "function": "initializeAccountSetting"
                         ],
                         encoding: JSONEncoding.default,
-                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token.value)
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
