@@ -488,35 +488,97 @@ extension _DoriAPI.Station {
         // TBH the error handling in the Station API is tremendously distressing.
         // It always returns status 200 and describe errors as plain texts
         
-        case operationNotAllowed = "Not allowed"
-        case forbidden = "No permission"
-        case badRequest = "Unparsable format"
-        case missingParameters = "Missing Parameters"
-        case missingFunctionParameter = "Missing Parameter \"function\""
-        case undefinedFunctionGroup = "Undefined function group"
-        case undefinedFunction = "Undefined function"
-        case methodNotAllowed = "Forbidden method"
-        case undefinedAccessToken = "Undefined access token"
-        case invalidToken = "Token validation failure"
-        case userNotFound = "Nonexistent user"
-        case emailNotFound = "Undefined email"
-        case emailNotAvailable = "Duplicate email"
-        case invalidEmail = "Invalid email"
-        case emailVerified = "Verified email"
-        case undefinedVerificationCode = "Undefined verification code"
-        case invalidVerificationCode = "Invalid verification code"
-        case tooManyLogins = "Too many logins"
-        case wrongPassword = "Wrong password"
-        case tooManySignups = "Too many signups"
-        case usernameOrEmailNotAvailable = "Username or email already exists"
-        case usernameNotAvailable = "Username already exists"
-        case qqNumberNotAvailable = "QQ already exists"
-        case badVerificationRequest = "Undefined verification request"
-        case tooManySubmits = "Duplicate number submit" // The Swift name is right
-        case failedToVerifyPlayer = "Player verification failure"
-        case failedToGetPlayerData = "No player data"
-        case tooManyRequests = "Requests are too frequent"
-        case unknown = "API request failure" // We use this as a fallback
+        case operationNotAllowed
+        case forbidden
+        case badRequest
+        case missingParameters
+        case missingFunctionParameter
+        case undefinedFunctionGroup
+        case undefinedFunction
+        case methodNotAllowed
+        case undefinedAccessToken
+        case invalidToken
+        case userNotFound
+        case emailNotFound
+        case emailNotAvailable
+        case invalidEmail
+        case emailVerified
+        case undefinedVerificationCode
+        case invalidVerificationCode
+        case wrongPassword
+        case usernameOrEmailNotAvailable
+        case usernameNotAvailable
+        case qqNumberNotAvailable
+        case badVerificationRequest
+        case failedToVerifyPlayer
+        case failedToGetPlayerData
+        case tooManyRequests
+        case unknown
+        
+        public init?(rawValue: String) {
+            switch rawValue {
+            case "Not allowed":
+                self = .operationNotAllowed
+            case "No permission":
+                self = .forbidden
+            case "Unparsable format":
+                self = .badRequest
+            case "Missing Parameters":
+                self = .missingParameters
+            case "Missing Parameter \"function\"":
+                self = .missingFunctionParameter
+            case "Undefined function group":
+                self = .undefinedFunctionGroup
+            case "Undefined function":
+                self = .undefinedFunction
+            case "Forbidden method":
+                self = .methodNotAllowed
+            case "Undefined access token":
+                self = .undefinedAccessToken
+            case "Token validation failure":
+                self = .invalidToken
+            case "Nonexistent user":
+                self = .userNotFound
+            case "Undefined email":
+                self = .emailNotFound
+            case "Duplicate email":
+                self = .emailNotAvailable
+            case "Invalid email":
+                self = .invalidEmail
+            case "Verified email":
+                self = .emailVerified
+            case "Undefined verification code":
+                self = .undefinedVerificationCode
+            case "Invalid verification code":
+                self = .invalidVerificationCode
+            case "Too many logins":
+                self = .tooManyRequests
+            case "Wrong password":
+                self = .wrongPassword
+            case "Too many signups":
+                self = .tooManyRequests
+            case "Username or email already exists":
+                self = .usernameOrEmailNotAvailable
+            case "Username already exists":
+                self = .usernameNotAvailable
+            case "QQ already exists":
+                self = .qqNumberNotAvailable
+            case "Undefined verification request":
+                self = .badVerificationRequest
+            case "Duplicate number submit":
+                self = .tooManyRequests
+            case "Player verification failure":
+                self = .failedToVerifyPlayer
+            case "No player data":
+                self = .failedToGetPlayerData
+            case "Requests are too frequent":
+                self = .tooManyRequests
+            case "API request failure":
+                self = .unknown
+            default:
+                return nil
+            }
+        }
     }
     
     public struct Credential: Sendable, Hashable {
