@@ -18,7 +18,7 @@ internal import SwiftyJSON
 
 extension _DoriAPI {
     public enum Station {
-        public static func register(with form: RegisterForm) async throws(APIError) -> String {
+        public static func register(username: String, password: String, email: String) async throws(APIError) -> String {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -27,9 +27,9 @@ extension _DoriAPI {
                         parameters: [
                             "function_group": "UserLogin",
                             "function": "signup",
-                            "username": form.username,
-                            "password": form.password,
-                            "email": form.email
+                            "username": username,
+                            "password": password,
+                            "email": email
                         ],
                         encoding: JSONEncoding.default
                     ).response { response in
@@ -52,7 +52,7 @@ extension _DoriAPI {
             }
         }
         
-        public static func login(with credential: Credential) async throws(APIError) -> LoginResponse {
+        public static func login(username: String, password: String) async throws(APIError) -> LoginResponse {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -61,8 +61,8 @@ extension _DoriAPI {
                         parameters: [
                             "function_group": "UserLogin",
                             "function": "login",
-                            "username": credential.username,
-                            "password": credential.password
+                            "username": username,
+                            "password": password
                         ],
                         encoding: JSONEncoding.default
                     ).response { response in
@@ -458,7 +458,7 @@ extension _DoriAPI {
 
 extension _DoriAPI.Station {
     public enum APIError: String, Sendable, Error, Hashable {
-        // TBH the error handling in the Station API is terrible.
+        // TBH the error handling in the Station API is tremendously distressing.
         // It always returns status 200 and describe errors as plain texts
         
         case operationNotAllowed = "Not allowed"
@@ -490,28 +490,6 @@ extension _DoriAPI.Station {
         case failedToGetPlayerData = "No player data"
         case tooManyRequests = "Requests are too frequent"
         case unknown = "API request failure" // We use this as a fallback
-    }
-    
-    public struct RegisterForm: Sendable, Hashable {
-        public var username: String
-        public var password: String
-        public var email: String
-        
-        public init(username: String, password: String, email: String) {
-            self.username = username
-            self.password = password
-            self.email = email
-        }
-    }
-    
-    public struct Credential: Sendable, Hashable {
-        public var username: String
-        public var password: String
-        
-        public init(username: String, password: String) {
-            self.username = username
-            self.password = password
-        }
     }
     
     public enum LoginResponse: Sendable {
