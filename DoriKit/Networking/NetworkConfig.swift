@@ -15,7 +15,7 @@
 import Foundation
 internal import Alamofire
 
-internal let AF = {
+internal let defaultRequestHeaders = {
     let info = Bundle.main.infoDictionary
     let executable = (info?["CFBundleExecutable"] as? String) ??
     (ProcessInfo.processInfo.arguments.first?.split(separator: "/").last.map(String.init)) ??
@@ -43,8 +43,26 @@ internal let AF = {
     var defaultRequestHeaders: HTTPHeaders = .default
     defaultRequestHeaders.update(.userAgent(userAgent))
     
+    return defaultRequestHeaders
+}()
+
+internal let AF = {
     let configuration = URLSessionConfiguration.af.default
     configuration.headers = defaultRequestHeaders
     let session = Session(configuration: configuration)
     return session
 }()
+
+extension HTTPHeaders {
+    internal func with(_ header: HTTPHeader) -> Self {
+        var mutable = self
+        mutable.update(header)
+        return mutable
+    }
+    
+    internal func with(name: String, value: String) -> Self {
+        var mutable = self
+        mutable.update(name: name, value: value)
+        return mutable
+    }
+}

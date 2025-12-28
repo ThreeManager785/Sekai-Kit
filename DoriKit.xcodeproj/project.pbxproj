@@ -165,6 +165,8 @@
 		8CBCBB562EB9DDD5007A1E33 /* VTable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCBB552EB9DDCD007A1E33 /* VTable.swift */; };
 		8CBCCAFF2EBE39DD007A1E33 /* Stdlib.zeile in Resources */ = {isa = PBXBuildFile; fileRef = 8CBCCAFE2EBE39D0007A1E33 /* Stdlib.zeile */; };
 		8CBCCB012EBF8F10007A1E33 /* IRCoding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBCCB002EBF8F0D007A1E33 /* IRCoding.swift */; };
+		8CBF0C882F004D2B0069585F /* Station.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF0C872F004D230069585F /* Station.swift */; };
+		8CBF0CEB2F006E6C0069585F /* Synchronization.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CBF0CEA2F006E6A0069585F /* Synchronization.swift */; };
 		8CD13FAE2E2FE2BF00673E15 /* Band.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FA12E2FE2BF00673E15 /* Band.swift */; };
 		8CD13FAF2E2FE2BF00673E15 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FA22E2FE2BF00673E15 /* Card.swift */; };
 		8CD13FB02E2FE2BF00673E15 /* Character.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8CD13FA32E2FE2BF00673E15 /* Character.swift */; };
@@ -425,6 +427,8 @@
 		8CBCBB552EB9DDCD007A1E33 /* VTable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VTable.swift; sourceTree = "<group>"; };
 		8CBCCAFE2EBE39D0007A1E33 /* Stdlib.zeile */ = {isa = PBXFileReference; lastKnownFileType = text; path = Stdlib.zeile; sourceTree = "<group>"; };
 		8CBCCB002EBF8F0D007A1E33 /* IRCoding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCoding.swift; sourceTree = "<group>"; };
+		8CBF0C872F004D230069585F /* Station.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Station.swift; sourceTree = "<group>"; };
+		8CBF0CEA2F006E6A0069585F /* Synchronization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Synchronization.swift; sourceTree = "<group>"; };
 		8CD13FA12E2FE2BF00673E15 /* Band.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Band.swift; sourceTree = "<group>"; };
 		8CD13FA22E2FE2BF00673E15 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		8CD13FA32E2FE2BF00673E15 /* Character.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Character.swift; sourceTree = "<group>"; };
@@ -934,6 +938,7 @@
 				8C923D9A2E3138E1003AFC0A /* Post.swift */,
 				8CD13FAB2E2FE2BF00673E15 /* Skill.swift */,
 				8CD13FAC2E2FE2BF00673E15 /* Song.swift */,
+				8CBF0C872F004D230069585F /* Station.swift */,
 				8C7855D92E4A698D000EA06E /* MiracleTicket.swift */,
 				8C9474402E345BE9003A90B4 /* Misc.swift */,
 				8CEA20D62EACCF62009D41C5 /* User.swift */,
@@ -991,6 +996,7 @@
 				8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */,
 				8CD13FC32E2FE2BF00673E15 /* Logger.swift */,
 				8C923D942E30721F003AFC0A /* TaskGroup.swift.gyb */,
+				8CBF0CEA2F006E6A0069585F /* Synchronization.swift */,
 			);
 			path = Internal;
 			sourceTree = "<group>";
@@ -1614,6 +1620,7 @@
 				8C923D7A2E3046D0003AFC0A /* FrontendCharacter.swift in Sources */,
 				8CE186AF2E535DE0009C1C87 /* Asset.swift in Sources */,
 				8C923D892E305237003AFC0A /* FrontendEvent.swift in Sources */,
+				8CBF0C882F004D2B0069585F /* Station.swift in Sources */,
 				8CD13FB02E2FE2BF00673E15 /* Character.swift in Sources */,
 				8CD13FB12E2FE2BF00673E15 /* Costume.swift in Sources */,
 				E97810BE2EE979E7000AD397 /* IR2Sirius.swift in Sources */,
@@ -1678,6 +1685,7 @@
 				8C3D4E7A2EA671240034E831 /* FrontendPost.swift in Sources */,
 				8C7855992E48C68F000EA06E /* Comic.swift in Sources */,
 				8C62485A2E9116B600FF6950 /* CachePreloading.swift in Sources */,
+				8CBF0CEB2F006E6C0069585F /* Synchronization.swift in Sources */,
 				8CFEF5BF2E4DD5F00017FF66 /* FrontendLoginCampaign.swift in Sources */,
 				8C8E43EE2E5D915E005590F0 /* URL+OfflineAsset.swift in Sources */,
 				8C923D9F2E313C0B003AFC0A /* Filters.swift in Sources */,
