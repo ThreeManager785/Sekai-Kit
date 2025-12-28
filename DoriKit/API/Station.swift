@@ -18,7 +18,19 @@ internal import SwiftyJSON
 
 extension _DoriAPI {
     public enum Station {
-        public static func register(username: String, password: String, email: String) async throws(APIError) -> String {
+        @inlinable
+        public static func register(
+            username: String,
+            password: String,
+            email: String
+        ) async throws(APIError) -> UnverifiedUserToken {
+            try await register(with: .init(
+                username: username,
+                password: password,
+                email: email
+            ))
+        }
+        public static func register(with form: RegisterForm) async throws(APIError) -> UnverifiedUserToken {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -27,16 +39,16 @@ extension _DoriAPI {
                         parameters: [
                             "function_group": "UserLogin",
                             "function": "signup",
-                            "username": username,
-                            "password": password,
-                            "email": email
+                            "username": form.username,
+                            "password": form.password,
+                            "email": form.email
                         ],
                         encoding: JSONEncoding.default
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
                             if let token = json["response"]["token"].string {
-                                continuation.resume(returning: token)
+                                continuation.resume(returning: .init(_value: token))
                             } else {
                                 continuation.resume(throwing: APIError(
                                     rawValue: json["response"].stringValue
@@ -52,7 +64,14 @@ extension _DoriAPI {
             }
         }
         
-        public static func login(username: String, password: String) async throws(APIError) -> LoginResponse {
+        @inlinable
+        public static func login(
+            username: String,
+            password: String
+        ) async throws(APIError) -> LoginResponse {
+            try await login(with: .init(username: username, password: password))
+        }
+        public static func login(with credential: Credential) async throws(APIError) -> LoginResponse {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -61,18 +80,22 @@ extension _DoriAPI {
                         parameters: [
                             "function_group": "UserLogin",
                             "function": "login",
-                            "username": username,
-                            "password": password
+                            "username": credential.username,
+                            "password": credential.password
                         ],
                         encoding: JSONEncoding.default
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
                             if json["response"]["redirect_to"].string != nil {
-                                continuation.resume(returning: .emailVerificationRequired)
+                                continuation.resume(
+                                    returning: .emailVerificationRequired(
+                                        token: .init(_value: json["response"]["token"].stringValue)
+                                    )
+                                )
                             } else if let token = json["response"]["token"].string {
                                 continuation.resume(returning: .success(
-                                    token: token,
+                                    token: .init(_value: token),
                                     userInfo: .init(
                                         id: json["response"]["user_id"].intValue,
                                         _avatarFileName: json["response"]["avatar"].stringValue,
@@ -112,7 +135,9 @@ extension _DoriAPI {
             }
         }
         
-        public static func currentEmail(fromUserToken token: String) async throws(APIError) -> String {
+        public static func currentEmail(
+            fromUserToken token: UnverifiedUserToken
+        ) async throws(APIError) -> String {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -123,7 +148,7 @@ extension _DoriAPI {
                             "function": "getCurrentEmail"
                         ],
                         encoding: JSONEncoding.default,
-                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token)
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
@@ -144,7 +169,9 @@ extension _DoriAPI {
             }
         }
         
-        public static func sendVerificationCode(forUserToken token: String) async throws(APIError) {
+        public static func sendVerificationCode(
+            forUserToken token: UnverifiedUserToken
+        ) async throws(APIError) {
             do {
                 try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -155,7 +182,7 @@ extension _DoriAPI {
                             "function": "sendEmailVerificationCode"
                         ],
                         encoding: JSONEncoding.default,
-                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token)
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
@@ -177,9 +204,9 @@ extension _DoriAPI {
         }
         
         public static func verifyEmail(
-            forUserToken token: String,
+            forUserToken token: UnverifiedUserToken,
             withCode code: String
-        ) async throws(APIError) -> String {
+        ) async throws(APIError) -> UserToken {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -191,12 +218,12 @@ extension _DoriAPI {
                             "verification_code": code
                         ],
                         encoding: JSONEncoding.default,
-                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token)
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
                             if let token = json["response"]["token"].string {
-                                continuation.resume(returning: token)
+                                continuation.resume(returning: .init(_value: token))
                             } else {
                                 continuation.resume(throwing: APIError(
                                     rawValue: json["response"].stringValue
@@ -259,7 +286,7 @@ extension _DoriAPI {
         ///     or your app is terminated.
         public static func receiveRooms(
             client: String = "DoriKit",
-            userToken: String? = nil,
+            userToken: UserToken? = nil,
             pushingNewRooms pushRooms: sending ([Room]) -> Void
         ) async throws {
             final class Coordinator: NSObject, URLSessionWebSocketDelegate {
@@ -416,7 +443,7 @@ extension _DoriAPI {
                                     initialActions.append([
                                         "action": "setAccessPermission",
                                         "data": [
-                                            "token": userToken
+                                            "token": userToken._value
                                         ]
                                     ])
                                 }
@@ -492,9 +519,38 @@ extension _DoriAPI.Station {
         case unknown = "API request failure" // We use this as a fallback
     }
     
+    public struct Credential: Sendable, Hashable {
+        public var username: String
+        public var password: String
+        
+        public init(username: String, password: String) {
+            self.username = username
+            self.password = password
+        }
+    }
+    
+    public struct RegisterForm: Sendable, Hashable {
+        public var username: String
+        public var password: String
+        public var email: String
+        
+        public init(username: String, password: String, email: String) {
+            self.username = username
+            self.password = password
+            self.email = email
+        }
+    }
+    
+    public struct UserToken: Sendable, Hashable, Codable {
+        internal var _value: String
+    }
+    public struct UnverifiedUserToken: Sendable, Hashable, Codable {
+        internal var _value: String
+    }
+    
     public enum LoginResponse: Sendable {
-        case emailVerificationRequired
-        case success(token: String, userInfo: SelfInformation)
+        case emailVerificationRequired(token: UnverifiedUserToken)
+        case success(token: UserToken, userInfo: SelfInformation)
     }
     
     public struct SelfInformation: Sendable, Identifiable, Hashable {
