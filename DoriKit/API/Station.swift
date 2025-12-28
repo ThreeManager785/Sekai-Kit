@@ -99,7 +99,6 @@ extension _DoriAPI {
                                     userInfo: .init(
                                         id: json["response"]["user_id"].intValue,
                                         _avatarFileName: json["response"]["avatar"].stringValue,
-                                        role: json["response"]["role"].intValue,
                                         banStatus: json["response"]["ban_status"]["is_banned"].boolValue
                                                    ? .banned(interval: json["response"]["ban_status"]["interval"].doubleValue)
                                                    : .normal,
@@ -480,6 +479,132 @@ extension _DoriAPI {
                 throw error
             }
         }
+        
+        public func userInformation(id: Int) async throws(APIError) -> UserInformation {
+            do {
+                return try await withCheckedThrowingContinuation { continuation in
+                    AF.request(
+                        "https://server.bandoristation.com",
+                        method: .post,
+                        parameters: [
+                            "function_group": "MainAction",
+                            "function": "getUserInfo",
+                            "user_id": id
+                        ],
+                        encoding: JSONEncoding.default
+                    ).response { response in
+                        if let _data = response.data,
+                           let json = try? JSON(data: consume _data) {
+                            if json["status"].stringValue == "success" {
+                                var result = UserInformation(
+                                    id: json["response"]["summary"]["user_id"].intValue,
+                                    username: json["response"]["summary"]["username"].stringValue,
+                                    _avatarFileName: json["response"]["summary"]["avatar"].stringValue,
+                                    _bannerImageFileName: json["response"]["summary"]["banner"].stringValue,
+                                    introduction: json["response"]["summary"]["introduction"].string,
+                                    banStatus: json["response"]["summary"]["ban_status"]["is_banned"].boolValue
+                                               ? .banned(interval: json["response"]["summary"]["ban_status"]["interval"].doubleValue)
+                                               : .normal,
+                                    recentRooms: nil, // Will be added later
+                                    followingUserCount: json["response"]["summary"]["following"].intValue,
+                                    followerCount: json["response"]["summary"]["follower"].intValue,
+                                    bestdoriProfiles: json["response"]["bandori_profile"].map {
+                                        (key: $0.0,
+                                         value: $0.1.map {
+                                            _DoriAPI.Misc.PlayerProfile(parsing: $0.1)
+                                        })
+                                    }.reduce(into: [_DoriAPI.Locale: [_DoriAPI.Misc.PlayerProfile]]()) {
+                                        $0.updateValue(
+                                            $1.value,
+                                            forKey: .init(rawValue: $1.key) ?? .jp
+                                        )
+                                    }
+                                )
+                                result.recentRooms = json["response"]["room_number_history"].map {
+                                    var room = Room(parsing: $0.1)
+                                    room.creator = result
+                                    return room
+                                }
+                                continuation.resume(returning: result)
+                            } else {
+                                continuation.resume(throwing: APIError(
+                                    rawValue: json["response"].stringValue
+                                ) ?? .unknown)
+                            }
+                        } else {
+                            continuation.resume(throwing: APIError.unknown)
+                        }
+                    }
+                }
+            } catch {
+                throw error as! APIError
+            }
+        }
+        
+        public func userInformation(userToken token: UserToken) async throws(APIError) -> UserInformation {
+            do {
+                var result: UserInformation = try await withCheckedThrowingContinuation { continuation in
+                    AF.request(
+                        "https://server.bandoristation.com",
+                        method: .post,
+                        parameters: [
+                            "function_group": "MainAction",
+                            "function": "initializeAccountSetting"
+                        ],
+                        encoding: JSONEncoding.default,
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
+                    ).response { response in
+                        if let _data = response.data,
+                           let json = try? JSON(data: consume _data) {
+                            if json["status"].stringValue == "success" {
+                                continuation.resume(returning: .init(
+                                    id: json["response"]["user_id"].intValue,
+                                    _avatarFileName: json["response"]["avatar"].stringValue,
+                                    banStatus: json["response"]["ban_status"]["is_banned"].boolValue
+                                               ? .banned(interval: json["response"]["ban_status"]["interval"].doubleValue)
+                                               : .normal,
+                                    websiteSettings: .init(
+                                        backgroundDynamicEffectEnabled: json["response"]["website_setting"]["background"]["dynamic_effect"].boolValue,
+                                        postPreference: .init(
+                                            roomType: .init(rawValue: Int(json["response"]["website_setting"]["send_room_number"]["type"].stringValue) ?? 0) ?? .daredemo,
+                                            preselectedWordList: json["response"]["website_setting"]["send_room_number"]["preselection_word_list"].map {
+                                                $0.1.stringValue
+                                            }
+                                        )
+                                    ),
+                                    followedUsers: json["response"]["following_user"].map {
+                                        .init(
+                                            id: $0.1["user_id"].intValue,
+                                            followingDate: .init(timeIntervalSince1970: $0.1["time"].doubleValue)
+                                        )
+                                    }
+                                ))
+                            } else {
+                                continuation.resume(throwing: APIError(
+                                    rawValue: json["response"].stringValue
+                                ) ?? .unknown)
+                            }
+                        } else {
+                            continuation.resume(throwing: APIError.unknown)
+                        }
+                    }
+                }
+                
+                let idPartialInfo = try await userInformation(id: result.id)
+                result.username = idPartialInfo.username
+                result._bannerImageFileName = idPartialInfo._bannerImageFileName
+                result.introduction = idPartialInfo.introduction
+                result.gameProfile = idPartialInfo.gameProfile
+                result.recentRooms = idPartialInfo.recentRooms
+                result.followingUserCount = idPartialInfo.followingUserCount
+                result.followerCount = idPartialInfo.followerCount
+                result.bestdoriProfiles = idPartialInfo.bestdoriProfiles
+                
+                return result
+            } catch {
+                throw error as! APIError
+            }
+        }
     }
 }
 
@@ -619,19 +744,44 @@ extension _DoriAPI.Station {
     
     public enum LoginResponse: Sendable {
         case emailVerificationRequired(token: UnverifiedUserToken)
-        case success(token: UserToken, userInfo: SelfInformation)
+        case success(token: UserToken, userInfo: UserInformation)
     }
     
-    public struct SelfInformation: Sendable, Identifiable, Hashable {
+    public struct UserInformation: Sendable, Identifiable, Hashable {
         public var id: Int
+        public var username: String?
         public var _avatarFileName: String
-        public var role: Int
-        public var banStatus: BanStatus
-        public var websiteSettings: WebsiteSettings
-        public var followedUsers: [FollowedUser]
+        public var _bannerImageFileName: String = ""
+        public var introduction: String?
+        public var gameProfile: GameProfile?
+        public var banStatus: BanStatus?
+        public var websiteSettings: WebsiteSettings?
+        public var followedUsers: [FollowedUser]?
+        public var recentRooms: [Room]?
+        public var followingUserCount: Int?
+        public var followerCount: Int?
+        public var bestdoriProfiles: [_DoriAPI.Locale: [_DoriAPI.Misc.PlayerProfile]]?
         
         public var avatarURL: URL? {
             _avatarFileName.isEmpty ? nil : .init(string: "https://asset.bandoristation.com/images/user-avatar/\(_avatarFileName)")
+        }
+        public var bannerImageURL: URL? {
+            _bannerImageFileName.isEmpty ? nil : .init(string: "https://asset.bandoristation.com/images/user-banner/\(_bannerImageFileName)")
+        }
+        
+        public struct GameProfile: Sendable, Identifiable, Hashable {
+            public var id: Int
+            public var degreeIDs: [Int]
+            public var dateUpdated: Date
+            public var server: _DoriAPI.Locale
+            public var bandPower: Int
+            public var mainDeck: [Situation]
+            
+            public struct Situation: Sendable, Hashable {
+                public var id: Int
+                public var trained: Bool
+                public var illust: String
+            }
         }
         
         public enum BanStatus: Sendable, Hashable {
@@ -652,33 +802,6 @@ extension _DoriAPI.Station {
         public struct FollowedUser: Sendable, Identifiable, Hashable {
             public var id: Int
             public var followingDate: Date
-        }
-    }
-    
-    public struct UserInformation: Sendable, Identifiable, Hashable {
-        public var id: Int
-        public var type: String
-        public var username: String
-        public var _avatarFileName: String
-        public var gameProfile: GameProfile?
-        
-        public var avatarURL: URL? {
-            _avatarFileName.isEmpty ? nil : .init(string: "https://asset.bandoristation.com/images/user-avatar/\(_avatarFileName)")
-        }
-        
-        public struct GameProfile: Sendable, Identifiable, Hashable {
-            public var id: Int
-            public var degreeIDs: [Int]
-            public var dateUpdated: Date
-            public var server: _DoriAPI.Locale
-            public var bandPower: Int
-            public var mainDeck: [Situation]
-            
-            public struct Situation: Sendable, Hashable {
-                public var id: Int
-                public var trained: Bool
-                public var illust: String
-            }
         }
     }
     
@@ -720,7 +843,6 @@ extension _DoriAPI.Station.Room {
             source: .init(parsing: json["source_info"]),
             creator: .init(
                 id: json["user_info"]["user_id"].intValue,
-                type: json["user_info"]["type"].stringValue,
                 username: json["user_info"]["username"].stringValue,
                 _avatarFileName: json["user_info"]["avatar"].stringValue,
                 gameProfile: json["user_info"]["bandori_player_brief_info"]["latest_update_time"].double != nil
