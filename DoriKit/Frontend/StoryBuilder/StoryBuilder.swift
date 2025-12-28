@@ -19,9 +19,9 @@ internal import SwiftParser
 
 @available(watchOS, unavailable)
 public final class DoriStoryBuilder: Sendable {
-    public let locale: _DoriAPI.Locale
+    public let locale: DoriAPI.Locale
     
-    public init(for locale: _DoriAPI.Locale) {
+    public init(for locale: DoriAPI.Locale) {
         self.locale = locale
     }
     
@@ -107,8 +107,8 @@ extension DoriStoryBuilder {
         }
         
         public static func zeileIR(
-            fromBandori asset: _DoriAPI.Misc.StoryAsset,
-            in locale: _DoriAPI.Locale,
+            fromBandori asset: DoriAPI.Misc.StoryAsset,
+            in locale: DoriAPI.Locale,
             voiceBundlePath: String
         ) -> StoryIR {
             let ir = IRConversion.convertFromBandori(

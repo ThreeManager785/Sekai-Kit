@@ -14,7 +14,7 @@
 
 import Foundation
 
-extension Array<_DoriAPI.News.Item.Content> {
+extension Array<DoriAPI.News.Item.Content> {
     public func toMarkdown(
         locale: Locale = .current,
         dateFormatter: DateFormatter = .init()
@@ -24,7 +24,7 @@ extension Array<_DoriAPI.News.Item.Content> {
 }
 
 private func compileNewsContent(
-    _ content: _DoriAPI.News.Item.Content,
+    _ content: DoriAPI.News.Item.Content,
     locale: Locale,
     dateFormatter: DateFormatter
 ) -> String {
@@ -37,7 +37,7 @@ private func compileNewsContent(
 }
 
 private func compileContentSection(
-    _ section: _DoriAPI.News.Item.Content.ContentDataSection,
+    _ section: DoriAPI.News.Item.Content.ContentDataSection,
     locale: Locale,
     dateFormatter: DateFormatter
 ) -> String {
@@ -62,7 +62,7 @@ private func compileContentSection(
 }
 
 private func compileBulletList(
-    _ contents: [[_DoriAPI.News.Item.Content.ContentDataSection]],
+    _ contents: [[DoriAPI.News.Item.Content.ContentDataSection]],
     locale: Locale,
     dateFormatter: DateFormatter
 ) -> String {
@@ -82,9 +82,9 @@ private func compileBulletList(
 
 private func parseLinkTarget(_ target: String, data: String) -> String {
     switch target {
-    case "live2d-asset": "https://bestdori.com/tool/live2d/asset/\(_DoriAPI.preferredLocale.rawValue)/\(data)"
-    case "story-asset": "https://bestdori.com/tool/storyviewer/asset/\(_DoriAPI.preferredLocale.rawValue)/\(data)"
-    case "asset-single": "https://bestdori.com/tool/explorer/asset/\(_DoriAPI.preferredLocale.rawValue)/\(data)"
+    case "live2d-asset": "https://bestdori.com/tool/live2d/asset/\(DoriAPI.preferredLocale.rawValue)/\(data)"
+    case "story-asset": "https://bestdori.com/tool/storyviewer/asset/\(DoriAPI.preferredLocale.rawValue)/\(data)"
+    case "asset-single": "https://bestdori.com/tool/explorer/asset/\(DoriAPI.preferredLocale.rawValue)/\(data)"
     case "join-us": "https://bestdori.com/home/join"
     case "support-us": "https://bestdori.com/home/support"
     default:

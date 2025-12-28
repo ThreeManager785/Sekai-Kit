@@ -18,7 +18,7 @@ import Foundation
 ///
 /// Each methods in ``DoriAPI`` fetches raw data from Bestdori API directly,
 /// makes them Swifty and return them.
-public final class _DoriAPI {
+public final class DoriAPI {
     private init() {}
     
     @usableFromInline
@@ -67,10 +67,10 @@ public final class _DoriAPI {
         @inlinable
         public static var secondaryLocale: Self {
             _read {
-                yield _DoriAPI.secondaryLocale
+                yield DoriAPI.secondaryLocale
             }
             _modify {
-                yield &_DoriAPI.secondaryLocale
+                yield &DoriAPI.secondaryLocale
             }
         }
         
@@ -124,7 +124,7 @@ public final class _DoriAPI {
         @inlinable
         public init(
             repeating item: T?,
-            forLocale locales: Set<Locale> = .init(_DoriAPI.Locale.allCases)
+            forLocale locales: Set<Locale> = .init(DoriAPI.Locale.allCases)
         ) {
             if _fastPath(locales.count == 5) {
                 self.init(jp: item, en: item, tw: item, cn: item, kr: item)
@@ -298,7 +298,7 @@ public final class _DoriAPI {
     }
 }
 
-extension _DoriAPI.Locale {
+extension DoriAPI.Locale {
     @usableFromInline
     internal init?(rawIntValue value: Int) {
         switch value {
@@ -332,12 +332,12 @@ extension _DoriAPI.Locale {
     }
 }
 
-extension _DoriAPI.LocalizedData: Sendable where T: Sendable {}
-extension _DoriAPI.LocalizedData: Equatable where T: Equatable {}
-extension _DoriAPI.LocalizedData: Hashable where T: Hashable {}
-extension _DoriAPI.LocalizedData: DoriCache.Cacheable, Codable where T: DoriCache.Cacheable {}
+extension DoriAPI.LocalizedData: Sendable where T: Sendable {}
+extension DoriAPI.LocalizedData: Equatable where T: Equatable {}
+extension DoriAPI.LocalizedData: Hashable where T: Hashable {}
+extension DoriAPI.LocalizedData: DoriCache.Cacheable, Codable where T: DoriCache.Cacheable {}
 
-extension _DoriAPI.LocalizedData {
+extension DoriAPI.LocalizedData {
     /// Returns localized data containing the results of mapping the given closure
     /// over each locales.
     ///
@@ -347,9 +347,9 @@ extension _DoriAPI.LocalizedData {
     /// - Returns: Localized data containing the transformed elements of this
     ///   sequence.
     @inlinable
-    public func map<R, E>(_ transform: (T?) throws(E) -> R?) throws(E) -> _DoriAPI.LocalizedData<R> {
-        var result = _DoriAPI.LocalizedData<R>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
-        for locale in _DoriAPI.Locale.allCases {
+    public func map<R, E>(_ transform: (T?) throws(E) -> R?) throws(E) -> DoriAPI.LocalizedData<R> {
+        var result = DoriAPI.LocalizedData<R>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
+        for locale in DoriAPI.Locale.allCases {
             result._set(try transform(self.forLocale(locale)), forLocale: locale)
         }
         return result
@@ -383,7 +383,7 @@ extension _DoriAPI.LocalizedData {
         _ transform: (T?) throws -> ElementOfResult?
     ) rethrows -> [ElementOfResult] {
         var result: [ElementOfResult] = []
-        for locale in _DoriAPI.Locale.allCases {
+        for locale in DoriAPI.Locale.allCases {
             if let newElement = try transform(self.forLocale(locale)) {
                 result.append(newElement)
             }
@@ -392,7 +392,7 @@ extension _DoriAPI.LocalizedData {
     }
     
     @inlinable
-    public func enumerated() -> [(locale: _DoriAPI.Locale, element: T?)] {
+    public func enumerated() -> [(locale: DoriAPI.Locale, element: T?)] {
         compactMap { $0 }.enumerated().map { (.init(rawIntValue: $0.offset)!, $0.element) }
     }
 
@@ -422,7 +422,7 @@ extension _DoriAPI.LocalizedData {
     }
 }
 
-extension _DoriAPI.LocalizedData where T: Collection {
+extension DoriAPI.LocalizedData where T: Collection {
     @inlinable
     public var isValueEmpty: Bool {
         self.jp?.isEmpty != false
@@ -433,7 +433,7 @@ extension _DoriAPI.LocalizedData where T: Collection {
     }
 }
 
-extension _DoriAPI.LocalizedData where T: Equatable {
+extension DoriAPI.LocalizedData where T: Equatable {
     @inlinable
     public func contains(_ element: T?) -> Bool {
         for locale in DoriLocale.allCases {

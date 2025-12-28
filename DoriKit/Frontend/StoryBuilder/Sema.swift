@@ -19,10 +19,10 @@ internal import SwiftOperators
 internal import SwiftParserDiagnostics
 
 internal final class SemaEvaluator {
-    internal let locale: _DoriAPI.Locale
+    internal let locale: DoriAPI.Locale
     internal let sources: [SourceFileSyntax]
     
-    internal init(_ sources: [SourceFileSyntax], in locale: _DoriAPI.Locale) {
+    internal init(_ sources: [SourceFileSyntax], in locale: DoriAPI.Locale) {
         self.locale = locale
         
         var sources = sources

@@ -15,10 +15,10 @@
 import Foundation
 
 public final class StoryIR {
-    public internal(set) var locale: _DoriAPI.Locale
+    public internal(set) var locale: DoriAPI.Locale
     public internal(set) var actions: [StepAction] = []
     
-    internal init(locale: _DoriAPI.Locale, actions: [StepAction]) {
+    internal init(locale: DoriAPI.Locale, actions: [StepAction]) {
         self.locale = locale
         self.actions = actions
     }

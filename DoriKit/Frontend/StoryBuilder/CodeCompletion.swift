@@ -35,7 +35,7 @@ private let stdlibSource = {
 }()
 
 private let assetListLock = NSLock()
-nonisolated(unsafe) private var assetList: _DoriAPI.Assets.AssetList?
+nonisolated(unsafe) private var assetList: DoriAPI.Assets.AssetList?
 private let bundleFileListCacheLock = NSLock()
 nonisolated(unsafe) private var cachedBundleFileList: [Int: [String]] = [:]
 #if canImport(SwiftUI) && canImport(WebKit)
@@ -49,7 +49,7 @@ nonisolated(unsafe) private var cachedSemaResult: (Int, SemaEvaluator)?
 internal func _completeZeileCode(
     _ code: String,
     at index: String.Index,
-    in locale: _DoriAPI.Locale,
+    in locale: DoriAPI.Locale,
     assetFolder: FileWrapper? = nil
 ) -> [CodeCompletionItem] {
     assert(
@@ -245,7 +245,7 @@ internal func _prepareAssetListForZeileCompletion() -> Bool {
     assetListLock.unlock()
     
     Task.detached {
-        if let list = await _DoriAPI.Assets.info(in: .jp) {
+        if let list = await DoriAPI.Assets.info(in: .jp) {
             assetListLock.withLock {
                 unsafe assetList = list
             }
@@ -617,11 +617,11 @@ private func lookupPath(
     if !path.hasPrefix("/") {
         // Resolve from remote asset list
         
-        var pathDesc = _DoriAPI.Assets.PathDescriptor(locale: .jp)
+        var pathDesc = DoriAPI.Assets.PathDescriptor(locale: .jp)
         func resolveChild(
             _ pathSeg: [String],
-            in list: _DoriAPI.Assets.AssetList
-        ) -> _DoriAPI.Assets.Child? {
+            in list: DoriAPI.Assets.AssetList
+        ) -> DoriAPI.Assets.Child? {
             guard !pathSeg.isEmpty else {
                 return .list(list)
             }
@@ -662,7 +662,7 @@ private func lookupPath(
                 let semaphore = DispatchSemaphore(value: 0)
                 let desc = pathDesc
                 Task { @Sendable in
-                    contents = await _DoriAPI.Assets.contentsOf(desc)
+                    contents = await DoriAPI.Assets.contentsOf(desc)
                     semaphore.signal()
                 }
                 semaphore.wait()
@@ -787,7 +787,7 @@ private func lookupLive2D(
     _ token: TokenSyntax,
     inside argument: StringLiteralExprSyntax,
     within funcCall: FunctionCallExprSyntax,
-    in locale: _DoriAPI.Locale,
+    in locale: DoriAPI.Locale,
     with sema: SemaEvaluator
 ) -> [CodeCompletionItem] {
     guard let memberAccess = funcCall.calledExpression.as(MemberAccessExprSyntax.self),

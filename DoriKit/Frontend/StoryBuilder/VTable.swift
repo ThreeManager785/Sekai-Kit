@@ -292,35 +292,35 @@ private func _characterName(byID id: Int, in ctx: IRGenEvaluator) -> String {
     } else {
         let extendMap = [
             // Ave Mujica
-            337: _DoriAPI.LocalizedData(
+            337: DoriAPI.LocalizedData(
                 jp: "三角初華",
                 en: "Uika Misumi",
                 tw: "三角初華",
                 cn: "三角初华",
                 kr: nil
             ),
-            338: _DoriAPI.LocalizedData(
+            338: DoriAPI.LocalizedData(
                 jp: "若葉睦",
                 en: "Mutsumi Wakaba",
                 tw: "若葉睦",
                 cn: "若叶睦",
                 kr: nil
             ),
-            339: _DoriAPI.LocalizedData(
+            339: DoriAPI.LocalizedData(
                 jp: "八幡海鈴",
                 en: "Umiri Yahata",
                 tw: "八幡海铃",
                 cn: "八幡海铃",
                 kr: nil
             ),
-            340: _DoriAPI.LocalizedData(
+            340: DoriAPI.LocalizedData(
                 jp: "祐天寺にゃむ",
                 en: "Nyamu Yutenji",
                 tw: "祐天寺若麥",
                 cn: "祐天寺若麦",
                 kr: nil
             ),
-            341: _DoriAPI.LocalizedData(
+            341: DoriAPI.LocalizedData(
                 jp: "豊川祥子",
                 en: "Sakiko Togawa",
                 tw: "豐川祥子",

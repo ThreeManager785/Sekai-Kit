@@ -25,12 +25,12 @@ extension DoriCache {
     public struct PreCache: Sendable, Hashable, Decodable {
         public static let current: Self = preCache
         
-        public var bands: [_DoriAPI.Bands.Band]
-        public var mainBands: [_DoriAPI.Bands.Band]
-        public var characters: [_DoriAPI.Characters.PreviewCharacter]
-        public var birthdayCharacters: [_DoriAPI.Characters.BirthdayCharacter]
-        public var categorizedCharacters: _DoriFrontend.Characters.CategorizedCharacters
-        public var characterDetails: [Int: _DoriAPI.Characters.Character] // [CharacterID: Detail]
+        public var bands: [DoriAPI.Bands.Band]
+        public var mainBands: [DoriAPI.Bands.Band]
+        public var characters: [DoriAPI.Characters.PreviewCharacter]
+        public var birthdayCharacters: [DoriAPI.Characters.BirthdayCharacter]
+        public var categorizedCharacters: DoriFrontend.Characters.CategorizedCharacters
+        public var characterDetails: [Int: DoriAPI.Characters.Character] // [CharacterID: Detail]
         
         public static var isAvailable: Bool {
 #if DORIKIT_ENABLE_PRECACHE

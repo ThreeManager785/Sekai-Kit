@@ -50,7 +50,7 @@ extension URL {
     @usableFromInline
     internal func respectOfflineAssetContext() -> URL {
         #if canImport(DoriAssetShims)
-        func checkedOutFileURL(base path: String, in locale: _DoriAPI.Locale, of type: DoriOfflineAsset.ResourceType) -> URL? {
+        func checkedOutFileURL(base path: String, in locale: DoriAPI.Locale, of type: DoriOfflineAsset.ResourceType) -> URL? {
             if let hash = try? DoriOfflineAsset.shared.fileHash(forPath: path, in: locale, of: type) {
                 var sourceExtension = path.split(separator: ".").last ?? ""
                 if sourceExtension.contains("/") {
@@ -99,7 +99,7 @@ extension URL {
             // we use [recognizer] to determine the resource type.
             let separatedPath = basePath.split(separator: "/")
             guard separatedPath.count > 3 else { return self } // To prevent out of index
-            guard let locale = _DoriAPI.Locale(rawValue: String(separatedPath[1])) else { return self }
+            guard let locale = DoriAPI.Locale(rawValue: String(separatedPath[1])) else { return self }
             let resourceType = DoriOfflineAsset.ResourceType(rawValue: analyzePathBranch(separatedPath.dropFirst().dropFirst().joined(separator: "/")))!
             let localPath = separatedPath.dropFirst().joined(separator: "/") // removes 'assets/'
             if let url = checkedOutFileURL(base: localPath, in: locale, of: resourceType) {

@@ -15,7 +15,7 @@
 import Foundation
 internal import os
 
-extension _DoriFrontend {
+extension DoriFrontend {
     /// Request and fetch data about events in Bandori.
     ///
     /// *Events* are periodic activities with new stories in GBP.
@@ -26,12 +26,12 @@ extension _DoriFrontend {
         /// Returns latest events for each locales.
         ///
         /// - Returns: Latest events for each locales, nil if failed to fetch.
-        public static func localizedLatestEvent() async -> _DoriAPI.LocalizedData<PreviewEvent>? {
-            guard let allEvents = await _DoriAPI.Events.all() else { return nil }
-            var result = _DoriAPI.LocalizedData<PreviewEvent>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
+        public static func localizedLatestEvent() async -> DoriAPI.LocalizedData<PreviewEvent>? {
+            guard let allEvents = await DoriAPI.Events.all() else { return nil }
+            var result = DoriAPI.LocalizedData<PreviewEvent>(jp: nil, en: nil, tw: nil, cn: nil, kr: nil)
             // Find from latest to earliest.
             let reversedEvents = allEvents.filter { $0.id <= 5000 }.reversed()
-            for locale in _DoriAPI.Locale.allCases {
+            for locale in DoriAPI.Locale.allCases {
                 let availableEvents = reversedEvents.filter { $0.startAt.availableInLocale(locale) }
                 if let ongoingEvent = availableEvents.first(where: {
                     $0.startAt.forLocale(locale)! <= .now
@@ -56,7 +56,7 @@ extension _DoriFrontend {
                     }
                 }
             }
-            for locale in _DoriAPI.Locale.allCases where !result.availableInLocale(locale) {
+            for locale in DoriAPI.Locale.allCases where !result.availableInLocale(locale) {
                 return nil
             }
             return result
@@ -66,7 +66,7 @@ extension _DoriFrontend {
         ///
         /// - Returns: All events, nil if failed to fetch.
         public static func list() async -> [PreviewEvent]? {
-            guard let events = await _DoriAPI.Events.all() else { return nil }
+            guard let events = await DoriAPI.Events.all() else { return nil }
             return events
         }
         
@@ -77,19 +77,19 @@ extension _DoriFrontend {
         ///     with related bands, characters, cards, gacha, songs and degrees.
         public static func extendedInformation(of id: Int) async -> ExtendedEvent? {
             let groupResult = await withTasksResult {
-                await _DoriAPI.Events.detail(of: id)
+                await DoriAPI.Events.detail(of: id)
             } _: {
-                await _DoriAPI.Bands.all()
+                await DoriAPI.Bands.all()
             } _: {
-                await _DoriAPI.Characters.all()
+                await DoriAPI.Characters.all()
             } _: {
-                await _DoriAPI.Cards.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await _DoriAPI.Gachas.all()
+                await DoriAPI.Gachas.all()
             } _: {
-                await _DoriAPI.Songs.all()
+                await DoriAPI.Songs.all()
             } _: {
-                await _DoriAPI.Degrees.all()
+                await DoriAPI.Degrees.all()
             }
             guard let event = groupResult.0 else { return nil }
             guard let bands = groupResult.1 else { return nil }
@@ -105,11 +105,11 @@ extension _DoriFrontend {
                 return nil
             }
             
-            var groupedDegrees: [[_DoriAPI.Degrees.Degree]] = []
+            var groupedDegrees: [[DoriAPI.Degrees.Degree]] = []
             if let rewards = event.rankingRewards.forLocale(
                 event.rankingRewards.availableLocale(prefer: .jp) ?? .jp
             ) {
-                var partialResult: [_DoriAPI.Degrees.Degree] = []
+                var partialResult: [DoriAPI.Degrees.Degree] = []
                 for reward in rewards where reward.reward.type == .degree {
                     if let degree = degrees.first(where: { $0.id == reward.reward.itemID }) {
                         _onFastPath()
@@ -130,7 +130,7 @@ extension _DoriFrontend {
                 event.musics?.availableLocale(prefer: .jp) ?? .jp
             ) {
                 for music in musics {
-                    var partialResult: [_DoriAPI.Degrees.Degree] = []
+                    var partialResult: [DoriAPI.Degrees.Degree] = []
                     for reward in music.rankingRewards where reward.reward.type == .degree {
                         if let degree = degrees.first(where: { $0.id == reward.reward.itemID }) {
                             _onFastPath()
@@ -186,13 +186,13 @@ extension _DoriFrontend {
         /// - SeeAlso:
         ///     See ``trackerData(for:in:tier:smooth:)-(PreviewEvent,_,_,_)``
         ///     for cutoff data of tier *20, 30, 40, 50, 100, 200, 300, 400, 500, 1000, 2000, 3000, 4000, 5000, 10000, 20000 and 30000*.
-        public static func topData(of id: Int, in locale: _DoriAPI.Locale, interval: TimeInterval = 0) async -> [TopData]? {
+        public static func topData(of id: Int, in locale: DoriAPI.Locale, interval: TimeInterval = 0) async -> [TopData]? {
             let groupResult = await withTasksResult {
-                await _DoriAPI.Events.topData(of: id, in: locale, interval: interval)
+                await DoriAPI.Events.topData(of: id, in: locale, interval: interval)
             } _: {
-                await _DoriAPI.Cards.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await _DoriAPI.Degrees.all()
+                await DoriAPI.Degrees.all()
             }
             guard let data = groupResult.0 else { return nil }
             guard let cards = groupResult.1 else { return nil }
@@ -249,7 +249,7 @@ extension _DoriFrontend {
         @inlinable
         public static func trackerData(
             for event: PreviewEvent,
-            in locale: _DoriAPI.Locale,
+            in locale: DoriAPI.Locale,
             tier: Int,
             smooth: Bool = true
         ) async -> TrackerData? {
@@ -280,7 +280,7 @@ extension _DoriFrontend {
         @inlinable
         public static func trackerData(
             for event: Event,
-            in locale: _DoriAPI.Locale,
+            in locale: DoriAPI.Locale,
             tier: Int,
             smooth: Bool = true
         ) async -> TrackerData? {
@@ -298,10 +298,10 @@ extension _DoriFrontend {
         }
         public static func _trackerData(
             of id: Int,
-            eventType: _DoriAPI.Events.EventType,
+            eventType: DoriAPI.Events.EventType,
             eventStartDate: Date,
             eventEndDate: Date,
-            in locale: _DoriAPI.Locale,
+            in locale: DoriAPI.Locale,
             tier: Int,
             smooth: Bool
         ) async -> TrackerData? {
@@ -411,9 +411,9 @@ extension _DoriFrontend {
             }
             
             let groupResult = await withTasksResult {
-                await _DoriAPI.Events.trackerRates()
+                await DoriAPI.Events.trackerRates()
             } _: {
-                await _DoriAPI.Events.trackerData(of: id, in: locale, tier: tier)
+                await DoriAPI.Events.trackerData(of: id, in: locale, tier: tier)
             }
             guard let rates = groupResult.0 else { return nil }
             guard let trackerData = groupResult.1 else { return nil }
@@ -433,9 +433,9 @@ extension _DoriFrontend {
     }
 }
 
-extension _DoriFrontend.Events {
-    public typealias PreviewEvent = _DoriAPI.Events.PreviewEvent
-    public typealias Event = _DoriAPI.Events.Event
+extension DoriFrontend.Events {
+    public typealias PreviewEvent = DoriAPI.Events.PreviewEvent
+    public typealias Event = DoriAPI.Events.Event
     
     /// Represent an extended event.
     public struct ExtendedEvent: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -444,22 +444,22 @@ extension _DoriFrontend.Events {
         /// The base event information.
         public var event: Event
         /// The bands that participate in this event.
-        public var bands: [_DoriAPI.Bands.Band]
+        public var bands: [DoriAPI.Bands.Band]
         /// The characters that participate in this event.
-        public var characters: [_DoriAPI.Characters.PreviewCharacter]
+        public var characters: [DoriAPI.Characters.PreviewCharacter]
         /// The cards that related to this event.
-        public var cards: [_DoriAPI.Cards.PreviewCard]
+        public var cards: [DoriAPI.Cards.PreviewCard]
         /// The gacha that related to relating cards to this event.
-        public var gacha: [_DoriAPI.Gachas.PreviewGacha]
+        public var gacha: [DoriAPI.Gachas.PreviewGacha]
         /// The songs that were released during this event.
-        public var songs: [_DoriAPI.Songs.PreviewSong]
+        public var songs: [DoriAPI.Songs.PreviewSong]
         /// The songs that presents in the `musics` property in the event.
-        public var eventSongs: _DoriAPI.LocalizedData<[_DoriAPI.Songs.PreviewSong]>?
+        public var eventSongs: DoriAPI.LocalizedData<[DoriAPI.Songs.PreviewSong]>?
         /// The degrees that related to this event.
         ///
         /// The degrees are grouped into several arrays.
         /// Degrees in the same inner array are related.
-        public var degrees: [[_DoriAPI.Degrees.Degree]]
+        public var degrees: [[DoriAPI.Degrees.Degree]]
     }
     
     /// Represent data of a user of top 10 in an event.
@@ -473,11 +473,11 @@ extension _DoriFrontend.Events {
         /// The rank of user.
         public var rank: Int
         /// The card that is set to main by the user.
-        public var card: _DoriAPI.Cards.PreviewCard
+        public var card: DoriAPI.Cards.PreviewCard
         /// A boolean value that indicates whether the ``card`` is trained.
         public var trained: Bool
         /// The degrees that the user displaying.
-        public var degrees: [_DoriAPI.Degrees.Degree]
+        public var degrees: [DoriAPI.Degrees.Degree]
         /// Time-related points data in an event of the user.
         public var points: [Point]
         
@@ -509,10 +509,10 @@ extension _DoriFrontend.Events {
     }
 }
 
-extension _DoriFrontend.Events.ExtendedEvent {
+extension DoriFrontend.Events.ExtendedEvent {
     @inlinable
     public init?(id: Int) async {
-        if let event = await _DoriFrontend.Events.extendedInformation(of: id) {
+        if let event = await DoriFrontend.Events.extendedInformation(of: id) {
             self = event
         } else {
             return nil
@@ -520,9 +520,9 @@ extension _DoriFrontend.Events.ExtendedEvent {
     }
 }
 
-extension _DoriAPI.Events.EventStory {
+extension DoriAPI.Events.EventStory {
     @inlinable
-    public func availability(in locale: _DoriAPI.Locale) -> Bool {
+    public func availability(in locale: DoriAPI.Locale) -> Bool {
         stories.first?.title.availableInLocale(locale) ?? false
     }
 }

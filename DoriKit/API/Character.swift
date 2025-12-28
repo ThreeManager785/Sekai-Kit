@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension _DoriAPI {
+extension DoriAPI {
     /// Request and fetch data about character in Bandori.
     ///
     /// *Characters* contains all persons appear in GBP,
@@ -412,7 +412,7 @@ extension _DoriAPI {
     }
 }
 
-extension _DoriAPI.Characters {
+extension DoriAPI.Characters {
     /// Represent simplified data of a character.
     public struct PreviewCharacter: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of character.
@@ -420,12 +420,12 @@ extension _DoriAPI.Characters {
         /// Type of character.
         public var characterType: CharacterType
         /// Localized name of character.
-        public var characterName: _DoriAPI.LocalizedData<String>
+        public var characterName: DoriAPI.LocalizedData<String>
         /// Localized nickname of character.
         ///
         /// Only few characters are associateed with a nickname,
         /// mainly in *RAISE A SUILEN*, such as Chiyu has a nickname *CHU²*.
-        public var nickname: _DoriAPI.LocalizedData<String>
+        public var nickname: DoriAPI.LocalizedData<String>
         /// ID of related band to this character.
         public var bandID: Int?
         /// Member color of character.
@@ -463,8 +463,8 @@ extension _DoriAPI.Characters {
         internal init(
             id: Int,
             characterType: CharacterType,
-            characterName: _DoriAPI.LocalizedData<String>,
-            nickname: _DoriAPI.LocalizedData<String>,
+            characterName: DoriAPI.LocalizedData<String>,
+            nickname: DoriAPI.LocalizedData<String>,
             bandID: Int?,
             color: Color?,
             seasonCostumeList: [[SeasonCostume]]?
@@ -484,12 +484,12 @@ extension _DoriAPI.Characters {
         /// A unique ID of character.
         public var id: Int
         /// Localized name of character.
-        public var characterName: _DoriAPI.LocalizedData<String>
+        public var characterName: DoriAPI.LocalizedData<String>
         /// Localized nickname of character.
         ///
         /// Only few characters are associateed with a nickname,
         /// mainly in *RAISE A SUILEN*, such as Chiyu has a nickname *CHU²*.
-        public var nickname: _DoriAPI.LocalizedData<String>
+        public var nickname: DoriAPI.LocalizedData<String>
         /// Birthday of character.
         public var birthday: Date // String(JSON) -> Date(Swift)
     }
@@ -501,16 +501,16 @@ extension _DoriAPI.Characters {
         /// Type of character.
         public var characterType: CharacterType
         /// Localized name of character.
-        public var characterName: _DoriAPI.LocalizedData<String>
+        public var characterName: DoriAPI.LocalizedData<String>
         /// Localized first name of character.
-        public var firstName: _DoriAPI.LocalizedData<String>
+        public var firstName: DoriAPI.LocalizedData<String>
         /// Localized last name of character.
-        public var lastName: _DoriAPI.LocalizedData<String>
+        public var lastName: DoriAPI.LocalizedData<String>
         /// Localized nickname of character.
         ///
         /// Only few characters are associateed with a nickname,
         /// mainly in *RAISE A SUILEN*, such as Chiyu has a nickname *CHU²*.
-        public var nickname: _DoriAPI.LocalizedData<String>
+        public var nickname: DoriAPI.LocalizedData<String>
         /// ID of related band to this character.
         public var bandID: Int?
         /// Member color of character.
@@ -549,23 +549,23 @@ extension _DoriAPI.Characters {
         ///     ```
         public var seasonCostumeList: [[SeasonCostume]]?
         /// Localized ruby of character's name.
-        public var ruby: _DoriAPI.LocalizedData<String>
+        public var ruby: DoriAPI.LocalizedData<String>
         /// Profile of character
         public var profile: Profile?
         
         internal init(
             id: Int,
             characterType: CharacterType,
-            characterName: _DoriAPI.LocalizedData<String>,
-            firstName: _DoriAPI.LocalizedData<String>,
-            lastName: _DoriAPI.LocalizedData<String>,
-            nickname: _DoriAPI.LocalizedData<String>,
+            characterName: DoriAPI.LocalizedData<String>,
+            firstName: DoriAPI.LocalizedData<String>,
+            lastName: DoriAPI.LocalizedData<String>,
+            nickname: DoriAPI.LocalizedData<String>,
             bandID: Int?,
             color: Color?,
             sdAssetBundleName: String,
             defaultCostumeID: Int?,
             seasonCostumeList: [[SeasonCostume]]?,
-            ruby: _DoriAPI.LocalizedData<String>,
+            ruby: DoriAPI.LocalizedData<String>,
             profile: Profile?
         ) {
             self.id = id
@@ -585,12 +585,12 @@ extension _DoriAPI.Characters {
         internal init(
             id: Int,
             characterType: CharacterType,
-            characterName: _DoriAPI.LocalizedData<String>,
-            firstName: _DoriAPI.LocalizedData<String>,
-            lastName: _DoriAPI.LocalizedData<String>,
-            nickname: _DoriAPI.LocalizedData<String>,
+            characterName: DoriAPI.LocalizedData<String>,
+            firstName: DoriAPI.LocalizedData<String>,
+            lastName: DoriAPI.LocalizedData<String>,
+            nickname: DoriAPI.LocalizedData<String>,
             sdAssetBundleName: String,
-            ruby: _DoriAPI.LocalizedData<String>
+            ruby: DoriAPI.LocalizedData<String>
         ) {
             self.id = id
             self.characterType = characterType
@@ -605,27 +605,27 @@ extension _DoriAPI.Characters {
         /// Represent profile of a character.
         public struct Profile: Sendable, Hashable, DoriCache.Cacheable {
             /// Localized name of character's voice actor.
-            public var characterVoice: _DoriAPI.LocalizedData<String>
+            public var characterVoice: DoriAPI.LocalizedData<String>
             /// Localized favorite food of character.
-            public var favoriteFood: _DoriAPI.LocalizedData<String>
+            public var favoriteFood: DoriAPI.LocalizedData<String>
             /// Localized hated food of character.
-            public var hatedFood: _DoriAPI.LocalizedData<String>
+            public var hatedFood: DoriAPI.LocalizedData<String>
             /// Localized hobby of character.
-            public var hobby: _DoriAPI.LocalizedData<String>
+            public var hobby: DoriAPI.LocalizedData<String>
             /// Localized self-introduction of character.
-            public var selfIntroduction: _DoriAPI.LocalizedData<String>
+            public var selfIntroduction: DoriAPI.LocalizedData<String>
             /// Localized school name of character.
-            public var school: _DoriAPI.LocalizedData<String>
+            public var school: DoriAPI.LocalizedData<String>
             /// Localized class in school which the character in.
-            public var schoolClass: _DoriAPI.LocalizedData<String> // named "schoolCls" in JSON, we use "schoolClass" to make it clear
+            public var schoolClass: DoriAPI.LocalizedData<String> // named "schoolCls" in JSON, we use "schoolClass" to make it clear
             /// Localized school year which the character in.
-            public var schoolYear: _DoriAPI.LocalizedData<String>
+            public var schoolYear: DoriAPI.LocalizedData<String>
             /// The part of character works in band.
             public var part: Part
             /// Birthday of character.
             public var birthday: Date // String(JSON) -> Date(Swift)
             /// Constellation of character.
-            public var constellation: _DoriAPI.Constellation
+            public var constellation: DoriAPI.Constellation
             /// Height of character, in *centimeter*.
             public var height: Int
             
@@ -691,8 +691,8 @@ extension _DoriAPI.Characters {
     }
 }
 
-extension _DoriAPI.Characters.PreviewCharacter {
-    public init(_ full: _DoriAPI.Characters.Character) {
+extension DoriAPI.Characters.PreviewCharacter {
+    public init(_ full: DoriAPI.Characters.Character) {
         self.init(
             id: full.id,
             characterType: full.characterType,
@@ -704,8 +704,8 @@ extension _DoriAPI.Characters.PreviewCharacter {
         )
     }
 }
-extension _DoriAPI.Characters.BirthdayCharacter {
-    public init?(_ full: _DoriAPI.Characters.Character) {
+extension DoriAPI.Characters.BirthdayCharacter {
+    public init?(_ full: DoriAPI.Characters.Character) {
         if let birthday = full.profile?.birthday {
             self.init(
                 id: full.id,
@@ -718,10 +718,10 @@ extension _DoriAPI.Characters.BirthdayCharacter {
         }
     }
 }
-extension _DoriAPI.Characters.Character {
+extension DoriAPI.Characters.Character {
     @inlinable
     public init?(id: Int) async {
-        if let character = await _DoriAPI.Characters.detail(of: id) {
+        if let character = await DoriAPI.Characters.detail(of: id) {
             self = character
         } else {
             return nil
@@ -729,11 +729,11 @@ extension _DoriAPI.Characters.Character {
     }
     
     @inlinable
-    public init?(preview: _DoriAPI.Characters.PreviewCharacter) async {
+    public init?(preview: DoriAPI.Characters.PreviewCharacter) async {
         await self.init(id: preview.id)
     }
     @inlinable
-    public init?(preview: _DoriAPI.Characters.BirthdayCharacter) async {
+    public init?(preview: DoriAPI.Characters.BirthdayCharacter) async {
         await self.init(id: preview.id)
     }
 }

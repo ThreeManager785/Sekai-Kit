@@ -14,7 +14,7 @@
 
 import Foundation
 
-extension _DoriFrontend {
+extension DoriFrontend {
     /// Request and fetch data about login campaigns in Bandori.
     ///
     /// *Login campaigns* are activities that give you some items
@@ -32,12 +32,12 @@ extension _DoriFrontend {
         ///
         /// - Returns: All login campaigns, nil if failed to fetch.
         public static func list() async -> [PreviewCampaign]? {
-            guard let campaigns = await _DoriAPI.LoginCampaigns.all() else { return nil }
+            guard let campaigns = await DoriAPI.LoginCampaigns.all() else { return nil }
             return campaigns
         }
     }
 }
 
-extension _DoriFrontend.LoginCampaigns {
-    public typealias PreviewCampaign = _DoriAPI.LoginCampaigns.PreviewCampaign
+extension DoriFrontend.LoginCampaigns {
+    public typealias PreviewCampaign = DoriAPI.LoginCampaigns.PreviewCampaign
 }

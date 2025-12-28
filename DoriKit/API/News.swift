@@ -16,7 +16,7 @@ import Foundation
 internal import os
 internal import SwiftyJSON
 
-extension _DoriAPI {
+extension DoriAPI {
     /// Request and fetch data about news in Bandori.
     ///
     /// The news information is provided by Bestdori.
@@ -364,7 +364,7 @@ extension _DoriAPI {
     }
 }
 
-extension _DoriAPI.News {
+extension DoriAPI.News {
     /// Represent simplified data of news.
     public struct PreviewItem: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of news.
@@ -388,26 +388,26 @@ extension _DoriAPI.News {
         
         public struct Song: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
             public var id: Int
-            public var musicTitle: _DoriAPI.LocalizedData<String>
-            public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var musicTitle: DoriAPI.LocalizedData<String>
+            public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         }
         public struct Event: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
             public var id: Int
-            public var eventName: _DoriAPI.LocalizedData<String>
-            public var startAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-            public var endAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var eventName: DoriAPI.LocalizedData<String>
+            public var startAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var endAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         }
         public struct Gacha: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
             public var id: Int
-            public var gachaName: _DoriAPI.LocalizedData<String>
-            public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-            public var closedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var gachaName: DoriAPI.LocalizedData<String>
+            public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var closedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         }
         public struct LoginBonus: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
             public var id: Int
-            public var caption: _DoriAPI.LocalizedData<String>
-            public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-            public var closedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var caption: DoriAPI.LocalizedData<String>
+            public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+            public var closedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         }
     }
     
@@ -423,7 +423,7 @@ extension _DoriAPI.News {
         public var timestamp: Date // String(JSON) -> Date(Swift)
         /// Tags of news.
         public var tags: [String]
-        public var locale: _DoriAPI.Locale? {
+        public var locale: DoriAPI.Locale? {
             tags.compactMap { DoriLocale(rawValue: $0.lowercased()) }.first
         }
         public var content: [Content]
@@ -444,7 +444,7 @@ extension _DoriAPI.News {
     }
 }
 #if HAS_BINARY_RESOURCE_BUNDLES
-extension Array<_DoriAPI.News.Item.Content> {
+extension Array<DoriAPI.News.Item.Content> {
     @inlinable
     public var forRichRendering: RichContentGroup {
         .init(self)
@@ -452,8 +452,8 @@ extension Array<_DoriAPI.News.Item.Content> {
 }
 #endif
 
-extension _DoriAPI.News.PreviewItem {
-    public init(_ full: _DoriAPI.News.Item) {
+extension DoriAPI.News.PreviewItem {
+    public init(_ full: DoriAPI.News.Item) {
         self.init(
             id: full.id,
             title: full.title,
@@ -463,10 +463,10 @@ extension _DoriAPI.News.PreviewItem {
         )
     }
 }
-extension _DoriAPI.News.Item {
+extension DoriAPI.News.Item {
     @inlinable
     public init?(id: Int) async {
-        if let item = await _DoriAPI.News.detail(of: id) {
+        if let item = await DoriAPI.News.detail(of: id) {
             self = item
         } else {
             return nil
@@ -474,7 +474,7 @@ extension _DoriAPI.News.Item {
     }
     
     @inlinable
-    public init?(preview: _DoriAPI.News.PreviewItem) async {
+    public init?(preview: DoriAPI.News.PreviewItem) async {
         await self.init(id: preview.id)
     }
 }

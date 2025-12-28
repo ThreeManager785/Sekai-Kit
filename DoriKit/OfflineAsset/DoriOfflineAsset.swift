@@ -57,7 +57,7 @@ public final class DoriOfflineAsset: Sendable {
     @discardableResult
     public func downloadResource(
         of type: ResourceType,
-        in locale: _DoriAPI.Locale,
+        in locale: DoriAPI.Locale,
         onProgressUpdate: @Sendable @escaping (Double, Int, Int) -> Void
     ) async throws -> Bool {
         let callback: @Sendable @convention(c) (UnsafePointer<_git_indexer_progress>, UnsafeMutableRawPointer?) -> Int32 = { progress, payload in
@@ -105,7 +105,7 @@ public final class DoriOfflineAsset: Sendable {
     @discardableResult
     public func updateResource(
         of type: ResourceType,
-        in locale: _DoriAPI.Locale,
+        in locale: DoriAPI.Locale,
         onProgressUpdate: @Sendable @escaping (Double, Int, Int) -> Void
     ) async throws -> Bool {
         let callback: @Sendable @convention(c) (UnsafePointer<_git_indexer_progress>, UnsafeMutableRawPointer?) -> Int32 = { progress, payload in
@@ -142,7 +142,7 @@ public final class DoriOfflineAsset: Sendable {
     ///   - locale: Locale of resource.
     ///   - type: Type of resource, see ``ResourceType`` for more details.
     /// - Returns: `true` if an update is available.
-    public func isUpdateAvailable(in locale: _DoriAPI.Locale, of type: ResourceType) async throws -> UpdateCheckerResult {
+    public func isUpdateAvailable(in locale: DoriAPI.Locale, of type: ResourceType) async throws -> UpdateCheckerResult {
         try await withCheckedThrowingContinuation { continuation in
             DispatchQueue(label: "com.memz233.DoriKit.OfflineAsset.is-update-available", qos: .userInitiated).async {
                 do {
@@ -162,23 +162,23 @@ public final class DoriOfflineAsset: Sendable {
         }
     }
     
-    public func fileExists(_ path: String, in locale: _DoriAPI.Locale, of type: ResourceType) -> Bool {
+    public func fileExists(_ path: String, in locale: DoriAPI.Locale, of type: ResourceType) -> Bool {
         AssetShims.fileExists(path, inLocale: locale.rawValue, ofType: type.rawValue)
     }
     
-    public func contentsOfDirectory(atPath path: String, in locale: _DoriAPI.Locale, of type: ResourceType) throws -> [String] {
+    public func contentsOfDirectory(atPath path: String, in locale: DoriAPI.Locale, of type: ResourceType) throws -> [String] {
         try AssetShims.contentsOfDirectory(atPath: path, inLocale: locale.rawValue, ofType: type.rawValue)
     }
     
-    public func fileData(forPath path: String, in locale: _DoriAPI.Locale, of type: ResourceType) throws -> Data {
+    public func fileData(forPath path: String, in locale: DoriAPI.Locale, of type: ResourceType) throws -> Data {
         try AssetShims.fileData(forPath: path, inLocale: locale.rawValue, ofType: type.rawValue)
     }
     
-    public func fileHash(forPath path: String, in locale: _DoriAPI.Locale, of type: ResourceType) throws -> String {
+    public func fileHash(forPath path: String, in locale: DoriAPI.Locale, of type: ResourceType) throws -> String {
         try AssetShims.fileHash(forPath: path, inLocale: locale.rawValue, ofType: type.rawValue)
     }
     
-    public func writeFile(atPath path: String, in locale: _DoriAPI.Locale, of type: ResourceType, toPath destination: String) throws {
+    public func writeFile(atPath path: String, in locale: DoriAPI.Locale, of type: ResourceType, toPath destination: String) throws {
         // We have to load all file data to memory first
         // because blobs in git are compressed and can't be read by streaming.
         // Since most of files in GBP aren't large at all, this won't cost much.

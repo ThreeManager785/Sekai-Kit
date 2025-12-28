@@ -20,8 +20,8 @@ import DoriKit
 import Foundation
 
 private let resourceInterpolation: [AnyHashable: String] = [
-    _DoriAPI.Locale.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
-    _DoriAPI.Attribute.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
+    DoriAPI.Locale.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
+    DoriAPI.Attribute.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
     1...40: "https://bestdori.com/res/icon/chara_icon_%s.png",
     [1, 2, 3, 4, 5, 18, 21, 45]: "https://bestdori.com/res/icon/band_%s.svg"
 ]

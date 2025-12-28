@@ -15,7 +15,7 @@
 import Foundation
 internal import SwiftyJSON
 
-extension _DoriAPI {
+extension DoriAPI {
     /// Other uncatogorized requests in Bandori.
     public enum Misc {
         public static func itemTexts() async -> [String: ItemText]? {
@@ -140,7 +140,7 @@ extension _DoriAPI {
                             ),
                             stories: value["stories"].map {
                                 (id: Int($0.0) ?? 0,
-                                 value: _DoriAPI.Story(
+                                 value: DoriAPI.Story(
                                     scenarioID: $0.1["scenarioId"].stringValue,
                                     caption: .init(
                                         jp: $0.1["caption"][0].string,
@@ -244,21 +244,21 @@ extension _DoriAPI {
             return nil
         }
         
-        public static func eventStoryAsset(eventID: Int, scenarioID: String, locale: _DoriAPI.Locale) async -> StoryAsset? {
+        public static func eventStoryAsset(eventID: Int, scenarioID: String, locale: DoriAPI.Locale) async -> StoryAsset? {
             let request = await requestJSON("https://bestdori.com/assets/\(locale.rawValue)/scenario/eventstory/event\(eventID)_rip/Scenario\(scenarioID).asset")
             if case let .success(respJSON) = request {
                 return await _parseStoryAsset(respJSON)
             }
             return nil
         }
-        public static func mainStoryAsset(scenarioID: String, locale: _DoriAPI.Locale) async -> StoryAsset? {
+        public static func mainStoryAsset(scenarioID: String, locale: DoriAPI.Locale) async -> StoryAsset? {
             let request = await requestJSON("https://bestdori.com/assets/\(locale.rawValue)/scenario/main_rip/Scenario\(scenarioID).asset")
             if case let .success(respJSON) = request {
                 return await _parseStoryAsset(respJSON)
             }
             return nil
         }
-        public static func bandStoryAsset(bandID: Int, scenarioID: String, locale: _DoriAPI.Locale) async -> StoryAsset? {
+        public static func bandStoryAsset(bandID: Int, scenarioID: String, locale: DoriAPI.Locale) async -> StoryAsset? {
             var bandID = String(bandID)
             while bandID.count < 3 {
                 bandID = "0" + bandID
@@ -269,14 +269,14 @@ extension _DoriAPI {
             }
             return nil
         }
-        public static func cardStoryAsset(resourceSetName: String, scenarioID: String, locale: _DoriAPI.Locale) async -> StoryAsset? {
+        public static func cardStoryAsset(resourceSetName: String, scenarioID: String, locale: DoriAPI.Locale) async -> StoryAsset? {
             let request = await requestJSON("https://bestdori.com/assets/\(locale.rawValue)/characters/resourceset/\(resourceSetName)_rip/Scenario\(scenarioID).asset")
             if case let .success(respJSON) = request {
                 return await _parseStoryAsset(respJSON)
             }
             return nil
         }
-        public static func actionSetStoryAsset(actionSetID: Int, locale: _DoriAPI.Locale) async -> StoryAsset? {
+        public static func actionSetStoryAsset(actionSetID: Int, locale: DoriAPI.Locale) async -> StoryAsset? {
             let _request = await requestJSON("https://bestdori.com/assets/\(locale.rawValue)/actionset/group\(Int(floor(Double(actionSetID / 128))))_rip/ActionSet\(actionSetID).asset")
             if case let .success(respJSON) = _request {
                 let id = respJSON["Base"]["details"][0]["reactionTypeBelongId"].stringValue
@@ -287,7 +287,7 @@ extension _DoriAPI {
             }
             return nil
         }
-        public static func afterLiveStoryAsset(talkID: Int, scenarioID: String, locale: _DoriAPI.Locale) async -> StoryAsset? {
+        public static func afterLiveStoryAsset(talkID: Int, scenarioID: String, locale: DoriAPI.Locale) async -> StoryAsset? {
             let request = await requestJSON("https://bestdori.com/assets/\(locale.rawValue)/scenario/afterlivetalk/group\(Int(floor(Double(talkID / 256))))_rip/Scenario\(scenarioID).asset")
             if case let .success(respJSON) = request {
                 return await _parseStoryAsset(respJSON)
@@ -518,7 +518,7 @@ extension _DoriAPI {
 
 // We declare extension of `DoriAPI` instead of `DoriAPI.Misc`
 // to make them can be found easier.
-extension _DoriAPI {
+extension DoriAPI {
     public struct Item: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var itemID: Int?
         public var type: ItemType
@@ -572,8 +572,8 @@ extension _DoriAPI {
         public var id: String { scenarioID }
     }
 }
-extension _DoriAPI.Story {
-    public init(_ eventStory: _DoriAPI.Events.Event.Story) {
+extension DoriAPI.Story {
+    public init(_ eventStory: DoriAPI.Events.Event.Story) {
         self.init(
             scenarioID: eventStory.scenarioID,
             caption: eventStory.caption,
@@ -585,13 +585,13 @@ extension _DoriAPI.Story {
 
 // These declerations are less used so we define it in
 // extension of `DoriAPI.Misc`
-extension _DoriAPI.Misc {
+extension DoriAPI.Misc {
     public struct ItemText: Sendable, Hashable, DoriCache.Cacheable {
-        public var name: _DoriAPI.LocalizedData<String>
+        public var name: DoriAPI.LocalizedData<String>
         public var type: ItemType?
         public var resourceID: Int
         
-        internal init(name: _DoriAPI.LocalizedData<String>, type: ItemType?, resourceID: Int) {
+        internal init(name: DoriAPI.LocalizedData<String>, type: ItemType?, resourceID: Int) {
             self.name = name
             self.type = type
             self.resourceID = resourceID
@@ -621,20 +621,20 @@ extension _DoriAPI.Misc {
         public var id: Int
         public var bandID: Int
         public var chapterNumber: Int
-        public var mainTitle: _DoriAPI.LocalizedData<String>
-        public var subTitle: _DoriAPI.LocalizedData<String>
-        public var publishedAt: _DoriAPI.LocalizedData<Date>
-        public var stories: [_DoriAPI.Story]
+        public var mainTitle: DoriAPI.LocalizedData<String>
+        public var subTitle: DoriAPI.LocalizedData<String>
+        public var publishedAt: DoriAPI.LocalizedData<Date>
+        public var stories: [DoriAPI.Story]
     }
     public struct AfterLiveTalk: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var scenarioID: String
-        public var description: _DoriAPI.LocalizedData<String>
+        public var description: DoriAPI.LocalizedData<String>
     }
     
     public struct Area: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
-        public var areaName: _DoriAPI.LocalizedData<String>
+        public var areaName: DoriAPI.LocalizedData<String>
     }
     public struct ActionSet: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
@@ -816,7 +816,7 @@ extension _DoriAPI.Misc {
         public var userProfileSituation: ProfileSituation
         public var userProfileDegree: [Int?] // [FirstID, SecondID]
         public var stageChallengeAchievementConditions: [Int: Int]
-        public var userMusicClearInfo: [_DoriAPI.Songs.DifficultyType: MusicClearInfo]
+        public var userMusicClearInfo: [DoriAPI.Songs.DifficultyType: MusicClearInfo]
         
         public struct Flags: Sendable, OptionSet, Hashable, DoriCache.Cacheable {
             public var rawValue: UInt16
@@ -858,9 +858,9 @@ extension _DoriAPI.Misc {
             public var limitBreakRank: Int
             
             public struct AppendParameter: Sendable, Hashable, DoriCache.Cacheable {
-                public var stat: _DoriAPI.Cards.Stat // Int<performance|technique|visual>(JSON) -> Stat(Swift)
-                public var characterPotentialStat: _DoriAPI.Cards.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
-                public var characterBonusStat: _DoriAPI.Cards.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
+                public var stat: DoriAPI.Cards.Stat // Int<performance|technique|visual>(JSON) -> Stat(Swift)
+                public var characterPotentialStat: DoriAPI.Cards.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
+                public var characterBonusStat: DoriAPI.Cards.Stat // Int<characterPotential.+>(JSON) -> Stat(Swift)
             }
         }
         
@@ -877,7 +877,7 @@ extension _DoriAPI.Misc {
             
             public struct HighScoreMusic: Sendable, Hashable, DoriCache.Cacheable {
                 public var musicID: Int
-                public var difficulty: _DoriAPI.Songs.DifficultyType
+                public var difficulty: DoriAPI.Songs.DifficultyType
                 public var rating: Int
             }
         }
@@ -909,17 +909,17 @@ extension _DoriAPI.Misc {
     public struct DecoFrame: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var assetBundleName: String
-        public var decoFrameName: _DoriAPI.LocalizedData<String>
+        public var decoFrameName: DoriAPI.LocalizedData<String>
     }
     public struct DecoPin: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var assetBundleName: String
-        public var decoPinName: _DoriAPI.LocalizedData<String>
+        public var decoPinName: DoriAPI.LocalizedData<String>
     }
     public struct DecoPinSet: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var assetBundleName: String
-        public var decoPinSetName: _DoriAPI.LocalizedData<String>
+        public var decoPinSetName: DoriAPI.LocalizedData<String>
     }
     
     public struct Stamp: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -930,11 +930,11 @@ extension _DoriAPI.Misc {
     public struct GameLaneSkin: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
         public var assetBundleName: String
-        public var skinName: _DoriAPI.LocalizedData<String>
+        public var skinName: DoriAPI.LocalizedData<String>
     }
 }
 
-extension _DoriAPI.Misc.PlayerProfile {
+extension DoriAPI.Misc.PlayerProfile {
     internal init(parsing json: JSON) {
         var flagsValue: UInt16 = 0
         if json["publishTotalDeckPowerFlg"].boolValue {
@@ -991,13 +991,13 @@ extension _DoriAPI.Misc.PlayerProfile {
         }
         
         let userMusicClearInfo = json["userMusicClearInfoMap"]["entries"].map {
-            (key: _DoriAPI.Songs.DifficultyType(rawStringValue: $0.0) ?? .easy,
+            (key: DoriAPI.Songs.DifficultyType(rawStringValue: $0.0) ?? .easy,
              value: MusicClearInfo(
                 clearedMusicCount: $0.1["clearedMusicCount"].intValue,
                 fullComboMusicCount: $0.1["fullComboMusicCount"].intValue,
                 allPerfectMusicCount: $0.1["allPerfectMusicCount"].intValue
              ))
-        }.reduce(into: [_DoriAPI.Songs.DifficultyType: MusicClearInfo]()) { $0.updateValue($1.value, forKey: $1.key) }
+        }.reduce(into: [DoriAPI.Songs.DifficultyType: MusicClearInfo]()) { $0.updateValue($1.value, forKey: $1.key) }
         let stageChallengeAchievementConditions = json["stageChallengeAchievementConditionsMap"]["entries"].map {
             (key: Int($0.0) ?? 0, value: $0.1.intValue)
         }.reduce(into: [Int: Int]()) { $0.updateValue($1.value, forKey: $1.key) }

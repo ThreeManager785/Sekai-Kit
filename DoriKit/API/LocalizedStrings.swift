@@ -14,7 +14,7 @@
 
 import Foundation
 
-extension _DoriAPI.Constellation {
+extension DoriAPI.Constellation {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -34,20 +34,20 @@ extension _DoriAPI.Constellation {
     }
 }
 
-extension _DoriAPI.Cards.CardType {
+extension DoriAPI.Cards.CardType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("card" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
-extension _DoriAPI.Cards.CardEpisode.EpisodeType {
+extension DoriAPI.Cards.CardEpisode.EpisodeType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("episode" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
 
-extension _DoriAPI.Characters.Character.Profile.Part {
+extension DoriAPI.Characters.Character.Profile.Part {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -63,44 +63,44 @@ extension _DoriAPI.Characters.Character.Profile.Part {
         }
     }
 }
-extension _DoriAPI.Characters.SeasonCostume.SeasonCostumeType {
+extension DoriAPI.Characters.SeasonCostume.SeasonCostumeType {
     public var localizedString: String {
         NSLocalizedString("seasonal\(self.rawValue)", bundle: #bundle, comment: "")
     }
 }
 
-extension _DoriAPI.Events.EventType {
+extension DoriAPI.Events.EventType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("event" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
-extension _DoriAPI.Events.Event.FestivalResult {
+extension DoriAPI.Events.Event.FestivalResult {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("festivalresult" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
-extension _DoriAPI.Events.Event.LiveTryMissionType {
+extension DoriAPI.Events.Event.LiveTryMissionType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString(self.rawValue, bundle: #bundle, comment: "")
     }
 }
-extension _DoriAPI.Events.FestivalStage.StageType {
+extension DoriAPI.Events.FestivalStage.StageType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString(self.rawValue, bundle: #bundle, comment: "")
     }
 }
 
-extension _DoriAPI.Gachas.GachaType {
+extension DoriAPI.Gachas.GachaType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("gacha" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
-extension _DoriAPI.Gachas.Gacha.PaymentMethod.Method {
+extension DoriAPI.Gachas.Gacha.PaymentMethod.Method {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -114,7 +114,7 @@ extension _DoriAPI.Gachas.Gacha.PaymentMethod.Method {
         }
     }
 }
-extension _DoriAPI.Gachas.Gacha.PaymentMethod.Behavior {
+extension DoriAPI.Gachas.Gacha.PaymentMethod.Behavior {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -128,14 +128,14 @@ extension _DoriAPI.Gachas.Gacha.PaymentMethod.Behavior {
     }
 }
 
-extension _DoriAPI.LoginCampaigns.CampaignType {
+extension DoriAPI.LoginCampaigns.CampaignType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("login" + self.rawValue, bundle: #bundle, comment: "")
     }
 }
 
-extension _DoriAPI.Misc.ActionSet.ActionSetType {
+extension DoriAPI.Misc.ActionSet.ActionSetType {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("areatype" + self.rawValue, bundle: #bundle, comment: "")
@@ -143,7 +143,7 @@ extension _DoriAPI.Misc.ActionSet.ActionSetType {
 }
 
 #if HAS_BINARY_RESOURCE_BUNDLES
-extension _DoriAPI.Posts.Post.StoryMetadata.AgeRating {
+extension DoriAPI.Posts.Post.StoryMetadata.AgeRating {
     @inline(never)
     public var localizedString: String {
         switch self {
@@ -156,7 +156,7 @@ extension _DoriAPI.Posts.Post.StoryMetadata.AgeRating {
 }
 #endif
 
-extension _DoriAPI.Songs.SongTag {
+extension DoriAPI.Songs.SongTag {
     @inline(never)
     public var localizedString: String {
         NSLocalizedString("tag" + self.rawValue, bundle: #bundle, comment: "")

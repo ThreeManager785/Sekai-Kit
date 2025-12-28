@@ -15,7 +15,7 @@
 import Foundation
 private import Builtin
 
-extension _DoriFrontend {
+extension DoriFrontend {
     /// Other uncatogorized requests in Bandori.
     public enum Misc {
         /// Returns a list of items with related information from given items.
@@ -25,22 +25,22 @@ extension _DoriFrontend {
         public static func extendedItems<T>(
             from items: T
         ) async -> [ExtendedItem]? where T: RandomAccessCollection, T.Element == Item {
-            guard let texts = await _DoriAPI.Misc.itemTexts() else { return nil }
+            guard let texts = await DoriAPI.Misc.itemTexts() else { return nil }
             
             // These data may or may not be used, we fetch them on demand
             var failureFlag: UInt8 = 0 // If something failed,
                                        // we don't try it anymore
-            var degrees: [_DoriAPI.Degrees.Degree]?
-            var decoFrames: [_DoriAPI.Misc.DecoFrame]?
-            var decoPins: [_DoriAPI.Misc.DecoPin]?
-            var decoPinSets: [_DoriAPI.Misc.DecoPinSet]?
-            var gameLaneSkins: [_DoriAPI.Misc.GameLaneSkin]?
-            var stamps: [_DoriAPI.Misc.Stamp]?
-            var cards: [_DoriAPI.Cards.PreviewCard]?
+            var degrees: [DoriAPI.Degrees.Degree]?
+            var decoFrames: [DoriAPI.Misc.DecoFrame]?
+            var decoPins: [DoriAPI.Misc.DecoPin]?
+            var decoPinSets: [DoriAPI.Misc.DecoPinSet]?
+            var gameLaneSkins: [DoriAPI.Misc.GameLaneSkin]?
+            var stamps: [DoriAPI.Misc.Stamp]?
+            var cards: [DoriAPI.Cards.PreviewCard]?
             
             var result = [ExtendedItem]()
             for item in items {
-                var text: _DoriAPI.Misc.ItemText?
+                var text: DoriAPI.Misc.ItemText?
                 var iconImageURL: URL?
                 var relatedItemSource: ExtendedItem.ItemSource?
                 
@@ -103,7 +103,7 @@ extension _DoriFrontend {
                             resourceID: -1
                         )
                     }
-                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/star.png")
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/common_rip/star.png")
                 case .coin:
                     text = .init(
                         name: .init(
@@ -116,7 +116,7 @@ extension _DoriFrontend {
                         type: nil,
                         resourceID: -1
                     )
-                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/coin.png")
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/common_rip/coin.png")
                 case .stamp, .voiceStamp:
                     if item.type == .stamp {
                         text = .init(
@@ -145,7 +145,7 @@ extension _DoriFrontend {
                     }
                     
                     if stamps == nil && failureFlag & 1 << 5 == 0 {
-                        let list = await _DoriAPI.Misc.stamps()
+                        let list = await DoriAPI.Misc.stamps()
                         if let list {
                             stamps = list
                         } else {
@@ -154,15 +154,15 @@ extension _DoriFrontend {
                     }
                     if let stamps,
                        let stamp = stamps.first(where: { $0.id == item.itemID }) {
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/stamp/01_rip/\(stamp.imageName).png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/stamp/01_rip/\(stamp.imageName).png")
                         
                         if item.type == .voiceStamp {
-                            relatedItemSource = .stampVoice(URL(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/sound/voice_stamp_rip/\(stamp.imageName).mp3")!)
+                            relatedItemSource = .stampVoice(URL(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/sound/voice_stamp_rip/\(stamp.imageName).mp3")!)
                         }
                     }
                 case .degree:
                     if degrees == nil && failureFlag & 1 == 0 {
-                        let list = await _DoriAPI.Degrees.all()
+                        let list = await DoriAPI.Degrees.all()
                         if list != nil {
                             degrees = list
                         } else {
@@ -189,7 +189,7 @@ extension _DoriFrontend {
                             resourceID: -1
                         )
                     }
-                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/degree.png")
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/common_rip/degree.png")
                 case .michelleSeal:
                     text = .init(
                         name: .init(
@@ -202,10 +202,10 @@ extension _DoriFrontend {
                         type: nil,
                         resourceID: -1
                     )
-                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/common_rip/michelle_seal.png")
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/common_rip/michelle_seal.png")
                 case .decoFrame:
                     if decoFrames == nil && failureFlag & 1 << 1 == 0 {
-                        let list = await _DoriAPI.Misc.decoFrames()
+                        let list = await DoriAPI.Misc.decoFrames()
                         if list != nil {
                             decoFrames = list
                         } else {
@@ -219,7 +219,7 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/frame_rip/\(frame.assetBundleName).png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/deco/frame_rip/\(frame.assetBundleName).png")
                     } else {
                         text = .init(
                             name: .init(
@@ -232,11 +232,11 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/frame_rip/deco_frame007.png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/deco/frame_rip/deco_frame007.png")
                     }
                 case .decoPins:
                     if decoPins == nil && failureFlag & 1 << 2 == 0 {
-                        let list = await _DoriAPI.Misc.decoPins()
+                        let list = await DoriAPI.Misc.decoPins()
                         if list != nil {
                             decoPins = list
                         } else {
@@ -250,7 +250,7 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/\(pin.assetBundleName).png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/\(pin.assetBundleName).png")
                     } else {
                         text = .init(
                             name: .init(
@@ -263,11 +263,11 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/deco_pins_single.png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/deco_pins_single.png")
                     }
                 case .decoPinsSet:
                     if decoPinSets == nil && failureFlag & 1 << 3 == 0 {
-                        let list = await _DoriAPI.Misc.decoPinSets()
+                        let list = await DoriAPI.Misc.decoPinSets()
                         if list != nil {
                             decoPinSets = list
                         } else {
@@ -281,7 +281,7 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/\(pinSet.assetBundleName).png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/\(pinSet.assetBundleName).png")
                     } else {
                         text = .init(
                             name: .init(
@@ -294,11 +294,11 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/deco_pins_shuffle.png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/deco/pins_rip/deco_pins_shuffle.png")
                     }
                 case .inGameSkinLane:
                     if gameLaneSkins == nil && failureFlag & 1 << 4 == 0 {
-                        let list = await _DoriAPI.Misc.gameLaneSkins()
+                        let list = await DoriAPI.Misc.gameLaneSkins()
                         if list != nil {
                             gameLaneSkins = list
                         } else {
@@ -312,7 +312,7 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/liveskinlane_rip/\(skin.assetBundleName).png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/liveskinlane_rip/\(skin.assetBundleName).png")
                     } else {
                         text = .init(
                             name: .init(
@@ -325,11 +325,11 @@ extension _DoriFrontend {
                             type: nil,
                             resourceID: -1
                         )
-                        iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/liveskinlane_rip/skin05.png")
+                        iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/liveskinlane_rip/skin05.png")
                     }
                 case .situation:
                     if cards == nil && failureFlag & 1 << 6 == 0 {
-                        let list = await _DoriAPI.Cards.all()
+                        let list = await DoriAPI.Cards.all()
                         if list != nil {
                             cards = list
                         } else {
@@ -370,7 +370,7 @@ extension _DoriFrontend {
                         type: nil,
                         resourceID: -1
                     )
-                    iconImageURL = .init(string: "https://bestdori.com/assets/\(_DoriAPI.preferredLocale.rawValue)/thumb/material_rip/costume3dmakingitem001.png")
+                    iconImageURL = .init(string: "https://bestdori.com/assets/\(DoriAPI.preferredLocale.rawValue)/thumb/material_rip/costume3dmakingitem001.png")
                 default: break
                 }
                 result.append(.init(
@@ -383,15 +383,15 @@ extension _DoriFrontend {
             return result
         }
         
-        public static func extendedPlayerProfile(of id: Int, in locale: _DoriAPI.Locale) async -> ExtendedPlayerProfile? {
+        public static func extendedPlayerProfile(of id: Int, in locale: DoriAPI.Locale) async -> ExtendedPlayerProfile? {
             let groupResult = await withTasksResult {
-                await _DoriAPI.Misc.playerProfile(of: id, in: locale)
+                await DoriAPI.Misc.playerProfile(of: id, in: locale)
             } _: {
-                await _DoriAPI.Degrees.all()
+                await DoriAPI.Degrees.all()
             } _: {
-                await _DoriAPI.Cards.all()
+                await DoriAPI.Cards.all()
             } _: {
-                await _DoriAPI.Songs.all()
+                await DoriAPI.Songs.all()
             }
             guard let profile = groupResult.0 else { return nil }
             guard let degrees = groupResult.1 else { return nil }
@@ -438,12 +438,12 @@ extension _DoriFrontend {
     }
 }
 
-extension _DoriFrontend {
-    public typealias Item = _DoriAPI.Item
+extension DoriFrontend {
+    public typealias Item = DoriAPI.Item
     
     public struct ExtendedItem: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var item: Item
-        public var text: _DoriAPI.Misc.ItemText?
+        public var text: DoriAPI.Misc.ItemText?
         public var _iconImageURL: URL?
         public var relatedItemSource: ItemSource?
         
@@ -459,7 +459,7 @@ extension _DoriFrontend {
         
         internal init(
             item: Item,
-            text: _DoriAPI.Misc.ItemText?,
+            text: DoriAPI.Misc.ItemText?,
             iconImageURL: URL?,
             relatedItemSource: ItemSource?
         ) {
@@ -470,23 +470,23 @@ extension _DoriFrontend {
         }
         
         public enum ItemSource: Sendable, Hashable, DoriCache.Cacheable {
-            case card(_DoriAPI.Cards.PreviewCard)
+            case card(DoriAPI.Cards.PreviewCard)
             case stampVoice(URL)
         }
     }
 }
 
-extension _DoriFrontend.Misc {
+extension DoriFrontend.Misc {
     public struct ExtendedPlayerProfile: Sendable, Hashable, DoriCache.Cacheable {
-        public var profile: _DoriAPI.Misc.PlayerProfile
-        public var degrees: [_DoriAPI.Degrees.Degree]
-        public var keyVisualCard: _DoriAPI.Cards.PreviewCard
-        public var mainDeckCards: [_DoriAPI.Cards.PreviewCard]
-        public var songs: [_DoriAPI.Songs.PreviewSong]
+        public var profile: DoriAPI.Misc.PlayerProfile
+        public var degrees: [DoriAPI.Degrees.Degree]
+        public var keyVisualCard: DoriAPI.Cards.PreviewCard
+        public var mainDeckCards: [DoriAPI.Cards.PreviewCard]
+        public var songs: [DoriAPI.Songs.PreviewSong]
     }
 }
 
-extension _DoriAPI.Misc.StoryAsset {
+extension DoriAPI.Misc.StoryAsset {
     /// Textual transcript of story.
     public var transcript: [Transcript] {
         var result = [Transcript]()

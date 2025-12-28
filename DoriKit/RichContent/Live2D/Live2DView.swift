@@ -37,7 +37,7 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
     
     @inlinable
     public init(
-        costume: _DoriAPI.Costumes.PreviewCostume,
+        costume: DoriAPI.Costumes.PreviewCostume,
         placeholder: @escaping () -> Placeholder = { EmptyView() },
         errorView: @escaping () -> ErrorView = { Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow) }
     ) {
@@ -49,7 +49,7 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
     }
     @inlinable
     public init(
-        costume: _DoriAPI.Costumes.Costume,
+        costume: DoriAPI.Costumes.Costume,
         placeholder: @escaping () -> Placeholder = { EmptyView() },
         errorView: @escaping () -> ErrorView = { Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow) }
     ) {
@@ -61,7 +61,7 @@ public struct Live2DView<Placeholder: View, ErrorView: View>: View {
     }
     @inlinable
     public init(
-        costume: _DoriAPI.Characters.SeasonCostume,
+        costume: DoriAPI.Characters.SeasonCostume,
         placeholder: @escaping () -> Placeholder = { EmptyView() },
         errorView: @escaping () -> ErrorView = { Image(systemName: "exclamationmark.triangle.fill").foregroundStyle(.yellow) }
     ) {

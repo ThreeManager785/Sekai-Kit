@@ -16,7 +16,7 @@ import Combine
 import Foundation
 internal import Alamofire
 
-extension _DoriFrontend {
+extension DoriFrontend {
     /// Validate URLs from DoriKit.
     ///
     /// - IMPORTANT:
@@ -52,7 +52,7 @@ extension _DoriFrontend {
             
             self.validationTask = Task {
                 var validationResult = [URL]()
-                for url in urls where await _DoriFrontend.URLValidator.reachability(of: url) {
+                for url in urls where await DoriFrontend.URLValidator.reachability(of: url) {
                     validationResult.append(url)
                 }
                 self.validURLs = validationResult

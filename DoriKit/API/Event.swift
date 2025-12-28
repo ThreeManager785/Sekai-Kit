@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension _DoriAPI {
+extension DoriAPI {
     /// Request and fetch data about events in Bandori.
     ///
     /// *Events* are periodic activities with new stories in GBP.
@@ -78,8 +78,8 @@ extension _DoriAPI {
                 let task = Task.detached(priority: .userInitiated) {
                     var result = [PreviewEvent]()
                     for (key, value) in respJSON {
-                        var musicIDs: _DoriAPI.LocalizedData<[Int]>?
-                        for locale in _DoriAPI.Locale.allCases {
+                        var musicIDs: DoriAPI.LocalizedData<[Int]>?
+                        for locale in DoriAPI.Locale.allCases {
                             let objects = value["musics"][locale.rawIntValue]
                             guard !objects.isEmpty else { continue }
                             
@@ -327,7 +327,7 @@ extension _DoriAPI {
                     // We break up expressions because of:
                     // The compiler is unable to type-check this expression in reasonable time;
                     // try breaking up the expression into distinct sub-expressions
-                    let pointRewards = _DoriAPI.LocalizedData(
+                    let pointRewards = DoriAPI.LocalizedData(
                         jp: respJSON["pointRewards"][0].map {
                             Event.PointReward(
                                 point: Int($0.1["point"].stringValue) ?? 0,
@@ -379,7 +379,7 @@ extension _DoriAPI {
                             )
                         }
                     )
-                    let rankingRewards = _DoriAPI.LocalizedData(
+                    let rankingRewards = DoriAPI.LocalizedData(
                         jp: respJSON["rankingRewards"][0].map {
                             Event.RankingReward(
                                 rankRange: $0.1["fromRank"].intValue...$0.1["toRank"].intValue,
@@ -433,8 +433,8 @@ extension _DoriAPI {
                     )
                     
                     // Musics
-                    var musics: _DoriAPI.LocalizedData<[Event.Music]>?
-                    for locale in _DoriAPI.Locale.allCases {
+                    var musics: DoriAPI.LocalizedData<[Event.Music]>?
+                    for locale in DoriAPI.Locale.allCases {
                         let objects = respJSON["musics"][locale.rawIntValue]
                         guard !objects.isEmpty else { continue }
                         
@@ -465,7 +465,7 @@ extension _DoriAPI {
                     var liveTryMissions: [Int: Event.LiveTryMission]?
                     var liveTryMissionDetails: [Int: Event.LiveTryMissionDetail]?
                     var liveTryMissionTypeSequences: [Event.LiveTryMissionType: Int]?
-                    var liveTryMissionRewards: [Int: [_DoriAPI.Item]]?
+                    var liveTryMissionRewards: [Int: [DoriAPI.Item]]?
                     if !respJSON["masterLiveTryMissionMap"]["entries"].isEmpty {
                         liveTryMissions = respJSON["masterLiveTryMissionMap"]["entries"].map {
                             (key: Int($0.0) ?? -1,
@@ -523,13 +523,13 @@ extension _DoriAPI {
                         liveTryMissionRewards = respJSON["masterLiveTryMissionRewardMap"]["entries"].map {
                             (key: Int($0.0) ?? -1,
                              value: $0.1["entries"].map {
-                                _DoriAPI.Item(
+                                DoriAPI.Item(
                                     itemID: $0.1["resourceId"].int,
                                     type: .init(rawValue: $0.1["resourceType"].stringValue) ?? .item,
                                     quantity: $0.1["quantity"].intValue
                                 )}
                             )
-                        }.reduce(into: [Int: [_DoriAPI.Item]]()) {
+                        }.reduce(into: [Int: [DoriAPI.Item]]()) {
                             $0.updateValue($1.value, forKey: $1.key)
                         }
                     }
@@ -986,7 +986,7 @@ extension _DoriAPI {
     }
 }
 
-extension _DoriAPI.Events {
+extension DoriAPI.Events {
     /// Represent simplified data of an event.
     public struct PreviewEvent: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of event.
@@ -994,45 +994,45 @@ extension _DoriAPI.Events {
         /// Type of event.
         public var eventType: EventType
         /// Localized name of event.
-        public var eventName: _DoriAPI.LocalizedData<String>
+        public var eventName: DoriAPI.LocalizedData<String>
         /// Name of resource bundle, used for combination of resource URLs.
         public var assetBundleName: String
         /// Name of banner resource bundle, used for combination of resource URLs.
         public var bannerAssetBundleName: String
         /// Localized start date of event.
-        public var startAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var startAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Localized end date of event.
-        public var endAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var endAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Attributes related to this event, with bonus percentage.
         public var attributes: [EventAttribute]
         /// Characters related to this event, with bonus percentage.
         public var characters: [EventCharacter]
         public var eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?
-        public var eventCharacterParameterBonus: _DoriAPI.Cards.Stat?
+        public var eventCharacterParameterBonus: DoriAPI.Cards.Stat?
         /// Members related to this event, with bonus percentage.
         ///
         /// A *member* related to event is a card with bonus during the event.
         public var members: [EventMember]
         public var limitBreaks: [EventLimitBreak]
-        public var musicIDs: _DoriAPI.LocalizedData<[Int]>?
+        public var musicIDs: DoriAPI.LocalizedData<[Int]>?
         /// IDs of cards that can be gotten by participating this event.
         public var rewardCards: [Int]
         
         internal init(
             id: Int,
             eventType: EventType,
-            eventName: _DoriAPI.LocalizedData<String>,
+            eventName: DoriAPI.LocalizedData<String>,
             assetBundleName: String,
             bannerAssetBundleName: String,
-            startAt: _DoriAPI.LocalizedData<Date>,
-            endAt: _DoriAPI.LocalizedData<Date>,
+            startAt: DoriAPI.LocalizedData<Date>,
+            endAt: DoriAPI.LocalizedData<Date>,
             attributes: [EventAttribute],
             characters: [EventCharacter],
             eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?,
-            eventCharacterParameterBonus: _DoriAPI.Cards.Stat?,
+            eventCharacterParameterBonus: DoriAPI.Cards.Stat?,
             members: [EventMember],
             limitBreaks: [EventLimitBreak],
-            musicIDs: _DoriAPI.LocalizedData<[Int]>?,
+            musicIDs: DoriAPI.LocalizedData<[Int]>?,
             rewardCards: [Int]
         ) {
             self.id = id
@@ -1060,33 +1060,33 @@ extension _DoriAPI.Events {
         /// Type of event.
         public var eventType: EventType
         /// Localized name of event.
-        public var eventName: _DoriAPI.LocalizedData<String>
+        public var eventName: DoriAPI.LocalizedData<String>
         /// Name of resource bundle, used for combination of resource URLs.
         public var assetBundleName: String
         /// Name of banner resource bundle, used for combination of resource URLs.
         public var bannerAssetBundleName: String
         /// Localized start date of event.
-        public var startAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var startAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Localized end date of event.
-        public var endAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var publicStartAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var publicEndAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var distributionStartAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var distributionEndAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var endAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var publicStartAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var publicEndAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var distributionStartAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var distributionEndAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Name of BGM resource bundle, used for combination of resource URLs.
         public var bgmAssetBundleName: String
         /// Name of BGM file, used for combination of resource URLs.
         public var bgmFileName: String
-        public var aggregateEndAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var exchangeEndAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
-        public var pointRewards: _DoriAPI.LocalizedData<[PointReward]>
-        public var rankingRewards: _DoriAPI.LocalizedData<[RankingReward]>
+        public var aggregateEndAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var exchangeEndAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var pointRewards: DoriAPI.LocalizedData<[PointReward]>
+        public var rankingRewards: DoriAPI.LocalizedData<[RankingReward]>
         /// Attributes related to this event, with bonus percentage.
         public var attributes: [EventAttribute]
         /// Characters related to this event, with bonus percentage.
         public var characters: [EventCharacter]
         public var eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?
-        public var eventCharacterParameterBonus: _DoriAPI.Cards.Stat?
+        public var eventCharacterParameterBonus: DoriAPI.Cards.Stat?
         /// Members related to this event, with bonus percentage.
         ///
         /// A *member* related to event is a card with bonus during the event.
@@ -1095,45 +1095,45 @@ extension _DoriAPI.Events {
         public var stories: [Story]
         /// IDs of cards that can be gotten by participating this event.
         public var rewardCards: [Int]
-        public var musics: _DoriAPI.LocalizedData<[Music]>?
+        public var musics: DoriAPI.LocalizedData<[Music]>?
         public var liveTryMissions: [Int: LiveTryMission]?
         public var liveTryMissionDetails: [Int: LiveTryMissionDetail]?
         public var liveTryMissionTypeSequences: [LiveTryMissionType: Int]?
-        public var liveTryMissionRewards: [Int: [_DoriAPI.Item]]?
+        public var liveTryMissionRewards: [Int: [DoriAPI.Item]]?
         public var teamList: [FestivalTeam]?
         public var teamRewards: [FestivalTeamReward]?
         
         internal init(
             id: Int,
             eventType: EventType,
-            eventName: _DoriAPI.LocalizedData<String>,
+            eventName: DoriAPI.LocalizedData<String>,
             assetBundleName: String,
             bannerAssetBundleName: String,
-            startAt: _DoriAPI.LocalizedData<Date>,
-            endAt: _DoriAPI.LocalizedData<Date>,
-            publicStartAt: _DoriAPI.LocalizedData<Date>,
-            publicEndAt: _DoriAPI.LocalizedData<Date>,
-            distributionStartAt: _DoriAPI.LocalizedData<Date>,
-            distributionEndAt: _DoriAPI.LocalizedData<Date>,
+            startAt: DoriAPI.LocalizedData<Date>,
+            endAt: DoriAPI.LocalizedData<Date>,
+            publicStartAt: DoriAPI.LocalizedData<Date>,
+            publicEndAt: DoriAPI.LocalizedData<Date>,
+            distributionStartAt: DoriAPI.LocalizedData<Date>,
+            distributionEndAt: DoriAPI.LocalizedData<Date>,
             bgmAssetBundleName: String,
             bgmFileName: String,
-            aggregateEndAt: _DoriAPI.LocalizedData<Date>,
-            exchangeEndAt: _DoriAPI.LocalizedData<Date>,
-            pointRewards: _DoriAPI.LocalizedData<[PointReward]>,
-            rankingRewards: _DoriAPI.LocalizedData<[RankingReward]>,
+            aggregateEndAt: DoriAPI.LocalizedData<Date>,
+            exchangeEndAt: DoriAPI.LocalizedData<Date>,
+            pointRewards: DoriAPI.LocalizedData<[PointReward]>,
+            rankingRewards: DoriAPI.LocalizedData<[RankingReward]>,
             attributes: [EventAttribute],
             characters: [EventCharacter],
             eventAttributeAndCharacterBonus: EventAttributeAndCharacterBonus?,
-            eventCharacterParameterBonus: _DoriAPI.Cards.Stat?,
+            eventCharacterParameterBonus: DoriAPI.Cards.Stat?,
             members: [EventMember],
             limitBreaks: [EventLimitBreak],
             stories: [Story],
             rewardCards: [Int],
-            musics: _DoriAPI.LocalizedData<[Music]>?,
+            musics: DoriAPI.LocalizedData<[Music]>?,
             liveTryMissions: [Int: LiveTryMission]?,
             liveTryMissionDetails: [Int: LiveTryMissionDetail]?,
             liveTryMissionTypeSequences: [LiveTryMissionType: Int]?,
-            liveTryMissionRewards: [Int: [_DoriAPI.Item]]?,
+            liveTryMissionRewards: [Int: [DoriAPI.Item]]?,
             teamList: [FestivalTeam]?,
             teamRewards: [FestivalTeamReward]?
         ) {
@@ -1173,11 +1173,11 @@ extension _DoriAPI.Events {
         
         public struct PointReward: Sendable, Hashable, DoriCache.Cacheable {
             public var point: Int
-            public var reward: _DoriAPI.Item
+            public var reward: DoriAPI.Item
         }
         public struct RankingReward: Sendable, Hashable, DoriCache.Cacheable {
             public var rankRange: ClosedRange<Int> // keys{fromRank, toRank}(JSON) -> ClosedRange(Swift)
-            public var reward: _DoriAPI.Item
+            public var reward: DoriAPI.Item
         }
         
         public struct Story: Sendable, Hashable, DoriCache.Cacheable {
@@ -1185,11 +1185,11 @@ extension _DoriAPI.Events {
             public var coverImage: String
             public var backgroundImage: String
             public var releasePt: Int
-            public var rewards: [_DoriAPI.Item]
-            public var caption: _DoriAPI.LocalizedData<String>
-            public var title: _DoriAPI.LocalizedData<String>
-            public var synopsis: _DoriAPI.LocalizedData<String>
-            public var releaseConditions: _DoriAPI.LocalizedData<String>
+            public var rewards: [DoriAPI.Item]
+            public var caption: DoriAPI.LocalizedData<String>
+            public var title: DoriAPI.LocalizedData<String>
+            public var synopsis: DoriAPI.LocalizedData<String>
+            public var releaseConditions: DoriAPI.LocalizedData<String>
         }
         
         public struct Music: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -1220,9 +1220,9 @@ extension _DoriAPI.Events {
         }
         
         public struct LiveTryMissionDetail: Sendable, Hashable, DoriCache.Cacheable {
-            public var musicDescription: _DoriAPI.LocalizedData<String>
-            public var difficultyDescription: _DoriAPI.LocalizedData<String>
-            public var description: _DoriAPI.LocalizedData<String>
+            public var musicDescription: DoriAPI.LocalizedData<String>
+            public var difficultyDescription: DoriAPI.LocalizedData<String>
+            public var description: DoriAPI.LocalizedData<String>
         }
         
         public struct FestivalTeam: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
@@ -1238,7 +1238,7 @@ extension _DoriAPI.Events {
         
         public struct FestivalTeamReward: Sendable, Hashable, DoriCache.Cacheable {
             public var festivalResult: FestivalResult
-            public var item: _DoriAPI.Item
+            public var item: DoriAPI.Item
         }
         
         public enum FestivalResult: String, Sendable, Hashable, DoriCache.Cacheable {
@@ -1288,7 +1288,7 @@ extension _DoriAPI.Events {
     
     public struct TrackerRate: Sendable, Hashable, DoriCache.Cacheable {
         public var type: EventType
-        public var server: _DoriAPI.Locale
+        public var server: DoriAPI.Locale
         public var tier: Int
         public var rate: Double
     }
@@ -1318,11 +1318,11 @@ extension _DoriAPI.Events {
         /// Related event ID.
         public var eventID: Int?
         /// Attribute.
-        public var attribute: _DoriAPI.Attribute
+        public var attribute: DoriAPI.Attribute
         /// Percentage of bonus.
         public var percent: Int
         
-        internal init(eventID: Int?, attribute: _DoriAPI.Attribute, percent: Int) {
+        internal init(eventID: Int?, attribute: DoriAPI.Attribute, percent: Int) {
             self.eventID = eventID
             self.attribute = attribute
             self.percent = percent
@@ -1377,13 +1377,13 @@ extension _DoriAPI.Events {
     
     public struct EventStory: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         public var id: Int
-        public var eventName: _DoriAPI.LocalizedData<String>
-        public var stories: [_DoriAPI.Story]
+        public var eventName: DoriAPI.LocalizedData<String>
+        public var stories: [DoriAPI.Story]
     }
 }
 
-extension _DoriAPI.Events.PreviewEvent {
-    public init(_ full: _DoriAPI.Events.Event) {
+extension DoriAPI.Events.PreviewEvent {
+    public init(_ full: DoriAPI.Events.Event) {
         self.init(
             id: full.id,
             eventType: full.eventType,
@@ -1403,10 +1403,10 @@ extension _DoriAPI.Events.PreviewEvent {
         )
     }
 }
-extension _DoriAPI.Events.Event {
+extension DoriAPI.Events.Event {
     @inlinable
     public init?(id: Int) async {
-        if let event = await _DoriAPI.Events.detail(of: id) {
+        if let event = await DoriAPI.Events.detail(of: id) {
             self = event
         } else {
             return nil
@@ -1414,7 +1414,7 @@ extension _DoriAPI.Events.Event {
     }
     
     @inlinable
-    public init?(preview: _DoriAPI.Events.PreviewEvent) async {
+    public init?(preview: DoriAPI.Events.PreviewEvent) async {
         await self.init(id: preview.id)
     }
 }

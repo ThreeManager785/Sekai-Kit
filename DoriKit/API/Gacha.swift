@@ -16,7 +16,7 @@ import SwiftUI
 import Foundation
 internal import SwiftyJSON
 
-extension _DoriAPI {
+extension DoriAPI {
     /// Request and fetch data about gacha in Bandori.
     ///
     /// *Gacha* allow you to get random cards from it
@@ -347,7 +347,7 @@ extension _DoriAPI {
     }
 }
 
-extension _DoriAPI.Gachas {
+extension DoriAPI.Gachas {
     /// Represent simplified data of gacha.
     public struct PreviewGacha: Sendable, Identifiable, Hashable, DoriCache.Cacheable {
         /// A unique ID of gacha.
@@ -357,11 +357,11 @@ extension _DoriAPI.Gachas {
         /// Name of banner resource bundle, used for combination of resource URLs.
         public var bannerAssetBundleName: String
         /// Localized name of gacha.
-        public var gachaName: _DoriAPI.LocalizedData<String>
+        public var gachaName: DoriAPI.LocalizedData<String>
         /// Localized published date of gacha.
-        public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Localized closed date of gacha.
-        public var closedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var closedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Type of gacha.
         public var type: GachaType
         /// IDs of new cards in this gacha.
@@ -380,14 +380,14 @@ extension _DoriAPI.Gachas {
         ///
         /// - SeeAlso:
         ///     - ``CardDetail``
-        public var details: _DoriAPI.LocalizedData<[Int: CardDetail]>
+        public var details: DoriAPI.LocalizedData<[Int: CardDetail]>
         /// Localized rates for each rarities of gacha.
         ///
         /// Detailed data dictionary `[Int: Rate]` represents `[CardRarity: Rate]`.
         ///
         /// - SeeAlso:
         ///     - ``Rate``
-        public var rates: _DoriAPI.LocalizedData<[Int: Rate]>
+        public var rates: DoriAPI.LocalizedData<[Int: Rate]>
         /// Payment methods of gacha.
         public var paymentMethods: [PaymentMethod]
         /// Name of resource bundle, used for combination of resource URLs.
@@ -395,17 +395,17 @@ extension _DoriAPI.Gachas {
         /// Name of banner resource bundle, used for combination of resource URLs.
         public var bannerAssetBundleName: String
         /// Localized name of gacha.
-        public var gachaName: _DoriAPI.LocalizedData<String>
+        public var gachaName: DoriAPI.LocalizedData<String>
         /// Localized published date of gacha.
-        public var publishedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var publishedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Localized closed date of gacha.
-        public var closedAt: _DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
+        public var closedAt: DoriAPI.LocalizedData<Date> // String(JSON) -> Date(Swift)
         /// Localized description of gacha.
-        public var description: _DoriAPI.LocalizedData<String>
+        public var description: DoriAPI.LocalizedData<String>
         /// Localized annotation text of gacha.
-        public var annotation: _DoriAPI.LocalizedData<String>
+        public var annotation: DoriAPI.LocalizedData<String>
         /// Localized period text of gacha.
-        public var gachaPeriod: _DoriAPI.LocalizedData<String>
+        public var gachaPeriod: DoriAPI.LocalizedData<String>
         /// Type of gacha.
         public var type: GachaType
         /// IDs of new cards in this gacha.
@@ -516,13 +516,13 @@ extension _DoriAPI.Gachas {
         /// Represent information of gacha.
         public struct Information: Sendable, Hashable, DoriCache.Cacheable {
             /// Localized description of gacha.
-            public var description: _DoriAPI.LocalizedData<String>
+            public var description: DoriAPI.LocalizedData<String>
             /// Localized term of gacha.
-            public var term: _DoriAPI.LocalizedData<String>
+            public var term: DoriAPI.LocalizedData<String>
             /// Localized new member info of gacha.
-            public var newMemberInfo: _DoriAPI.LocalizedData<String>
+            public var newMemberInfo: DoriAPI.LocalizedData<String>
             /// Localized notice of gacha.
-            public var notice: _DoriAPI.LocalizedData<String>
+            public var notice: DoriAPI.LocalizedData<String>
         }
     }
     
@@ -539,8 +539,8 @@ extension _DoriAPI.Gachas {
     }
 }
 
-extension _DoriAPI.Gachas.PreviewGacha {
-    public init(_ full: _DoriAPI.Gachas.Gacha) {
+extension DoriAPI.Gachas.PreviewGacha {
+    public init(_ full: DoriAPI.Gachas.Gacha) {
         self.init(
             id: full.id,
             resourceName: full.resourceName,
@@ -553,10 +553,10 @@ extension _DoriAPI.Gachas.PreviewGacha {
         )
     }
 }
-extension _DoriAPI.Gachas.Gacha {
+extension DoriAPI.Gachas.Gacha {
     @inlinable
     public init?(id: Int) async {
-        if let gacha = await _DoriAPI.Gachas.detail(of: id) {
+        if let gacha = await DoriAPI.Gachas.detail(of: id) {
             self = gacha
         } else {
             return nil
@@ -564,7 +564,7 @@ extension _DoriAPI.Gachas.Gacha {
     }
     
     @inlinable
-    public init?(preview: _DoriAPI.Gachas.PreviewGacha) async {
+    public init?(preview: DoriAPI.Gachas.PreviewGacha) async {
         await self.init(id: preview.id)
     }
 }

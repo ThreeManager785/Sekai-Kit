@@ -16,7 +16,7 @@ import Foundation
 internal import Alamofire
 internal import SwiftyJSON
 
-extension _DoriAPI {
+extension DoriAPI {
     public enum Station {
         @inlinable
         public static func register(
@@ -260,7 +260,7 @@ extension _DoriAPI {
         /// ```swift
         /// let task = Task {
         ///     do {
-        ///         try await _DoriAPI.Station.receiveRooms { newRooms in
+        ///         try await DoriAPI.Station.receiveRooms { newRooms in
         ///             roomArray.append(contentsOf: newRooms)
         ///         }
         ///         print("Finished!")
@@ -511,9 +511,9 @@ extension _DoriAPI {
                                     bestdoriProfiles: json["response"]["bandori_profile"].map {
                                         (key: $0.0,
                                          value: $0.1.map {
-                                            _DoriAPI.Misc.PlayerProfile(parsing: $0.1)
+                                            DoriAPI.Misc.PlayerProfile(parsing: $0.1)
                                         })
-                                    }.reduce(into: [_DoriAPI.Locale: [_DoriAPI.Misc.PlayerProfile]]()) {
+                                    }.reduce(into: [DoriAPI.Locale: [DoriAPI.Misc.PlayerProfile]]()) {
                                         $0.updateValue(
                                             $1.value,
                                             forKey: .init(rawValue: $1.key) ?? .jp
@@ -608,7 +608,7 @@ extension _DoriAPI {
     }
 }
 
-extension _DoriAPI.Station {
+extension DoriAPI.Station {
     public enum APIError: String, Sendable, Error, Hashable {
         // TBH the error handling in the Station API is tremendously distressing.
         // It always returns status 200 and describe errors as plain texts
@@ -760,7 +760,7 @@ extension _DoriAPI.Station {
         public var recentRooms: [Room]?
         public var followingUserCount: Int?
         public var followerCount: Int?
-        public var bestdoriProfiles: [_DoriAPI.Locale: [_DoriAPI.Misc.PlayerProfile]]?
+        public var bestdoriProfiles: [DoriAPI.Locale: [DoriAPI.Misc.PlayerProfile]]?
         
         public var avatarURL: URL? {
             _avatarFileName.isEmpty ? nil : .init(string: "https://asset.bandoristation.com/images/user-avatar/\(_avatarFileName)")
@@ -773,7 +773,7 @@ extension _DoriAPI.Station {
             public var id: Int
             public var degreeIDs: [Int]
             public var dateUpdated: Date
-            public var server: _DoriAPI.Locale
+            public var server: DoriAPI.Locale
             public var bandPower: Int
             public var mainDeck: [Situation]
             
@@ -835,7 +835,7 @@ extension _DoriAPI.Station {
         case receivedError(any Error)
     }
 }
-extension _DoriAPI.Station.Room {
+extension DoriAPI.Station.Room {
     internal init(parsing json: JSON) {
         self.init(
             _rawJSON: json.rawString()!,
@@ -867,7 +867,7 @@ extension _DoriAPI.Station.Room {
         )
     }
 }
-extension _DoriAPI.Station.Room.Source {
+extension DoriAPI.Station.Room.Source {
     internal init(parsing json: JSON) {
         if json["type"].stringValue == "qq" {
             self = .qq(json["name"].stringValue)

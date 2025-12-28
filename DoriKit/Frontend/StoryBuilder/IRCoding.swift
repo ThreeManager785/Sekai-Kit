@@ -93,7 +93,7 @@ extension StoryIR {
             .unsafeLoadUnaligned(as: UInt64.self)
         compressedData.removeSubrange(4..<12)
         
-        guard let metaLocale = _DoriAPI.Locale(
+        guard let metaLocale = DoriAPI.Locale(
             rawIntValue: Int(metadata & 0x00000000000000FF)
         ) else { return nil }
         

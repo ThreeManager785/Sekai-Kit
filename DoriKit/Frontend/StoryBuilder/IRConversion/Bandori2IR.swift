@@ -17,8 +17,8 @@ internal import os
 
 extension IRConversion {
     internal static func convertFromBandori(
-        _ asset: _DoriAPI.Misc.StoryAsset,
-        in locale: _DoriAPI.Locale,
+        _ asset: DoriAPI.Misc.StoryAsset,
+        in locale: DoriAPI.Locale,
         voiceBundlePath: String
     ) -> StoryIR {
         let bgmBasePath = "\(locale.rawValue)/sound/scenario/bgm/"
@@ -30,7 +30,7 @@ extension IRConversion {
         
         func actions(
             at index: Int,
-            in snippets: [_DoriAPI.Misc.StoryAsset.Snippet]
+            in snippets: [DoriAPI.Misc.StoryAsset.Snippet]
         ) -> [StoryIR.StepAction] {
             let snippet = snippets[index]
             
@@ -244,7 +244,7 @@ extension IRConversion {
 }
 
 extension StoryIR.StepAction.Position.Base {
-    fileprivate init(bandori side: _DoriAPI.Misc.StoryAsset.LayoutData.Side) {
+    fileprivate init(bandori side: DoriAPI.Misc.StoryAsset.LayoutData.Side) {
         self = switch side {
         case .none:
             logger.fault(
