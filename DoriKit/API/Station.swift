@@ -212,9 +212,54 @@ extension _DoriAPI {
             }
         }
         
-        // WIP, BUGGY, DO NOT CALL
+        /// Keep a connection to receive new rooms.
+        ///
+        /// - Parameters:
+        ///   - client: A string to identify the client.
+        ///   - userToken: A valid user token for access group settings.
+        ///   - pushRooms: A closure to be called when any new rooms available.
+        ///
+        /// This function creates a connection to receive room updates.
+        /// When the connection becomes active, it calls `pushRooms`
+        /// for the initial room list, this can be an empty array
+        /// if no rooms are available.
+        ///
+        /// You can disconnect by cancelling the task with this function.
+        ///
+        /// This function returns when the task is cancelled,
+        /// or throws an error if any error occured.
+        /// In both cases, the connection is disconnected
+        /// and you can create a new task with this function to start over.
+        ///
+        /// ```swift
+        /// let task = Task {
+        ///     do {
+        ///         try await _DoriAPI.Station.receiveRooms { newRooms in
+        ///             roomArray.append(contentsOf: newRooms)
+        ///         }
+        ///         print("Finished!")
+        ///     } catch {
+        ///         handleError(error)
+        ///     }
+        /// }
+        ///
+        /// while true {
+        ///     if shouldStopReceiving {
+        ///         task.cancel()
+        ///         break
+        ///     }
+        ///     sleep(10)
+        /// }
+        /// ```
+        ///
+        /// - IMPORTANT:
+        ///     It's important to keep a reference to the task
+        ///     for this function. If you lose all references to the task,
+        ///     the connection is kept forever until any errors occurs
+        ///     or your app is terminated.
         public static func receiveRooms(
             client: String = "DoriKit",
+            userToken: String? = nil,
             pushingNewRooms pushRooms: sending ([Room]) -> Void
         ) async throws {
             final class Coordinator: NSObject, URLSessionWebSocketDelegate {
@@ -273,7 +318,6 @@ extension _DoriAPI {
             let isConnected = Locking(false)
             let runLoopContinuation: Locking<CheckedContinuation<RunloopWakeReason, any Error>?> = .init(nil)
             runLoopContinuation._lock() // unlock when continuation ready
-            let heartBeatTimer: Locking<Timer?> = .init(nil)
             
             let coordinator = Coordinator(onOpen: { session, webSocketTask, `protocol` in
                 isConnected.withLock {
@@ -297,10 +341,10 @@ extension _DoriAPI {
             task.resume()
             defer { task.cancel(with: .goingAway, reason: nil) }
             
-            Task {
+            let receiveLoopTask = Task {
                 repeat {
                     if Task.isCancelled {
-                        break
+                        return
                     }
                     
                     do {
@@ -315,16 +359,27 @@ extension _DoriAPI {
                     }
                 } while true
             }
+            defer {
+                receiveLoopTask.cancel()
+            }
             
-            heartBeatTimer.withLock {
-                $0 = .scheduledTimer(withTimeInterval: 30, repeats: true) { timer in
-                    runLoopContinuation.withLock {
-                        $0?.resume(returning: .heartBeatTimeout)
-                    }
-                }
+            let heartBeatTask = Task {
+                do {
+                    repeat {
+                        if Task.isCancelled {
+                            return
+                        }
+                        
+                        try await Task.sleep(for: .seconds(30))
+                        
+                        runLoopContinuation.withLock {
+                            $0?.resume(returning: .heartBeatTimeout)
+                        }
+                    } while true
+                } catch {}
             }
             defer {
-                heartBeatTimer.withLock { $0?.invalidate() }
+                heartBeatTask.cancel()
             }
             
             do {
@@ -341,11 +396,8 @@ extension _DoriAPI {
                     switch reason {
                     case .receiveMessage(let message):
                         switch message {
-                        case .data(let data):
-                            print(data)
                         case .string(let string):
                             let json = JSON(parseJSON: string)
-                            print(json)
                             if json["action"].stringValue == "sendServerTime" {
                                 // Send initial messages
                                 var initialActions: [Any] = []
@@ -360,6 +412,14 @@ extension _DoriAPI {
                                     "action": "getRoomNumberList",
                                     "data": nil
                                 ])
+                                if let userToken {
+                                    initialActions.append([
+                                        "action": "setAccessPermission",
+                                        "data": [
+                                            "token": userToken
+                                        ]
+                                    ])
+                                }
                                 if ((try? await task.send(.data(JSONSerialization.data(withJSONObject: initialActions)))) == nil) {
                                     throw RoomUpdateError.failedToInitializeConnection
                                 }
@@ -370,8 +430,7 @@ extension _DoriAPI {
                                 }
                                 pushRooms(newRooms)
                             }
-                        @unknown default:
-                            fatalError()
+                        default: break
                         }
                     case .heartBeatTimeout:
                         let heartBeatAction: [String: Any] = [
