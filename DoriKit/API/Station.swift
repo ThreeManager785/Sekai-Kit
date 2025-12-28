@@ -48,7 +48,7 @@ extension _DoriAPI {
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
                             if let token = json["response"]["token"].string {
-                                continuation.resume(returning: .init(_value: token))
+                                continuation.resume(returning: .init(value: token))
                             } else {
                                 continuation.resume(throwing: APIError(
                                     rawValue: json["response"].stringValue
@@ -90,12 +90,12 @@ extension _DoriAPI {
                             if json["response"]["redirect_to"].string != nil {
                                 continuation.resume(
                                     returning: .emailVerificationRequired(
-                                        token: .init(_value: json["response"]["token"].stringValue)
+                                        token: .init(value: json["response"]["token"].stringValue)
                                     )
                                 )
                             } else if let token = json["response"]["token"].string {
                                 continuation.resume(returning: .success(
-                                    token: .init(_value: token),
+                                    token: .init(value: token),
                                     userInfo: .init(
                                         id: json["response"]["user_id"].intValue,
                                         _avatarFileName: json["response"]["avatar"].stringValue,
@@ -148,7 +148,7 @@ extension _DoriAPI {
                             "function": "getCurrentEmail"
                         ],
                         encoding: JSONEncoding.default,
-                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token.value)
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
@@ -182,7 +182,7 @@ extension _DoriAPI {
                             "function": "sendEmailVerificationCode"
                         ],
                         encoding: JSONEncoding.default,
-                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token.value)
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
@@ -218,12 +218,12 @@ extension _DoriAPI {
                             "verification_code": code
                         ],
                         encoding: JSONEncoding.default,
-                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token._value)
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token.value)
                     ).response { response in
                         if let _data = response.data,
                            let json = try? JSON(data: consume _data) {
                             if let token = json["response"]["token"].string {
-                                continuation.resume(returning: .init(_value: token))
+                                continuation.resume(returning: .init(value: token))
                             } else {
                                 continuation.resume(throwing: APIError(
                                     rawValue: json["response"].stringValue
@@ -443,7 +443,7 @@ extension _DoriAPI {
                                     initialActions.append([
                                         "action": "setAccessPermission",
                                         "data": [
-                                            "token": userToken._value
+                                            "token": userToken.value
                                         ]
                                     ])
                                 }
@@ -603,11 +603,18 @@ extension _DoriAPI.Station {
         }
     }
     
-    public struct UserToken: Sendable, Hashable, Codable {
-        internal var _value: String
+    public struct UserToken: Sendable, Hashable, Codable, CustomStringConvertible {
+        public let value: String
+        
+        public var description: String {
+            value
+        }
     }
-    public struct UnverifiedUserToken: Sendable, Hashable, Codable {
-        internal var _value: String
+    public struct UnverifiedUserToken: Sendable, Hashable, Codable, CustomStringConvertible {
+        public let value: String
+        public var description: String {
+            value
+        }
     }
     
     public enum LoginResponse: Sendable {
