@@ -480,7 +480,7 @@ extension DoriAPI {
             }
         }
         
-        public func userInformation(id: Int) async throws(APIError) -> UserInformation {
+        public static func userInformation(id: Int) async throws(APIError) -> UserInformation {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -541,7 +541,7 @@ extension DoriAPI {
             }
         }
         
-        public func userInformation(userToken token: UserToken) async throws(APIError) -> UserInformation {
+        public static func userInformation(userToken token: UserToken) async throws(APIError) -> UserInformation {
             do {
                 var result: UserInformation = try await withCheckedThrowingContinuation { continuation in
                     AF.request(
