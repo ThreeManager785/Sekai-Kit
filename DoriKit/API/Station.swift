@@ -734,6 +734,14 @@ extension DoriAPI.Station {
         public var description: String {
             value
         }
+        
+        init(value: String) {
+            self.value = value
+        }
+        
+        public init(_ value: String) {
+            self.value = value
+        }
     }
     public struct UnverifiedUserToken: Sendable, Hashable, Codable, CustomStringConvertible {
         public let value: String
