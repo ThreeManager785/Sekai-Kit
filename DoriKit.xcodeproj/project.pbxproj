@@ -68,6 +68,8 @@
 		8C2CFEFD2EB8901E00A8A149 /* Mangling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */; };
 		8C2CFEFF2EB8AF5200A8A149 /* SwiftParserDiagnostics in Frameworks */ = {isa = PBXBuildFile; productRef = 8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */; };
 		8C2CFF012EB903FF00A8A149 /* RuntimeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */; };
+		8C2ED87E2F027B7A006BC253 /* FrontendCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2ED87D2F027B71006BC253 /* FrontendCalculator.swift */; };
+		8C2ED8802F02BB45006BC253 /* Duration+Overflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2ED87F2F02BB3F006BC253 /* Duration+Overflow.swift */; };
 		8C2EE3AC2E704A3400EDDD0D /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2EE3AA2E70498800EDDD0D /* libgit2.a */; };
 		8C320FB12E8C1239002D183A /* DriverCommonProtocol.swift.gyb in Sources */ = {isa = PBXBuildFile; fileRef = 8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */; };
 		8C3264042E3B760100081F4F /* PreCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C3264032E3B75FF00081F4F /* PreCache.swift */; };
@@ -327,6 +329,8 @@
 		8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbolization.swift; sourceTree = "<group>"; };
 		8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mangling.swift; sourceTree = "<group>"; };
 		8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeObject.swift; sourceTree = "<group>"; };
+		8C2ED87D2F027B71006BC253 /* FrontendCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendCalculator.swift; sourceTree = "<group>"; };
+		8C2ED87F2F02BB3F006BC253 /* Duration+Overflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Duration+Overflow.swift"; sourceTree = "<group>"; };
 		8C2EE3AA2E70498800EDDD0D /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgit2.a; path = "../../../Library/Developer/Xcode/DerivedData/Greatdori-aghqtexjlhuxqfcowlzrriajcttj/Build/Products/Debug/libgit2.a"; sourceTree = "<group>"; };
 		8C320FB02E8C1230002D183A /* DriverCommonProtocol.swift.gyb */ = {isa = PBXFileReference; explicitFileType = sourcecode.swift; path = DriverCommonProtocol.swift.gyb; sourceTree = "<group>"; };
 		8C3264032E3B75FF00081F4F /* PreCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreCache.swift; sourceTree = "<group>"; };
@@ -959,6 +963,7 @@
 				E9A67EB32E72AF160047E6BA /* Sorter.swift */,
 				8CBC1BDA2E334233004023F7 /* Searching.swift */,
 				8CDEAAE12E825B02001397CC /* URLValidator.swift */,
+				8C2ED87D2F027B71006BC253 /* FrontendCalculator.swift */,
 				8C923D9C2E313B47003AFC0A /* FrontendCard.swift */,
 				8C923D792E3046C6003AFC0A /* FrontendCharacter.swift */,
 				8C78559A2E48C949000EA06E /* FrontendComic.swift */,
@@ -992,6 +997,7 @@
 			children = (
 				8CD13FCA2E2FEFCC00673E15 /* Date+.swift */,
 				8CD13FC22E2FE2BF00673E15 /* Color+.swift */,
+				8C2ED87F2F02BB3F006BC253 /* Duration+Overflow.swift */,
 				8C4C89402E620C5F007F1E9F /* CopyOnWrite.swift */,
 				8CBC1BD22E32B892004023F7 /* InMemoryCaches.swift */,
 				8CD13FC32E2FE2BF00673E15 /* Logger.swift */,
@@ -1627,6 +1633,7 @@
 				8C923D9D2E313B4A003AFC0A /* FrontendCard.swift in Sources */,
 				8CD13FB22E2FE2BF00673E15 /* Degree.swift in Sources */,
 				8CB4D46C2E4304A20085D57A /* FrontendSong.swift in Sources */,
+				8C2ED87E2F027B7A006BC253 /* FrontendCalculator.swift in Sources */,
 				8CD13FB32E2FE2BF00673E15 /* DoriAPI.swift in Sources */,
 				8C2CCD472E3E07AC0014189F /* DoriEmoji.swift in Sources */,
 				8C94744A2E35AB84003A90B4 /* DoriCache.swift in Sources */,
@@ -1681,6 +1688,7 @@
 				8C0872BB2E72FCDA00447B05 /* DoriNotification.swift in Sources */,
 				8C4C58012ED3556D0097F41F /* FunctionEvaluator.swift in Sources */,
 				8CD13FB82E2FE2BF00673E15 /* Skill.swift in Sources */,
+				8C2ED8802F02BB45006BC253 /* Duration+Overflow.swift in Sources */,
 				8CD13FB92E2FE2BF00673E15 /* Song.swift in Sources */,
 				8C3D4E7A2EA671240034E831 /* FrontendPost.swift in Sources */,
 				8C7855992E48C68F000EA06E /* Comic.swift in Sources */,
