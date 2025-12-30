@@ -736,7 +736,7 @@ extension DoriAPI {
             }
         }
         
-        public func roomFilter(fromUserToken token: UserToken) async throws(APIError) -> RoomFilter {
+        public static func roomFilter(fromUserToken token: UserToken) async throws(APIError) -> RoomFilter {
             do {
                 return try await withCheckedThrowingContinuation { continuation in
                     AF.request(
@@ -782,7 +782,7 @@ extension DoriAPI {
             }
         }
         
-        public func updateRoomFilter(
+        public static func updateRoomFilter(
             to newFilter: RoomFilter,
             userToken token: UserToken
         ) async throws(APIError) {
