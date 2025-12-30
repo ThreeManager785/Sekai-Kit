@@ -813,7 +813,7 @@ extension DoriAPI.Station {
         }
     }
     
-    public enum RoomType: Int, Sendable, Hashable {
+    public enum RoomType: Int, Sendable, Hashable, CaseIterable {
         case daredemo = 0
         case standard = 7
         case master = 12
