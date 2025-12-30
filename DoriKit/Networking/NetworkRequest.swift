@@ -65,7 +65,7 @@ private func _getThreadHeaders() -> HTTPHeaders {
         if !cookie.isEmpty {
             cookie += "; "
         }
-        cookie += "token=\(userToken._value)"
+        cookie += "token=\(userToken.value)"
         result.update(name: "Cookie", value: cookie)
     }
     

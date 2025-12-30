@@ -21,6 +21,11 @@ extension DoriAPI {
     ///
     /// You use the Bestdori account to join the community.
     public enum User {
+        @inlinable
+        public static func login(username: String, password: String) async throws(LoginError) -> Token {
+            try await login(.init(username: username, password: password))
+        }
+        
         /// Login Bestdori by account credential.
         ///
         /// - Parameter credential: A credential of account.
@@ -28,6 +33,7 @@ extension DoriAPI {
         ///
         /// - Throws:
         ///     A ``LoginError`` if any errors occurred during logging in.
+        ///     
         public static func login(_ credential: LoginCredential) async throws(LoginError) -> Token {
             // We don't use 'throwing' continuation
             // to keep the error type
@@ -514,12 +520,12 @@ extension DoriAPI.User {
 
 extension DoriAPI.User {
     public struct Token: Sendable, Hashable {
-        internal let _value: String
+        public let value: String
         
         public let expirationDate: Date
         
-        internal init(_ value: String, expirationDate: Date) {
-            self._value = value
+        public init(_ value: String, expirationDate: Date) {
+            self.value = value
             self.expirationDate = expirationDate
         }
         

@@ -122,7 +122,7 @@ extension DoriFrontend.User {
             let tokenWriteQuery: [String: Any] = [
                 kSecClass as String: kSecClassGenericPassword,
                 kSecAttrApplicationTag as String: Self.tokenTag,
-                kSecValueData as String: token._value.data(using: .utf8)!,
+                kSecValueData as String: token.value.data(using: .utf8)!,
                 kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
             ]
             SecItemAdd(tokenWriteQuery as CFDictionary, nil)
@@ -170,7 +170,7 @@ public func withUserToken<R>(
 /// - Returns: Result of provided closure.
 public func withUserToken<R>(
     _ token: DoriFrontend.User.Token?,
-    _ body: () async throws -> R
-) async rethrows -> R {
+    _ body: sending () async throws -> R
+) async rethrows -> sending R {
     try await DoriFrontend.User.$_currentUserToken.withValue(token, operation: body)
 }
