@@ -781,6 +781,55 @@ extension DoriAPI {
                 throw error as! APIError
             }
         }
+        
+        public func updateRoomFilter(
+            to newFilter: RoomFilter,
+            userToken token: UserToken
+        ) async throws(APIError) {
+            do {
+                try await withCheckedThrowingContinuation { continuation in
+                    AF.request(
+                        "https://server.bandoristation.com",
+                        method: .post,
+                        parameters: [
+                            "function_group": "MainAction",
+                            "function": "updateRoomNumberFilter",
+                            "room_number_filter": [
+                                "type": newFilter.roomTypes.map {
+                                    $0.rawValue == 0 ? "other" : String($0.rawValue)
+                                },
+                                "keyword": Array(newFilter.keywords),
+                                "user": newFilter.users.map {
+                                    [
+                                        "type": "local",
+                                        "user_id": $0.id,
+                                        "username": $0.username ?? "",
+                                        "avatar": $0._avatarFileName
+                                    ] as [String: any Sendable]
+                                }
+                            ] as [String: any Sendable]
+                        ],
+                        encoding: JSONEncoding.default,
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token.value)
+                    ).response { response in
+                        if let _data = response.data,
+                           let json = try? JSON(data: consume _data) {
+                            if json["status"].stringValue == "success" {
+                                continuation.resume()
+                            } else {
+                                continuation.resume(throwing: APIError(
+                                    rawValue: json["response"].stringValue
+                                ) ?? .unknown)
+                            }
+                        } else {
+                            continuation.resume(throwing: APIError.unknown)
+                        }
+                    }
+                }
+            } catch {
+                throw error as! APIError
+            }
+        }
     }
 }
 
