@@ -605,6 +605,182 @@ extension DoriAPI {
                 throw error as! APIError
             }
         }
+        
+        public static func postRoom(
+            number: String,
+            type: RoomType,
+            description: String,
+            user token: UserToken,
+            client: String = "DoriKit"
+        ) async throws {
+            let configuration = URLSessionConfiguration.default
+            configuration.headers = defaultRequestHeaders
+            let session = URLSession(configuration: configuration)
+            
+            let task = session.webSocketTask(with: URL(string: "wss://api.bandoristation.com")!)
+            task.resume()
+            defer { task.cancel(with: .goingAway, reason: nil) }
+            
+            let returnContinuation: Locking<CheckedContinuation<Void, any Error>?> = .init(nil)
+            
+            let receiveLoopTask = Task {
+                repeat {
+                    if Task.isCancelled {
+                        break
+                    }
+                    
+                    do {
+                        let message = try await task.receive()
+                        if case .string(let string) = message {
+                            let json = JSON(parseJSON: string)
+                            if json["action"].stringValue == "sendServerTime" {
+                                // Send initial messages
+                                var initialActions: [Any] = []
+                                initialActions.append([
+                                    "action": "setClient",
+                                    "data": [
+                                        "client": client,
+                                        "send_room_number": true
+                                    ]
+                                ])
+                                initialActions.append([
+                                    "action": "setAccessPermission",
+                                    "data": [
+                                        "token": token.value
+                                    ]
+                                ])
+                                initialActions.append([
+                                    "action": "sendRoomNumber",
+                                    "data": [
+                                        "room_number": number,
+                                        "description": description,
+                                        "type": type.rawValue == 0 ? "" : String(type.rawValue)
+                                    ]
+                                ])
+                                if ((try? await task.send(.data(JSONSerialization.data(withJSONObject: initialActions)))) == nil) {
+                                    throw APIError.unknown
+                                }
+                            } else if json["status"].stringValue == "failure"
+                                        && json["action"].stringValue == "sendNotice" {
+                                throw APIError(rawValue: json["response"].stringValue) ?? .unknown
+                            } else if json["status"].stringValue == "success"
+                                        && json["action"].stringValue == "sendRoomNumberList" {
+                                returnContinuation.withLock {
+                                    $0?.resume()
+                                }
+                                return
+                            }
+                        }
+                    } catch {
+                        returnContinuation.withLock {
+                            $0?.resume(throwing: error)
+                        }
+                        returnContinuation._lock() // Never resume twice
+                    }
+                } while true
+                
+                returnContinuation.withLock {
+                    $0?.resume(throwing: APIError.unknown)
+                }
+            }
+            defer {
+                receiveLoopTask.cancel()
+            }
+            
+            try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, any Error>) in
+                returnContinuation.withLock {
+                    $0 = continuation
+                }
+            }
+        }
+        
+        public static func reportRoom(
+            _ room: Room,
+            reason: String,
+            userToken token: UserToken
+        ) async throws(APIError) {
+            do {
+                try await withCheckedThrowingContinuation { continuation in
+                    AF.request(
+                        "https://server.bandoristation.com",
+                        method: .post,
+                        parameters: [
+                            "function_group": "MainAction",
+                            "function": "informUser",
+                            "type": "local",
+                            "user_id": room.creator.id,
+                            "raw_message": (try? JSONSerialization.jsonObject(
+                                with: room._rawJSON.data(using: .utf8)!
+                            )) as? [String: any Sendable],
+                            "reason": reason
+                        ],
+                        encoding: JSONEncoding.default,
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token.value)
+                    ).response { response in
+                        if let _data = response.data,
+                           let json = try? JSON(data: consume _data) {
+                            if json["status"].stringValue == "success" {
+                                continuation.resume()
+                            } else {
+                                continuation.resume(throwing: APIError(
+                                    rawValue: json["response"].stringValue
+                                ) ?? .unknown)
+                            }
+                        } else {
+                            continuation.resume(throwing: APIError.unknown)
+                        }
+                    }
+                }
+            } catch {
+                throw error as! APIError
+            }
+        }
+        
+        public func roomFilter(fromUserToken token: UserToken) async throws(APIError) -> RoomFilter {
+            do {
+                return try await withCheckedThrowingContinuation { continuation in
+                    AF.request(
+                        "https://server.bandoristation.com",
+                        method: .post,
+                        parameters: [
+                            "function_group": "MainAction",
+                            "function": "getRoomNumberFilter"
+                        ],
+                        encoding: JSONEncoding.default,
+                        headers: defaultRequestHeaders.with(name: "Auth-Token", value: token.value)
+                    ).response { response in
+                        if let _data = response.data,
+                           let json = try? JSON(data: consume _data) {
+                            if json["status"].stringValue == "success" {
+                                continuation.resume(returning: .init(
+                                    roomTypes: Set(json["response"]["room_number_filter"]["type"].map {
+                                        .init(rawValue: Int($0.1.stringValue) ?? 0) ?? .daredemo
+                                    }),
+                                    keywords: Set(json["response"]["room_number_filter"]["keyword"].map {
+                                        $0.1.stringValue
+                                    }),
+                                    users: Set(json["response"]["room_number_filter"]["user"].map {
+                                        .init(
+                                            id: $0.1["user_id"].intValue,
+                                            username: $0.1["username"].stringValue,
+                                            _avatarFileName: $0.1["avatar"].stringValue
+                                        )
+                                    })
+                                ))
+                            } else {
+                                continuation.resume(throwing: APIError(
+                                    rawValue: json["response"].stringValue
+                                ) ?? .unknown)
+                            }
+                        } else {
+                            continuation.resume(throwing: APIError.unknown)
+                        }
+                    }
+                }
+            } catch {
+                throw error as! APIError
+            }
+        }
     }
 }
 
@@ -813,7 +989,7 @@ extension DoriAPI.Station {
         }
     }
     
-    public enum RoomType: Int, Sendable, Hashable, CaseIterable, Codable {
+    public enum RoomType: Int, CaseIterable, Sendable, Hashable, Codable {
         case daredemo = 0
         case standard = 7
         case master = 12
@@ -841,6 +1017,22 @@ extension DoriAPI.Station {
     public enum RoomUpdateError: Sendable, Error {
         case failedToInitializeConnection
         case receivedError(any Error)
+    }
+    
+    public struct RoomFilter: Sendable, Hashable {
+        public var roomTypes: Set<RoomType>
+        public var keywords: Set<String>
+        public var users: Set<UserInformation>
+        
+        public init(
+            roomTypes: Set<RoomType> = [],
+            keywords: Set<String> = [],
+            users: Set<UserInformation> = []
+        ) {
+            self.roomTypes = roomTypes
+            self.keywords = keywords
+            self.users = users
+        }
     }
 }
 extension DoriAPI.Station.Room {
