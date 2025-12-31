@@ -39,17 +39,132 @@ extension DoriFrontend.Searchable {
 extension Array where Element: DoriFrontend.Searchable {
     /// Returns a new array which is filtered by given keyword.
     ///
-    /// - Parameter keyword: Keyword for searching
+    /// - Parameters:
+    ///   - keyword: Keyword for searching.
+    ///   - locales:
+    ///     Locales used to improve searching, sorted by priority.
+    ///
+    ///     When it's set to an empty array, DoriKit doesn't apply
+    ///     locale-specific improments to searching.
+    ///     When it's set to `nil`, DoriKit determines
+    ///     a locale list automatically.
     /// - Returns: A new array which is filtered by given keyword.
     ///
     /// This function performs a "smart search" like the one on Bestdori! website.
-    public func search(for keyword: String) -> Self {
+    public func search(for keyword: String, with locales: [Locale]? = []) -> Self {
         let tokens = keyword.split(separator: " ").map { $0.lowercased() }
         guard !tokens.isEmpty else { return self }
         
+        let locales = locales ?? Locale.preferredLanguages.compactMap {
+            Locale(languageCode: .init($0))
+        }
+        
         var result = self
         var removes = IndexSet()
-        for (index, item) in result.enumerated() {
+        var jpLangTokenizer: CFStringTokenizer!
+        var cnLangTokenizer: CFStringTokenizer!
+        let keyPattern = keyword.replacing(" ", with: "")
+        itemLoop: for (index, item) in result.enumerated() {
+            for localizedString in item._searchLocalizedStrings {
+                if locales.contains(where: {
+                    $0.language.languageCode?.identifier.hasPrefix("ja") == true
+                }), let string = localizedString[.jp] {
+                    let cfString = string as CFString
+                    let range = CFRange(
+                        location: 0,
+                        length: CFStringGetLength(cfString)
+                    )
+                    if _fastPath(jpLangTokenizer != nil) {
+                        CFStringTokenizerSetString(
+                            jpLangTokenizer,
+                            cfString,
+                            range
+                        )
+                    } else {
+                        jpLangTokenizer = CFStringTokenizerCreate(
+                            kCFAllocatorDefault,
+                            cfString,
+                            range,
+                            kCFStringTokenizerUnitWordBoundary,
+                            CFLocaleCreate(
+                                kCFAllocatorDefault,
+                                CFLocaleIdentifier("ja_JP" as CFString)
+                            )
+                        )
+                    }
+                    
+                    var partialResult = ""
+                    var tokenType = CFStringTokenizerAdvanceToNextToken(jpLangTokenizer)
+                    while tokenType != [] {
+                        if let latin = CFStringTokenizerCopyCurrentTokenAttribute(
+                            jpLangTokenizer,
+                            kCFStringTokenizerAttributeLatinTranscription
+                        ) as? String {
+                            partialResult += latin + " "
+                        }
+                        tokenType = CFStringTokenizerAdvanceToNextToken(jpLangTokenizer)
+                    }
+                    if !partialResult.isEmpty {
+                        partialResult.removeLast()
+                    }
+                    partialResult = partialResult.applyingTransform(.stripDiacritics, reverse: false) ?? partialResult
+                    
+//                    if partialResult.replacing(" ", with: "").contains(keyPattern) {
+//                        continue itemLoop
+//                    }
+                    if let hiragana = partialResult.applyingTransform(
+                        .latinToHiragana,
+                        reverse: false
+                    ), hiragana.replacing(" ", with: "").contains(keyPattern) {
+                        continue itemLoop
+                    }
+                }
+                if locales.contains(where: {
+                    $0.language.languageCode?.identifier.hasPrefix("zh") == true
+                }), let string = localizedString[.cn] {
+                    let cfString = string as CFString
+                    let range = CFRange(
+                        location: 0,
+                        length: CFStringGetLength(cfString)
+                    )
+                    if _fastPath(cnLangTokenizer != nil) {
+                        CFStringTokenizerSetString(
+                            cnLangTokenizer,
+                            cfString,
+                            range
+                        )
+                    } else {
+                        cnLangTokenizer = CFStringTokenizerCreate(
+                            kCFAllocatorDefault,
+                            cfString,
+                            range,
+                            kCFStringTokenizerUnitWord,
+                            CFLocaleCreate(
+                                kCFAllocatorDefault,
+                                CFLocaleIdentifier("zh_CN" as CFString)
+                            )
+                        )
+                    }
+                    
+                    var partialResult = ""
+                    var tokenType = CFStringTokenizerAdvanceToNextToken(cnLangTokenizer)
+                    while tokenType != [] {
+                        if let latin = CFStringTokenizerCopyCurrentTokenAttribute(
+                            cnLangTokenizer,
+                            kCFStringTokenizerAttributeLatinTranscription
+                        ) as? String {
+                            partialResult += latin
+                        }
+                        tokenType = CFStringTokenizerAdvanceToNextToken(cnLangTokenizer)
+                    }
+                    partialResult = partialResult.applyingTransform(.stripDiacritics, reverse: false) ?? partialResult
+                    
+                    if partialResult.contains(keyPattern) {
+                        continue itemLoop
+                    }
+                }
+            }
+            
             tokenLoop: for token in tokens {
                 // We always do early exit for performance
                 for string in item._searchStrings {
@@ -185,7 +300,11 @@ extension Array where Element: DoriFrontend.Searchable {
 
 extension DoriAPI.Cards.PreviewCard: DoriFrontend.Searchable {
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
-        [self.prefix]
+        [
+            self.prefix,
+            _character?.characterName,
+            _character?.nickname.isEmpty == false ? _character?.nickname : nil
+        ].compactMap { $0 }
     }
     public var _searchIntegers: [Int] {
         [self.rarity]
@@ -199,8 +318,23 @@ extension DoriAPI.Cards.PreviewCard: DoriFrontend.Searchable {
         }
         return result
     }
+    public var _searchBands: [DoriAPI.Bands.Band] {
+        if let bandID = _character?.bandID {
+            PreCache.current.mainBands.filter {
+                bandID == $0.id
+            }
+        } else {
+            []
+        }
+    }
     public var _searchAttributes: [DoriAPI.Attribute] {
         [self.attribute]
+    }
+    
+    private var _character: DoriAPI.Characters.PreviewCharacter? {
+        PreCache.current.characters.first {
+            $0.id == self.characterID
+        }
     }
 }
 extension DoriAPI.Comics.Comic: DoriFrontend.Searchable {
@@ -216,10 +350,25 @@ extension DoriAPI.Comics.Comic: DoriFrontend.Searchable {
         }
         return result
     }
+    public var _searchBands: [DoriAPI.Bands.Band] {
+        PreCache.current.mainBands.filter {
+            _characters.compactMap { $0.bandID }.contains($0.id)
+        }
+    }
+    
+    private var _characters: [DoriAPI.Characters.PreviewCharacter] {
+        PreCache.current.characters.filter {
+            self.characterIDs.contains($0.id)
+        }
+    }
 }
 extension DoriAPI.Costumes.PreviewCostume: DoriFrontend.Searchable {
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
-        [self.description]
+        [
+            self.description,
+            _character?.characterName,
+            _character?.nickname.isEmpty == false ? _character?.nickname : nil
+        ].compactMap { $0 }
     }
     public var _searchLocales: [DoriAPI.Locale] {
         var result = [DoriAPI.Locale]()
@@ -229,6 +378,21 @@ extension DoriAPI.Costumes.PreviewCostume: DoriFrontend.Searchable {
             }
         }
         return result
+    }
+    public var _searchBands: [DoriAPI.Bands.Band] {
+        if let bandID = _character?.bandID {
+            PreCache.current.mainBands.filter {
+                bandID == $0.id
+            }
+        } else {
+            []
+        }
+    }
+    
+    public var _character: DoriAPI.Characters.PreviewCharacter? {
+        PreCache.current.characters.first {
+            $0.id == self.characterID
+        }
     }
 }
 extension DoriAPI.Events.PreviewEvent: DoriFrontend.Searchable {
