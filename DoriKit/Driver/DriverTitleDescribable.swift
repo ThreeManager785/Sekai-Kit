@@ -30,18 +30,18 @@ extension Band: TitleDescribable {
 extension PreviewCard: TitleDescribable {
     @inlinable
     public var title: DoriAPI.LocalizedData<String> {
-        self.prefix
+        self.cardName
     }
 }
 extension Card: TitleDescribable {
     @inlinable
     public var title: DoriAPI.LocalizedData<String> {
-        self.prefix
+        self.cardName
     }
 }
 extension ExtendedCard: TitleDescribable {
     public var title: DoriAPI.LocalizedData<String> {
-        self.card.prefix
+        self.card.cardName
     }
 }
 

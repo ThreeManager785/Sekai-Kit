@@ -38,10 +38,10 @@ extension DoriFrontend {
                     && $0.endAt.forLocale(locale)!.timeIntervalSinceNow > 0
                 }) {
                     // Use ongoing locale firstly
-                    result._set(ongoingEvent, forLocale: locale)
+                    result.set(ongoingEvent, forLocale: locale)
                 } else {
                     // Otherwise find the event where `startAt` is closest to now
-                    result._set(
+                    result.set(
                         availableEvents.min(by: {
                             abs($0.startAt.forLocale(locale)!.timeIntervalSinceNow)
                             < abs($1.startAt.forLocale(locale)!.timeIntervalSinceNow)
@@ -52,7 +52,7 @@ extension DoriFrontend {
                 if let event = result.forLocale(locale), let endDate = event.endAt.forLocale(locale), endDate < .now {
                     // latest event has ended, but next event is null
                     if let nextEvent = allEvents.first(where: { $0.id == event.id + 1 }) {
-                        result._set(nextEvent, forLocale: locale)
+                        result.set(nextEvent, forLocale: locale)
                     }
                 }
             }
@@ -213,7 +213,7 @@ extension DoriFrontend {
                         attribute: .powerful,
                         levelLimit: -1,
                         resourceSetName: "",
-                        prefix: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
+                        cardName: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
                         releasedAt: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
                         skillID: -1,
                         type: .others,

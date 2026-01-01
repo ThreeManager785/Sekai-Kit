@@ -224,7 +224,7 @@ extension DoriFrontend.Cards.PreviewCard: DoriFrontend.Filterable {
         } else if let character = value as? DoriFrontend.Filter.Character { // Character
             return self.characterID == character.rawValue
         } else if let server = value as? DoriFrontend.Filter.Server { // Server
-            return self.prefix.availableInLocale(server)
+            return self.title.availableInLocale(server)
         } else if let availabilityWithServers = value as? AvailabilityWithServers { // Availability
             for locale in availabilityWithServers.servers {
                 if availabilityWithServers.releaseStatus.boolValue {
@@ -266,7 +266,7 @@ extension DoriFrontend.Cards.CardWithBand: DoriFrontend.Filterable {
         } else if let character = value as? DoriFrontend.Filter.Character { // Character
             return self.card.characterID == character.rawValue
         } else if let server = value as? DoriFrontend.Filter.Server { // Server
-            return self.card.prefix.availableInLocale(server)
+            return self.card.title.availableInLocale(server)
         } else if let availabilityWithServers = value as? AvailabilityWithServers { // Availability
             for locale in availabilityWithServers.servers {
                 if availabilityWithServers.releaseStatus.boolValue {

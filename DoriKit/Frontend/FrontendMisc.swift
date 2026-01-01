@@ -339,7 +339,7 @@ extension DoriFrontend {
                     if let cards,
                        let card = cards.first(where: { $0.id == item.itemID }) {
                         text = .init(
-                            name: card.prefix,
+                            name: card.title,
                             type: nil,
                             resourceID: -1
                         )
@@ -409,7 +409,7 @@ extension DoriFrontend {
                     attribute: .powerful,
                     levelLimit: -1,
                     resourceSetName: "",
-                    prefix: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
+                    cardName: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
                     releasedAt: .init(jp: nil, en: nil, tw: nil, cn: nil, kr: nil),
                     skillID: -1,
                     type: .others,

@@ -114,7 +114,7 @@ extension DoriAPI {
                             attribute: .init(rawValue: value["attribute"].stringValue) ?? .pure,
                             levelLimit: value["levelLimit"].intValue,
                             resourceSetName: value["resourceSetName"].stringValue,
-                            prefix: .init(
+                            cardName: .init(
                                 jp: value["prefix"][0].string,
                                 en: value["prefix"][1].string,
                                 tw: value["prefix"][2].string,
@@ -375,7 +375,7 @@ extension DoriAPI {
                             cn: respJSON["gachaText"][3].string,
                             kr: respJSON["gachaText"][4].string
                         ),
-                        prefix: .init(
+                        cardName: .init(
                             jp: respJSON["prefix"][0].string,
                             en: respJSON["prefix"][1].string,
                             tw: respJSON["prefix"][2].string,
@@ -435,10 +435,7 @@ extension DoriAPI.Cards {
         /// Name of resource set, used for combination of resource URLs.
         public var resourceSetName: String
         /// Localized title of card.
-        ///
-        /// The same *prefix* can be associated to different cards with different characters,
-        /// so it's called `prefix` instead of *title*.
-        public var prefix: DoriAPI.LocalizedData<String>
+        public var cardName: DoriAPI.LocalizedData<String>
         /// Localized release date of card.
         public var releasedAt: DoriAPI.LocalizedData<Date>
         /// ID of skill associated to this card.
@@ -474,10 +471,7 @@ extension DoriAPI.Cards {
         /// A localized text which shows when players get this card from gacha.
         public var gachaText: DoriAPI.LocalizedData<String>
         /// Localized title of card.
-        ///
-        /// The same *prefix* can be associated to different cards with different characters,
-        /// so it's called `prefix` instead of *title*.
-        public var prefix: DoriAPI.LocalizedData<String>
+        public var cardName: DoriAPI.LocalizedData<String>
         /// Localized release date of card.
         public var releasedAt: DoriAPI.LocalizedData<Date>
         /// Localized skill name.
@@ -504,7 +498,7 @@ extension DoriAPI.Cards {
             episodes: [CardEpisode],
             costumeID: Int,
             gachaText: DoriAPI.LocalizedData<String>,
-            prefix: DoriAPI.LocalizedData<String>,
+            cardName: DoriAPI.LocalizedData<String>,
             releasedAt: DoriAPI.LocalizedData<Date>,
             skillName: DoriAPI.LocalizedData<String>,
             skillID: Int,
@@ -523,7 +517,7 @@ extension DoriAPI.Cards {
             self.episodes = episodes
             self.costumeID = costumeID
             self.gachaText = gachaText
-            self.prefix = prefix
+            self.cardName = cardName
             self.releasedAt = releasedAt
             self.skillName = skillName
             self.skillID = skillID
@@ -671,7 +665,7 @@ extension DoriAPI.Cards.PreviewCard {
             attribute: full.attribute,
             levelLimit: full.levelLimit,
             resourceSetName: full.resourceSetName,
-            prefix: full.prefix,
+            cardName: full.cardName,
             releasedAt: full.releasedAt,
             skillID: full.skillID,
             type: full.type,

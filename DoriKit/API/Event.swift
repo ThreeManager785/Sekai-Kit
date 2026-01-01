@@ -96,7 +96,7 @@ extension DoriAPI {
                         
                         result.append(.init(
                             id: Int(key) ?? 0,
-                            eventType: .init(rawValue: value["eventType"].stringValue) ?? .story,
+                            eventType: .init(rawValue: value["eventType"].stringValue) ?? .normal,
                             eventName: .init(
                                 jp: value["eventName"][0].string,
                                 en: value["eventName"][1].string,
@@ -563,7 +563,7 @@ extension DoriAPI {
                     
                     return Event(
                         id: id,
-                        eventType: .init(rawValue: respJSON["eventType"].stringValue) ?? .story,
+                        eventType: .init(rawValue: respJSON["eventType"].stringValue) ?? .normal,
                         eventName: .init(
                             jp: respJSON["eventName"][0].string,
                             en: respJSON["eventName"][1].string,
@@ -877,7 +877,7 @@ extension DoriAPI {
                         default: Locale.jp
                         }
                         return TrackerRate(
-                            type: .init(rawValue: $0.1["type"].stringValue) ?? .story,
+                            type: .init(rawValue: $0.1["type"].stringValue) ?? .normal,
                             server: locale,
                             tier: $0.1["tier"].intValue,
                             rate: $0.1["rate"].doubleValue
@@ -1304,13 +1304,13 @@ extension DoriAPI.Events {
     
     /// Represent type of an event.
     public enum EventType: String, Sendable, CaseIterable, Hashable, DoriCache.Cacheable {
-        case story
-        case challenge
-        case versus
-        case liveTry = "live_try"
+        case normal = "story"
+        case challengeLive = "challenge"
+        case vsLive = "versus"
+        case liveGoals = "live_try"
         case missionLive = "mission_live"
-        case festival
-        case medley
+        case teamLiveFestival = "festival"
+        case medleyLive = "medley"
     }
     
     /// Represent an attribute with bonus related to an event.

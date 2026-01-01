@@ -21,7 +21,7 @@ extension DoriFrontend {
             let cpCostPossibleValues = [200, 400, 800, 1600]
             
             // Verify
-            if input.eventType == .challenge {
+            if input.eventType == .challengeLive {
                 precondition(
                     input.currentChallengePoint != nil,
                     "'currentChallengePoint' is required for challenge events"
@@ -67,7 +67,7 @@ extension DoriFrontend {
             result.gameplayByFlamesCount = result.consumedFlames / input.flameCostPerGameplay + input.zeroFlamesGameplayCount
             result.gameplayByFlamesDuration = input.gameplayDuration &* result.gameplayByFlamesCount
             
-            if input.eventType == .challenge {
+            if input.eventType == .challengeLive {
                 result.totalChallengePoints = input.currentChallengePoint! &+ result.eventPointsGainFromFlame / 20
                 
                 result.gameplayByChallengePointsCount = 0
