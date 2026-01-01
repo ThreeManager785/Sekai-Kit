@@ -301,7 +301,7 @@ extension Array where Element: DoriFrontend.Searchable {
 extension DoriAPI.Cards.PreviewCard: DoriFrontend.Searchable {
     public var _searchLocalizedStrings: [DoriAPI.LocalizedData<String>] {
         [
-            self.prefix,
+            self.cardName,
             _character?.characterName,
             _character?.nickname.isEmpty == false ? _character?.nickname : nil
         ].compactMap { $0 }
