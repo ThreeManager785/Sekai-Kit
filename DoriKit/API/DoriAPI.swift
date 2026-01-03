@@ -54,7 +54,7 @@ public final class DoriAPI {
     
     /// Represent a specific country or region which localized in GBP.
     @frozen
-    public enum Locale: String, CaseIterable, DoriCache.Cacheable {
+    public enum Locale: String, CaseIterable, Codable, DoriCache.Cacheable {
         @inlinable
         public static var primaryLocale: Self {
             _read {
