@@ -68,6 +68,7 @@
 		8C2CFEFD2EB8901E00A8A149 /* Mangling.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */; };
 		8C2CFEFF2EB8AF5200A8A149 /* SwiftParserDiagnostics in Frameworks */ = {isa = PBXBuildFile; productRef = 8C2CFEFE2EB8AF5200A8A149 /* SwiftParserDiagnostics */; };
 		8C2CFF012EB903FF00A8A149 /* RuntimeObject.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */; };
+		8C2EBF662F09550A006BC253 /* ImageMatching.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2EBF652F095506006BC253 /* ImageMatching.swift */; };
 		8C2ED87E2F027B7A006BC253 /* FrontendCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2ED87D2F027B71006BC253 /* FrontendCalculator.swift */; };
 		8C2ED8802F02BB45006BC253 /* Duration+Overflow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8C2ED87F2F02BB3F006BC253 /* Duration+Overflow.swift */; };
 		8C2EE3AC2E704A3400EDDD0D /* libgit2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8C2EE3AA2E70498800EDDD0D /* libgit2.a */; };
@@ -329,6 +330,7 @@
 		8C2CFEFA2EB8900F00A8A149 /* Symbolization.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Symbolization.swift; sourceTree = "<group>"; };
 		8C2CFEFC2EB8901B00A8A149 /* Mangling.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Mangling.swift; sourceTree = "<group>"; };
 		8C2CFF002EB903FB00A8A149 /* RuntimeObject.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RuntimeObject.swift; sourceTree = "<group>"; };
+		8C2EBF652F095506006BC253 /* ImageMatching.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageMatching.swift; sourceTree = "<group>"; };
 		8C2ED87D2F027B71006BC253 /* FrontendCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrontendCalculator.swift; sourceTree = "<group>"; };
 		8C2ED87F2F02BB3F006BC253 /* Duration+Overflow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Duration+Overflow.swift"; sourceTree = "<group>"; };
 		8C2EE3AA2E70498800EDDD0D /* libgit2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libgit2.a; path = "../../../Library/Developer/Xcode/DerivedData/Greatdori-aghqtexjlhuxqfcowlzrriajcttj/Build/Products/Debug/libgit2.a"; sourceTree = "<group>"; };
@@ -959,6 +961,7 @@
 				8CA8561A2EB488B1001464F7 /* StoryBuilder */,
 				8CD13FBA2E2FE2BF00673E15 /* DoriFrontend.swift */,
 				8C923D9E2E313C09003AFC0A /* Filters.swift */,
+				8C2EBF652F095506006BC253 /* ImageMatching.swift */,
 				E9EFF2B72E61BEA800991940 /* MatchedFilters.swift */,
 				E9A67EB32E72AF160047E6BA /* Sorter.swift */,
 				8CBC1BDA2E334233004023F7 /* Searching.swift */,
@@ -1700,6 +1703,7 @@
 				8CD13FC12E2FE2BF00673E15 /* NetworkRequest.swift in Sources */,
 				8C923D972E30A1BC003AFC0A /* LocalizedStrings.swift in Sources */,
 				E949A5732EAA1E65007441A6 /* DriverTitleDescribable.swift in Sources */,
+				8C2EBF662F09550A006BC253 /* ImageMatching.swift in Sources */,
 				8CD13FE72E300D2300673E15 /* FrontendNews.swift.gyb in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
