@@ -12,6 +12,8 @@
 //
 //===----------------------------------------------------------------------===//
 
+#if !os(watchOS)
+
 import CoreImage
 import Foundation
 internal import os
@@ -329,3 +331,5 @@ extension DoriFrontend.ImageMatching {
         public var trained: Bool
     }
 }
+
+#endif // !os(watchOS)
