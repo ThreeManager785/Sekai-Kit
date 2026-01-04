@@ -17,6 +17,20 @@ internal import os
 
 extension DoriFrontend {
     public enum Calculator {
+        /// Calculate an event information by the given input.
+        ///
+        /// - Parameter input: Input of calculation.
+        /// - Returns: Result of calculation.
+        ///
+        /// If the ``EventCalculatorInput/eventType`` is
+        /// ``DoriAPI/Events/EventType/challengeLive``,
+        /// ``EventCalculatorInput/currentChallengePoint``,
+        /// ``EventCalculatorInput/eventPointsGainPerChallengePoint`` and
+        /// ``EventCalculatorInput/challengePointCostPerGameplay``
+        /// **must not** be `nil`.
+        ///
+        /// The ``EventCalculatorInput/challengePointCostPerGameplay``
+        /// should be `200`, `400`, `800` or `1600` if provided.
         public static func calculateEvent(_ input: EventCalculatorInput) -> EventCalculatorResult {
             let cpCostPossibleValues = [200, 400, 800, 1600]
             

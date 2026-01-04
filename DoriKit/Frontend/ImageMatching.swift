@@ -22,6 +22,33 @@ internal import Accelerate
 
 extension DoriFrontend {
     public enum ImageMatching {
+        /// Match cards in database by a thumb image.
+        ///
+        /// - Parameter image: A card thumb image.
+        /// - Returns: The top 10 matching results, sorted by confidence,
+        ///     or `nil` if failed to match (most likely because of network).
+        ///
+        /// This function calculates a hash of the input image,
+        /// then compares it with pre-generated hashes in our online database.
+        /// It does not send any data related to the input image to server.
+        /// Comparing is executed locally.
+        ///
+        /// This function does not cut results by confidences.
+        /// That is, it always return a array with 10 results, or `nil`.
+        /// You can set a minimum acceptable confidence by yourself.
+        ///
+        /// This function can be used to find cards by screenshots in game
+        /// like the image below:
+        ///
+        /// ![Trained thumb image of card #2123 from the game](CardThumbScreenshot)
+        ///
+        /// - Note:
+        ///     Don't include multiple thumb images in the input,
+        ///     this function is designed for matching one card image.
+        ///
+        /// - SeeAlso:
+        ///     Use ``cardThumbBoundingRects(in:)`` to find bounding rectangles
+        ///     of card thumb images in a single image.
         public func matchCard(byThumbImage image: CIImage) async -> [ImageMatchingResult]? {
             let groupResult = await withTasksResult {
                 await DoriAPI.Cards.all()
@@ -55,9 +82,9 @@ extension DoriFrontend {
                         partialResult.append((distance, pair))
                     } else {
                         logger.fault("""
-                    DoriKit encountered an error while matching cards, \
-                    please file a bug report.
-                    """)
+                        DoriKit encountered an error while matching cards, \
+                        please file a bug report.
+                        """)
                     }
                 }
                 
@@ -78,6 +105,25 @@ extension DoriFrontend {
             }
         }
         
+        /// Find bounding rectangles of card thumb images in an image.
+        ///
+        /// - Parameter image: An image with grid-aligned card thumb images.
+        /// - Returns: Bounding rectangles of card thumb images in input image,
+        ///     or `nil` if failed to resolve.
+        ///
+        /// This function can be used to find bounding rectangles
+        /// of card thumb images from a screenshot in game like this:
+        ///
+        /// ![Card list in game](GameCardListScreenshot)
+        ///
+        /// - Note:
+        ///     This function is not a general-propose rectangle finder.
+        ///     Only use it with screenshots from the game
+        ///     and do not include other UI elements.
+        ///
+        /// - SeeAlso:
+        ///     Crop the input image to any rectangles from result,
+        ///     then it can be used for ``matchCard(byThumbImage:)``.
         public func cardThumbBoundingRects(in image: CIImage) -> [CGRect]? {
             let ctx = CIContext()
             let edgeImage = image.applyingFilter("CIPhotoEffectMono")

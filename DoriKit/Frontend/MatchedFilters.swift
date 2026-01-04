@@ -441,6 +441,11 @@ extension DoriFrontend.Costumes.PreviewCostume: DoriFrontend.Filterable {
 // MARK: extension Array
 extension Array where Element: DoriFrontend.Filterable {
     // Terms of Art... --@ThreeManager785
+    /// Returns an array containing, in order, the elements of the array
+    /// that satisfy constraints from the given ``DoriFrontend/Filter``.
+    ///
+    /// - Parameter filter: A filter that used for filtering the array.
+    /// - Returns: An array of the elements that `filter` allowed.
     public func filter(withDoriFilter filter: DoriFrontend.Filter) -> [Element] {
         var result: [Element] = self
         guard filter.isFiltered else { return result }
