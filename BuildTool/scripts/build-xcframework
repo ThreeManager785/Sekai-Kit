@@ -25,22 +25,22 @@ mkdir build >/dev/null 2>&1
 set -euo pipefail
 
 BUILD_MACOS_START=$(date +%s%N)
-xcodebuild -project Greatdori.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "platform=macOS" build
+xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "platform=macOS" build
 
 BUILD_MAC_CATALYST_START=$(date +%s%N)
-xcodebuild -project Greatdori.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "platform=macOS,variant=Mac Catalyst" build
+xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "platform=macOS,variant=Mac Catalyst" build
 
 BUILD_IOS_SIMULATOR_START=$(date +%s%N)
-xcodebuild -project Greatdori.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS Simulator" build
+xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS Simulator" build
 
 BUILD_IOS_START=$(date +%s%N)
-xcodebuild -project Greatdori.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS" build
+xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS" build
 
 BUILD_WATCH_SIMULATOR_START=$(date +%s%N)
-xcodebuild -project Greatdori.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS Simulator" build
+xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS Simulator" build
 
 BUILD_WATCHOS_START=$(date +%s%N)
-xcodebuild -project Greatdori.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS" build
+xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS" build
 
 BUILD_END=$(date +%s%N)
 
