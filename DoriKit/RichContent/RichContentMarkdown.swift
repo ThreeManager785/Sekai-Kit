@@ -42,7 +42,7 @@ extension RichContentGroup {
         if label == "%%DoriKit_Resolve_Emoji%%" {
             let encodedData = String(url.absoluteString.dropFirst("greatdori://".count))
             if let data = Data(base64Encoded: encodedData) {
-                #if canImport(AppKit)
+                #if canImport(AppKit) && !targetEnvironment(macCatalyst)
                 if let image = NSImage(data: data) {
                     guard let bitmapRep = NSBitmapImageRep(
                         bitmapDataPlanes: nil,
@@ -107,7 +107,7 @@ extension RichContentGroup {
                 }
                 #endif
             } else {
-                #if canImport(AppKit)
+                #if canImport(AppKit) && !targetEnvironment(macCatalyst)
                 return .init(nsImage: .init())
                 #else
                 return .init(uiImage: .init())
@@ -120,13 +120,13 @@ extension RichContentGroup {
                 }
             }
             if let data {
-                #if canImport(AppKit)
+                #if canImport(AppKit) && !targetEnvironment(macCatalyst)
                 return .init(nsImage: .init(data: data) ?? .init())
                 #else
                 return .init(uiImage: .init(data: data) ?? .init())
                 #endif
             } else {
-                #if canImport(AppKit)
+                #if canImport(AppKit) && !targetEnvironment(macCatalyst)
                 return .init(nsImage: .init())
                 #else
                 return .init(uiImage: .init())
@@ -154,7 +154,7 @@ private func compileRichContent(_ content: RichContent) -> String {
     case .link(let url):
         " [\(url.absoluteString)](\(url.absoluteString)) "
     case .emoji(let emoji):
-        #if canImport(AppKit)
+        #if canImport(AppKit) && !targetEnvironment(macCatalyst)
         " ![%%DoriKit_Resolve_Emoji%%](greatdori://\(emoji.image.tiffRepresentation?.base64EncodedString() ?? "")) "
         #else
         " ![%%DoriKit_Resolve_Emoji%%](greatdori://\(emoji.image.pngData()?.base64EncodedString() ?? "")) "
