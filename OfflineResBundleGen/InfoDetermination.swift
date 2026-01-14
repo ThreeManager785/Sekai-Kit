@@ -12,7 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import DoriKit
+import SekaiKit
 import Foundation
 
 func readLastID(allowInitialization: Bool = true) async -> Int? {

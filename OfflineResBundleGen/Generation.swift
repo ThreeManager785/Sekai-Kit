@@ -12,12 +12,12 @@
 //
 //===----------------------------------------------------------------------===//
 
-import DoriKit
+import SekaiKit
 import Foundation
 
 func generate(to output: URL) async throws {
     let startTime = CFAbsoluteTimeGetCurrent()
-    for locale in DoriAPI.Locale.allCases {
+    for locale in SekaiAPI.Locale.allCases {
         print("Generating for \(locale.rawValue.uppercased())...\n")
         
         let localizedOutput = output.appending(path: locale.rawValue)
@@ -29,16 +29,16 @@ func generate(to output: URL) async throws {
     }
 }
 
-func generateLocale(_ locale: DoriAPI.Locale, to output: URL, startTime: TimeInterval = CFAbsoluteTimeGetCurrent()) async throws {
-    let info = await retryUntilNonNil { await DoriAPI.Assets.info(in: locale) }
+func generateLocale(_ locale: SekaiAPI.Locale, to output: URL, startTime: TimeInterval = CFAbsoluteTimeGetCurrent()) async throws {
+    let info = await retryUntilNonNil { await SekaiAPI.Assets.info(in: locale) }
     var finishedCount = 0
     try await generateFromInfo(info, in: locale, to: output, finished: &finishedCount, total: fileCount(of: info), startTime: startTime)
     await LimitedTaskQueue.shared.waitUntilAllFinished()
 }
 
 private func generateFromInfo(
-    _ info: DoriAPI.Assets.AssetList,
-    in locale: DoriAPI.Locale,
+    _ info: SekaiAPI.Assets.AssetList,
+    in locale: SekaiAPI.Locale,
     to output: URL,
     finished: inout Int,
     total: Int,
@@ -52,7 +52,7 @@ private func generateFromInfo(
             LimitedTaskQueue.shared.addTask {
                 var contents: [String]!
                 for i in 0..<5 {
-                    if let result = await DoriAPI.Assets._contentsOf(_path + name, in: locale) {
+                    if let result = await SekaiAPI.Assets._contentsOf(_path + name, in: locale) {
                         contents = result
                         break
                     } else if i == 4 {
@@ -101,7 +101,7 @@ private func generateFromInfo(
     }
 }
 
-private func fileCount(of info: DoriAPI.Assets.AssetList) -> Int {
+private func fileCount(of info: SekaiAPI.Assets.AssetList) -> Int {
     var result = 0
     for (_, child) in info {
         switch child {

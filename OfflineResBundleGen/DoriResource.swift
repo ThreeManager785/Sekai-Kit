@@ -1,6 +1,6 @@
 //===---*- Greatdori! -*---------------------------------------------------===//
 //
-// DoriResource.swift
+// SekaiResource.swift
 //
 // This source file is part of the Greatdori! open source project
 //
@@ -12,21 +12,21 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// Code in this file generates files for DoriResource.bundle
+// Code in this file generates files for SekaiResource.bundle
 //
 //===----------------------------------------------------------------------===//
 
-import DoriKit
+import SekaiKit
 import Foundation
 
 private let resourceInterpolation: [AnyHashable: String] = [
-    DoriAPI.Locale.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
-    DoriAPI.Attribute.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
+    SekaiAPI.Locale.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
+    SekaiAPI.Attribute.allCases.map { $0.rawValue }: "https://bestdori.com/res/icon/%s.svg",
     1...40: "https://bestdori.com/res/icon/chara_icon_%s.png",
     [1, 2, 3, 4, 5, 18, 21, 45]: "https://bestdori.com/res/icon/band_%s.svg"
 ]
 
-func generateDoriResource(to output: URL) async throws {
+func generateSekaiResource(to output: URL) async throws {
     print("Fetching resources...")
     
     let resOutput = output.appending(path: "res")

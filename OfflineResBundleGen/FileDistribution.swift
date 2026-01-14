@@ -12,7 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import DoriKit
+import SekaiKit
 import Foundation
 
 // Strand Main
@@ -64,7 +64,7 @@ func updateAssets(in destination: URL, withToken token: String?, lastID givenLas
     print("[✓][Main] Process all done.")
 }
 
-func updateLocale(datas: [String], forLocale locale: DoriLocale, to destination: URL, withToken token: String, lastIDs: (Int, Int?)) async {
+func updateLocale(datas: [String], forLocale locale: SekaiLocale, to destination: URL, withToken token: String, lastIDs: (Int, Int?)) async {
     // I. Initiailzization
     print("[$][Update][\(locale.rawValue)] Update process starts.")
     var groupedDatas: [String: [String]] = [:]
@@ -181,10 +181,10 @@ echo "[%][Git Push][\#(locale.rawValue)/\#(branch)] Commited & Pushed."
 }
 
 
-func updateFile(for inputtedPath: String, into destination: URL, inLocale locale: DoriLocale, onUpdate: @escaping (String) -> Void) async {
+func updateFile(for inputtedPath: String, into destination: URL, inLocale locale: SekaiLocale, onUpdate: @escaping (String) -> Void) async {
     let path = inputtedPath.hasPrefix("/") ? inputtedPath : "/\(inputtedPath)"
     
-    let contents = await DoriAPI.Assets._contentsOf(path, in: locale)
+    let contents = await SekaiAPI.Assets._contentsOf(path, in: locale)
     if let contents {
         let fileContainerURL = destination.appending(path: "\(locale.rawValue)\(path)_rip")
         if !FileManager.default.fileExists(atPath: fileContainerURL.path(percentEncoded: false)) {

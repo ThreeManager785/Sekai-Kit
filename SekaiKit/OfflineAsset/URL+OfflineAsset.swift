@@ -1,0 +1,202 @@
+//===---*- Greatdori! -*---------------------------------------------------===//
+//
+// URL+OfflineAsset.swift
+//
+// This source file is part of the Greatdori! open source project
+//
+// Copyright (c) 2025 the Greatdori! project authors
+// Licensed under Apache License v2.0
+//
+// See https://greatdori.com/LICENSE.txt for license information
+// See https://greatdori.com/CONTRIBUTORS.txt for the list of Greatdori! project authors
+//
+//===----------------------------------------------------------------------===//
+
+import Foundation
+internal import os
+
+private let placeholderURL = URL(string: "placeholder://nil")!
+
+#if canImport(SekaiAssetShims)
+
+extension URL {
+    /// Configures a resource URL to match the provided offline asset behavior.
+    ///
+    /// - Parameter behavior: The offline asset behavior for URL,
+    ///       see ``OfflineAssetBehavior`` for more details.
+    /// - Returns: A URL that matches provided offline asset behavior.
+    ///
+    /// This function let the URL match the `behavior`.
+    /// You use this function to allow downloaded local assets work with SekaiKit.
+    ///
+    /// - Note:
+    ///     This function has no effect if the URL doesn't refer to a resource.
+    ///
+    /// - IMPORTANT:
+    ///     If the behavior is ``OfflineAssetBehavior/enabled``
+    ///     but local asset referred from the URL doesn't exist,
+    ///     this function returns a placeholder URL and logs the event.
+    ///     Use ``OfflineAssetBehavior/enableIfAvailable`` to make it flexible.
+    public func withOfflineAsset(_ behavior: OfflineAssetBehavior = .enableIfAvailable) -> URL {
+        SekaiKit.withOfflineAsset(behavior) {
+            self.respectOfflineAssetContext()
+        }
+    }
+}
+
+#endif
+
+extension URL {
+    @usableFromInline
+    internal func respectOfflineAssetContext() -> URL {
+        #if canImport(SekaiAssetShims)
+        func checkedOutFileURL(base path: String, in locale: SekaiAPI.Locale, of type: SekaiOfflineAsset.ResourceType) -> URL? {
+            if let hash = try? SekaiOfflineAsset.shared.fileHash(forPath: path, in: locale, of: type) {
+                var sourceExtension = path.split(separator: ".").last ?? ""
+                if sourceExtension.contains("/") {
+                    // Invalid
+                    sourceExtension = ""
+                } else if !sourceExtension.isEmpty {
+                    sourceExtension = "." + sourceExtension
+                }
+                let fileURL = URL(filePath: NSHomeDirectory() + "/tmp/TemporaryOfflineAssetCheckouts/\(hash)\(sourceExtension)")
+                if FileManager.default.fileExists(atPath: fileURL.path(percentEncoded: false)) {
+                    // Since a hash of blob is unique, we can elide writing
+                    // if previous checked out file exists.
+                    return fileURL
+                }
+                let fileParentDirectoryURL = fileURL.deletingLastPathComponent()
+                do {
+                    if _slowPath(!FileManager.default.fileExists(atPath: fileParentDirectoryURL.path(percentEncoded: false))) {
+                        try FileManager.default.createDirectory(at: fileParentDirectoryURL, withIntermediateDirectories: true)
+                    }
+                    try SekaiOfflineAsset.shared.writeFile(atPath: path, in: locale, of: type, toPath: fileURL.path(percentEncoded: false))
+                    return fileURL
+                } catch {
+                    logger.fault("Failed to write temporary file for local asset; please submit a bug report (https://github.com/WindowsMEMZ/Greatdori/issues/new) [\(error.localizedDescription)]")
+                }
+            }
+            return nil
+        }
+        
+        let behavior = SekaiOfflineAsset.localBehavior
+        if behavior == .disabled { return self }
+        
+        let path = self.absoluteString
+        guard path.hasPrefix("https://bestdori.com/") else { return self }
+        let basePath = String(path.dropFirst("https://bestdori.com/".count))
+        
+        if basePath.hasPrefix("api") {
+            if let url = checkedOutFileURL(base: basePath, in: .jp, of: .main) {
+                return url
+            } else if behavior == .enabled {
+                logger.fault("Offline asset context requires using local asset URL, but requested asset is not exist in local, returning a placeholder URL")
+                return placeholderURL
+            }
+        }
+        if basePath.hasPrefix("assets") {
+            // assets/[locale]/[recognizer]/...
+            // we use [recognizer] to determine the resource type.
+            let separatedPath = basePath.split(separator: "/")
+            guard separatedPath.count > 3 else { return self } // To prevent out of index
+            guard let locale = SekaiAPI.Locale(rawValue: String(separatedPath[1])) else { return self }
+            let resourceType = SekaiOfflineAsset.ResourceType(rawValue: analyzePathBranch(separatedPath.dropFirst().dropFirst().joined(separator: "/")))!
+            let localPath = separatedPath.dropFirst().joined(separator: "/") // removes 'assets/'
+            if let url = checkedOutFileURL(base: localPath, in: locale, of: resourceType) {
+                return url
+            } else if behavior == .enabled {
+                logger.fault("Offline asset context requires using local asset URL, but requested asset is not exist in local, returning a placeholder URL")
+                return placeholderURL
+            }
+        }
+        #endif
+        
+        return self
+    }
+}
+
+#if canImport(SekaiAssetShims)
+
+func analyzePathBranch(_ path: String) -> String {
+    let unavailablePaths = [
+        "characters/ingameresourceset",
+        "live2d",
+        "musicscore",
+        "pickupsituation",
+        "star3d",
+        "additional_music",
+        "ani_degree_aniver_8.5th_rip",
+        "animationbg",
+        "appeal",
+        "bili",
+        "bilispend_rip",
+        "birthday",
+        "birthdayintroduction",
+        "birthdayintroduction2021_rip",
+        "changedstamp",
+        "character_name_rip",
+        "character_profile_data_rip",
+        "characterprofile",
+        "commenthomebanner_rip",
+        "effect",
+        "eventcommon_rip",
+        "friendinvite",
+        "genericanimation",
+        "graphicalinfo",
+        "growthfund_mission",
+        "homebanner_rip",
+        "limitedmission",
+        "limitedpage",
+        "loading",
+        "map",
+        "memorial",
+        "multiplay",
+        "newsituationintroduction_rip",
+        "newyearcard",
+        "newyearholidays",
+        "popipa_10th_rip",
+        "speciallottery",
+        "specialtraining",
+        "starshop",
+        "thumb/billinggoods",
+        "thumb/characterrank_exp_rip",
+        "thumb/costume3ddress",
+        "thumb/costume3dhairstyle",
+        "thumb/limiteditem_rip",
+        "thumb/selfintroductionepisode_rip",
+        "thumbnail",
+        "title",
+        "tutorial_rip",
+        "worldmap_rip",
+        "april",
+        "button_",
+        "bili_bottun",
+    ]
+    let sharedPaths = [
+        "FIXME: SHARED PATH"
+    ]
+    
+    if pathMatchesPrefix(path, prefixs: unavailablePaths) {
+        return "unsupported"
+    } else if pathMatchesPrefix(path, prefixs: sharedPaths) {
+        return "shared"
+    } else if path.hasPrefix("movie") {
+        return "movie"
+    } else if path.hasPrefix("sound") {
+        return "sound"
+    } else {
+        return "basic"
+    }
+    
+    func pathMatchesPrefix(_ path: String, prefixs: [String]) -> Bool {
+        for unavailablePath in prefixs {
+            if path.hasPrefix(unavailablePath) {
+                return true
+            }
+        }
+        return false
+    }
+}
+
+
+#endif

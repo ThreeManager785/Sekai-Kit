@@ -12,7 +12,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-import DoriKit
+import SekaiKit
 import Foundation
 
 
@@ -20,18 +20,18 @@ import Foundation
 ////    FileManager.default.
 //}
 
-func getRecentAssetPatchNotes(lastID: Int) async -> [DoriFrontend.News.ListItem]? {
-    let allNews = await DoriFrontend.News.list(filter: .patchNote)
+func getRecentAssetPatchNotes(lastID: Int) async -> [SekaiFrontend.News.ListItem]? {
+    let allNews = await SekaiFrontend.News.list(filter: .patchNote)
     guard allNews != nil else { return nil }
     let assetPatchNotes = allNews!.filter { $0.tags.contains("Asset") }.sorted(by: { $0.relatedID > $1.relatedID })
     return Array(assetPatchNotes.prefix(while: { $0.relatedID > lastID }))
     // If last time's lastest news is #3417, then next time #3417 should not be checked. So use > not >=.
 }
 
-func getDatasInAseetPatchNotes(from patchNoteContents: [DoriAPI.News.Item.Content]) -> [String] {
+func getDatasInAseetPatchNotes(from patchNoteContents: [SekaiAPI.News.Item.Content]) -> [String] {
     var result: [String] = []
     
-    func traverseSection(_ section: DoriAPI.News.Item.Content.ContentDataSection) {
+    func traverseSection(_ section: SekaiAPI.News.Item.Content.ContentDataSection) {
         switch section {
         case .link(_, let data, _):
             result.append(data)
@@ -46,7 +46,7 @@ func getDatasInAseetPatchNotes(from patchNoteContents: [DoriAPI.News.Item.Conten
         }
     }
     
-    func traverseContent(_ content: DoriAPI.News.Item.Content) {
+    func traverseContent(_ content: SekaiAPI.News.Item.Content) {
         switch content {
         case .content(let sections):
             for section in sections {
@@ -64,18 +64,18 @@ func getDatasInAseetPatchNotes(from patchNoteContents: [DoriAPI.News.Item.Conten
     return result
 }
 
-func searchForAssetUpdate(lastID: Int) async -> [DoriLocale: Set<String>]? {
+func searchForAssetUpdate(lastID: Int) async -> [SekaiLocale: Set<String>]? {
     print("[$][Search] Searching starts with lastID #\(lastID).")
     let recentNotes = await getRecentAssetPatchNotes(lastID: lastID)
     if let recentNotes {
-        var result: [DoriLocale: Set<String>] = [:]
+        var result: [SekaiLocale: Set<String>] = [:]
         
         if recentNotes.count == 0 {
             print("[$][Search] No recent asset patch found with LastID #\(lastID).")
         }
         
         for note in recentNotes {
-            let completePassage = await DoriAPI.News.Item(id: note.relatedID)
+            let completePassage = await SekaiAPI.News.Item(id: note.relatedID)
             if let completePassage {
                 let datas = getDatasInAseetPatchNotes(from: completePassage.content)
                 if let passageLocale = completePassage.locale {
@@ -91,7 +91,7 @@ func searchForAssetUpdate(lastID: Int) async -> [DoriLocale: Set<String>]? {
             }
         }
         print("[$][Search] Search completed.")
-        for locale in DoriLocale.allCases {
+        for locale in SekaiLocale.allCases {
             if result[locale] != nil {
                 print("[$][Search] \(locale.rawValue.uppercased()) has \(result[locale]!.count) items waiting for update.")
             }

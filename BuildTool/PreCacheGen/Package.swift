@@ -14,7 +14,7 @@ let package = Package(
         .executableTarget(
             name: "PreCacheGen",
             dependencies: [
-                .product(name: "DoriKit", package: "Greatdori")
+                .product(name: "SekaiKit", package: "Greatdori")
             ]
         )
     ]

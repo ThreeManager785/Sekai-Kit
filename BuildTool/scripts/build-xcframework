@@ -25,34 +25,34 @@ mkdir build >/dev/null 2>&1
 set -euo pipefail
 
 BUILD_MACOS_START=$(date +%s%N)
-xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "platform=macOS" build
+xcodebuild -project SekaiKit.xcodeproj -scheme SekaiKit -configuration Release -derivedDataPath ./build -destination "platform=macOS" build
 
 BUILD_MAC_CATALYST_START=$(date +%s%N)
-xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "platform=macOS,variant=Mac Catalyst" build
+xcodebuild -project SekaiKit.xcodeproj -scheme SekaiKit -configuration Release -derivedDataPath ./build -destination "platform=macOS,variant=Mac Catalyst" build
 
 BUILD_IOS_SIMULATOR_START=$(date +%s%N)
-xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS Simulator" build
+xcodebuild -project SekaiKit.xcodeproj -scheme SekaiKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS Simulator" build
 
 BUILD_IOS_START=$(date +%s%N)
-xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS" build
+xcodebuild -project SekaiKit.xcodeproj -scheme SekaiKit -configuration Release -derivedDataPath ./build -destination "generic/platform=iOS" build
 
 BUILD_WATCH_SIMULATOR_START=$(date +%s%N)
-xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS Simulator" build
+xcodebuild -project SekaiKit.xcodeproj -scheme SekaiKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS Simulator" build
 
 BUILD_WATCHOS_START=$(date +%s%N)
-xcodebuild -project DoriKit.xcodeproj -scheme DoriKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS" build
+xcodebuild -project SekaiKit.xcodeproj -scheme SekaiKit -configuration Release -derivedDataPath ./build -destination "generic/platform=watchOS" build
 
 BUILD_END=$(date +%s%N)
 
 # Generate XCFramework
 xcodebuild -create-xcframework \
-    -framework "$SRCROOT/build/Build/Products/Release/DoriKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release/DoriKit.framework.dSYM" \
-    -framework "$SRCROOT/build/Build/Products/Release-maccatalyst/DoriKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-maccatalyst/DoriKit.framework.dSYM" \
-    -framework "$SRCROOT/build/Build/Products/Release-iphoneos/DoriKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-iphoneos/DoriKit.framework.dSYM" \
-    -framework "$SRCROOT/build/Build/Products/Release-iphonesimulator/DoriKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-iphonesimulator/DoriKit.framework.dSYM" \
-    -framework "$SRCROOT/build/Build/Products/Release-watchos/DoriKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-watchos/DoriKit.framework.dSYM" \
-    -framework "$SRCROOT/build/Build/Products/Release-watchsimulator/DoriKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-watchsimulator/DoriKit.framework.dSYM" \
-    -output "$SRCROOT/build/DoriKit.xcframework"
+    -framework "$SRCROOT/build/Build/Products/Release/SekaiKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release/SekaiKit.framework.dSYM" \
+    -framework "$SRCROOT/build/Build/Products/Release-maccatalyst/SekaiKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-maccatalyst/SekaiKit.framework.dSYM" \
+    -framework "$SRCROOT/build/Build/Products/Release-iphoneos/SekaiKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-iphoneos/SekaiKit.framework.dSYM" \
+    -framework "$SRCROOT/build/Build/Products/Release-iphonesimulator/SekaiKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-iphonesimulator/SekaiKit.framework.dSYM" \
+    -framework "$SRCROOT/build/Build/Products/Release-watchos/SekaiKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-watchos/SekaiKit.framework.dSYM" \
+    -framework "$SRCROOT/build/Build/Products/Release-watchsimulator/SekaiKit.framework" -debug-symbols "$SRCROOT/build/Build/Products/Release-watchsimulator/SekaiKit.framework.dSYM" \
+    -output "$SRCROOT/build/SekaiKit.xcframework"
 
 BUILD_MACOS_DURATION=$(awk "BEGIN {printf \"%.2f\", $((BUILD_MAC_CATALYST_START - BUILD_MACOS_START))/1000000000}")
 BUILD_MAC_CATALYST_DURATION=$(awk "BEGIN {printf \"%.2f\", $((BUILD_IOS_SIMULATOR_START - BUILD_MAC_CATALYST_START))/1000000000}")
@@ -81,10 +81,10 @@ echo -e "\n"
 echo "--- Build Analyzer ---"
 echo "Build Phase: Build Duration (sec)"
 echo "================================="
-echo "DoriKit for macOS: $BUILD_MACOS_DURATION"
-echo "DoriKit for Mac Catalyst: $BUILD_MAC_CATALYST_DURATION"
-echo "DoriKit for iOS Simulator: $BUILD_IOS_SIMULATOR_DURATION"
-echo "DoriKit for iOS: $BUILD_IOS_DURATION"
-echo "DoriKit for watchOS Simulator: $BUILD_WATCH_SIMULATOR_DURATION"
-echo "DoriKit for watchOS: $BUILD_WATCHOS_DURATION"
+echo "SekaiKit for macOS: $BUILD_MACOS_DURATION"
+echo "SekaiKit for Mac Catalyst: $BUILD_MAC_CATALYST_DURATION"
+echo "SekaiKit for iOS Simulator: $BUILD_IOS_SIMULATOR_DURATION"
+echo "SekaiKit for iOS: $BUILD_IOS_DURATION"
+echo "SekaiKit for watchOS Simulator: $BUILD_WATCH_SIMULATOR_DURATION"
+echo "SekaiKit for watchOS: $BUILD_WATCHOS_DURATION"
 echo "Total duration: $TOTAL_DURATION seconds ($(format_time "$TOTAL_DURATION"))"

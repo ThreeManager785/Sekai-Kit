@@ -1,0 +1,112 @@
+//===---*- Greatdori! -*---------------------------------------------------===//
+//
+// MiracleTicket.swift
+//
+// This source file is part of the Greatdori! open source project
+//
+// Copyright (c) 2025 the Greatdori! project authors
+// Licensed under Apache License v2.0
+//
+// See https://greatdori.com/LICENSE.txt for license information
+// See https://greatdori.com/CONTRIBUTORS.txt for the list of Greatdori! project authors
+//
+//===----------------------------------------------------------------------===//
+
+import Foundation
+internal import SwiftyJSON
+
+extension SekaiAPI {
+    /// Request and fetch data about miracle tickets in Bandori.
+    ///
+    /// *Miracle Tickets* can be used to exchange one card of your choice in GBP.
+    ///
+    /// You can only get all miracle tickets in one request,
+    /// to find a miracle ticket with a specific ID, use `Array.first(where:)`
+    /// to find the miracle ticket by ID.
+    ///
+    /// ![A miracle ticket](MiracleTicketExampleImage)
+    public enum MiracleTickets {
+        public static func all() async -> [MiracleTicket]? {
+            // Response example:
+            // {
+            //     "1": {
+            //         "name": [
+            //             "★3ミラクルチケット交換所",
+            //             "★3 Exchange Ticket",
+            //             "★3奇蹟兌換券交換所",
+            //             "★3奇迹招募券交换所",
+            //             "★3 미라클 티켓 교환소"
+            //         ],
+            //         "ids": [
+            //             [
+            //                 3,
+            //                 ...
+            //             ],
+            //             ...
+            //         ],
+            //         "exchangeStartAt": [
+            //             null,
+            //             ...
+            //         ],
+            //         "exchangeEndAt": [
+            //             null,
+            //             ...
+            //         ]
+            //     },
+            //     ...
+            // }
+            let request = await requestJSON("https://bestdori.com/api/miracleTicketExchanges/all.5.json")
+            if case let .success(respJSON) = request {
+                let task = Task.detached(priority: .userInitiated) {
+                    var result = [MiracleTicket]()
+                    for (key, value) in respJSON {
+                        result.append(.init(
+                            id: Int(key) ?? 0,
+                            name: .init(
+                                jp: value["name"][0].string,
+                                en: value["name"][1].string,
+                                tw: value["name"][2].string,
+                                cn: value["name"][3].string,
+                                kr: value["name"][4].string
+                            ),
+                            ids: .init(
+                                jp: value["ids"][0][0].int != nil ? value["ids"][0].map { $0.1.intValue } : nil,
+                                en: value["ids"][1][0].int != nil ? value["ids"][1].map { $0.1.intValue } : nil,
+                                tw: value["ids"][2][0].int != nil ? value["ids"][2].map { $0.1.intValue } : nil,
+                                cn: value["ids"][3][0].int != nil ? value["ids"][3].map { $0.1.intValue } : nil,
+                                kr: value["ids"][4][0].int != nil ? value["ids"][4].map { $0.1.intValue } : nil
+                            ),
+                            exchangeStartAt: .init(
+                                jp: .init(apiTimeInterval: value["exchangeStartAt"][0].string),
+                                en: .init(apiTimeInterval: value["exchangeStartAt"][1].string),
+                                tw: .init(apiTimeInterval: value["exchangeStartAt"][2].string),
+                                cn: .init(apiTimeInterval: value["exchangeStartAt"][3].string),
+                                kr: .init(apiTimeInterval: value["exchangeStartAt"][4].string)
+                            ),
+                            exchangeEndAt: .init(
+                                jp: .init(apiTimeInterval: value["exchangeEndAt"][0].string),
+                                en: .init(apiTimeInterval: value["exchangeEndAt"][1].string),
+                                tw: .init(apiTimeInterval: value["exchangeEndAt"][2].string),
+                                cn: .init(apiTimeInterval: value["exchangeEndAt"][3].string),
+                                kr: .init(apiTimeInterval: value["exchangeEndAt"][4].string)
+                            )
+                        ))
+                    }
+                    return result.sorted { $0.id < $1.id }
+                }
+                return await task.value
+            }
+            return nil
+        }
+    }
+}
+
+extension SekaiAPI.MiracleTickets {
+    public struct MiracleTicket: Sendable, Identifiable, Hashable, SekaiCache.Cacheable {
+        public var id: Int
+        public var name: SekaiAPI.LocalizedData<String>
+        public var ids: SekaiAPI.LocalizedData<[Int]>
+        public var exchangeStartAt: SekaiAPI.LocalizedData<Date>
+        public var exchangeEndAt: SekaiAPI.LocalizedData<Date>
+    }
+}

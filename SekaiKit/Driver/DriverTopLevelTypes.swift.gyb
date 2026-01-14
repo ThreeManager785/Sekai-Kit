@@ -1,0 +1,371 @@
+//===---*- Greatdori! -*---------------------------------------------------===//
+//
+// DriverTopLevelTypes.swift
+//
+// This source file is part of the Greatdori! open source project
+//
+// Copyright (c) 2025 the Greatdori! project authors
+// Licensed under Apache License v2.0
+//
+// See https://greatdori.com/LICENSE.txt for license information
+// See https://greatdori.com/CONTRIBUTORS.txt for the list of Greatdori! project authors
+//
+//===----------------------------------------------------------------------===//
+
+// MARK: - API
+
+// MARK: Basic Types
+public typealias SekaiLocale = SekaiAPI.Locale
+public typealias LocalizedData = SekaiAPI.LocalizedData
+public typealias Constellation = SekaiAPI.Constellation
+public typealias Attribute = SekaiAPI.Attribute
+
+// MARK: Login Campaign
+public typealias LoginCampaign = SekaiAPI.LoginCampaigns.Campaign
+public typealias PreviewLoginCampaign = SekaiAPI.LoginCampaigns.PreviewCampaign
+
+extension LoginCampaign {
+    @inlinable
+    public static func all() async -> [PreviewLoginCampaign]? {
+        await SekaiAPI.LoginCampaigns.all()
+    }
+}
+extension PreviewLoginCampaign {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiAPI.LoginCampaigns.all()
+    }
+}
+
+// MARK: News
+public typealias NewsItem = SekaiAPI.News.Item
+public typealias PreviewNewsItem = SekaiAPI.News.PreviewItem
+public typealias RecentNewsItems = SekaiAPI.News.RecentItems
+
+extension NewsItem {
+    @inlinable
+    public static func all() async -> [PreviewNewsItem]? {
+        await SekaiAPI.News.all()
+    }
+}
+extension PreviewNewsItem {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiAPI.News.all()
+    }
+}
+extension RecentNewsItems {
+    @inlinable
+    public static func all() async -> Self? {
+        await SekaiAPI.News.recent()
+    }
+}
+
+// MARK: Types with preview
+%{
+    baseNames = ["Costume", "Event", "Gacha", "Song"]
+}%
+% for baseName in baseNames:
+public typealias ${baseName} = SekaiAPI.${baseName}s.${baseName}
+public typealias Preview${baseName} = SekaiAPI.${baseName}s.Preview${baseName}
+
+extension ${baseName} {
+    @inlinable
+    public static func all() async -> [Preview${baseName}]? {
+        await SekaiFrontend.${baseName}s.list()
+    }
+}
+extension Preview${baseName} {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiFrontend.${baseName}s.list()
+    }
+}
+% end
+
+// MARK: Types without preview
+%{
+    baseNames = ["Band", "Comic", "Degree", "Skill", "MiracleTicket"]
+}%
+% for baseName in baseNames:
+public typealias ${baseName} = SekaiAPI.${baseName}s.${baseName}
+
+extension ${baseName} {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiAPI.${baseName}s.all()
+    }
+}
+% end
+
+// MARK: Band
+extension Band {
+    @inlinable
+    public static func main() async -> [Self]? {
+        await SekaiAPI.Bands.main()
+    }
+}
+
+// MARK: Card
+public typealias Card = SekaiAPI.Cards.Card
+public typealias PreviewCard = SekaiAPI.Cards.PreviewCard
+public typealias CardType = SekaiAPI.Cards.CardType
+public typealias CardEpisode = SekaiAPI.Cards.CardEpisode
+public typealias CardStat = SekaiAPI.Cards.CardStat
+public typealias CardStatValue = SekaiAPI.Cards.Stat
+
+extension Card {
+    @inlinable
+    public static func all() async -> [PreviewCard]? {
+        await SekaiAPI.Cards.all()
+    }
+    
+    @inlinable
+    public static func allWithBand() async -> [CardWithBand]? {
+        await SekaiFrontend.Cards.list()
+    }
+}
+extension PreviewCard {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiAPI.Cards.all()
+    }
+    
+    @inlinable
+    public static func allWithBand() async -> [CardWithBand]? {
+        await SekaiFrontend.Cards.list()
+    }
+}
+
+// MARK: Character
+public typealias Character = SekaiAPI.Characters.Character
+public typealias PreviewCharacter = SekaiAPI.Characters.PreviewCharacter
+public typealias BirthdayCharacter = SekaiAPI.Characters.BirthdayCharacter
+public typealias CategorizedCharacters = SekaiFrontend.Characters.CategorizedCharacters
+public typealias SeasonCostume = SekaiAPI.Characters.SeasonCostume
+
+extension Character {
+    @inlinable
+    public static func all() async -> [PreviewCharacter]? {
+        await SekaiAPI.Characters.all()
+    }
+    
+    @inlinable
+    public static func categorized() async -> CategorizedCharacters? {
+        await SekaiFrontend.Characters.categorizedCharacters()
+    }
+}
+extension PreviewCharacter {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiAPI.Characters.all()
+    }
+    
+    @inlinable
+    public static func categorized() async -> CategorizedCharacters? {
+        await SekaiFrontend.Characters.categorizedCharacters()
+    }
+}
+extension BirthdayCharacter {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiAPI.Characters.allBirthday()
+    }
+}
+
+// MARK: Post
+
+#if HAS_BINARY_RESOURCE_BUNDLES
+
+public typealias Post = SekaiAPI.Posts.Post
+public typealias PagedPosts = SekaiAPI.Posts.PagedPosts
+public typealias PostBasicData = SekaiAPI.Posts.BasicData
+
+extension Post {
+    public var basicData: PostBasicData? {
+        get async {
+            await SekaiAPI.Posts.basicData(of: self.id)
+        }
+    }
+}
+
+#endif // HAS_BINARY_RESOURCE_BUNDLES
+
+// MARK: - Frontend
+
+public typealias SekaiFilter = SekaiFrontend.Filter
+public typealias SekaiFilterable = SekaiFrontend.Filterable
+public typealias SekaiSorter = SekaiFrontend.Sorter
+public typealias SekaiSortable = SekaiFrontend.Sortable
+public typealias SekaiSearchable = SekaiFrontend.Searchable
+public typealias SekaiURLValidator = SekaiFrontend.URLValidator
+
+%{
+    baseNames = ["Card", "Character", "Costume", "Event", "Gacha", "Song"]
+}%
+% for baseName in baseNames:
+public typealias Extended${baseName} = SekaiFrontend.${baseName}s.Extended${baseName}
+% end
+
+public typealias CardWithBand = SekaiFrontend.Cards.CardWithBand
+
+extension BirthdayCharacter {
+    @inlinable
+    public static func recent() async -> [Self]? {
+        await SekaiFrontend.Characters.recentBirthdayCharacters()
+    }
+}
+
+extension CategorizedCharacters {
+    @inlinable
+    public static func all() async -> CategorizedCharacters? {
+        await SekaiFrontend.Characters.categorizedCharacters()
+    }
+}
+
+extension Event {
+    @inlinable
+    public static func localizedLatest() async -> LocalizedData<PreviewEvent>? {
+        await SekaiFrontend.Events.localizedLatestEvent()
+    }
+}
+extension PreviewEvent {
+    @inlinable
+    public static func localizedLatest() async -> LocalizedData<Self>? {
+        await SekaiFrontend.Events.localizedLatestEvent()
+    }
+}
+
+public typealias NewsListItem = SekaiFrontend.News.ListItem
+public typealias NewsListFilter = SekaiFrontend.News.ListFilter
+
+extension NewsListItem {
+    @inlinable
+    public static func all(filter: NewsListFilter? = nil) async -> [Self]? {
+        await SekaiFrontend.News.list(filter: filter)
+    }
+}
+
+public typealias ExtendedMiracleTicket = SekaiFrontend.MiracleTickets.ExtendedMiracleTicket
+
+extension ExtendedMiracleTicket {
+    @inlinable
+    public static func all() async -> [Self]? {
+        await SekaiFrontend.MiracleTickets.extendedList()
+    }
+}
+
+// MARK: - Cache
+public typealias SekaiCacheable = SekaiCache.Cacheable
+public typealias PreCache = SekaiCache.PreCache
+public typealias CachePromise = SekaiCache.Promise
+public typealias CacheTrait = SekaiCache.CacheTrait
+
+/// Get result with automatic cache.
+///
+/// - Parameters:
+///   - id: A unique identifier for cache.
+///   - trait: Trait of data being cached, see ``CacheTrait`` for more details.
+///   - invocation: A closure that returns a result that can be cached.
+/// - Returns: A ``Promise`` for result.
+///
+/// Call this function with an identifier to get a promise for result,
+/// then register an `onUpdate` closure for receiving new data:
+/// ```swift
+/// withSekaiCache(id: "CacheID") {
+///     await SekaiAPI.Character.Character(id: 39)
+/// }.onUpdate {
+///     let myFavoriteCharacter = $0
+/// }
+/// ```
+///
+/// The `onUpdate` closure registered to a promise may be called more than once
+/// (we call this *return twice*).
+///
+/// If a cache is available on disk, the promise will be update immediately,
+/// which allows you to get data faster. Then if `invocation` returns a result
+/// other than `nil`, the promise will be update again with the latest data from `invocation`.
+///
+/// If a cache is available on disk but `invocation` returns `nil`, the promise
+/// will be update only once with data from cache, and cache on disk won't be update.
+/// If cache is unavailable and `invocation` returns `nil`, the promise will be updated
+/// with `nil`.
+///
+/// The mechanism above implies the promise will be update **at least once**
+/// and may **more than once**.
+///
+/// - Note:
+///     You can use the same ID in different places if the result types aren't same.
+///     Caches with the same ID but different types will be stored separately.
+@inline(__always)
+public func withSekaiCache<Result: Sendable & SekaiCacheable>(
+    id: String,
+    trait: CacheTrait = .invocationElidable,
+    invocation: sending @escaping () async -> Result?
+) -> CachePromise<Result?> {
+    SekaiCache.withCache(id: id, trait: trait, invocation: invocation)
+}
+
+public typealias PreloadDescriptor = SekaiCache.PreloadDescriptor
+
+/// Preloads a resource for later usage.
+///
+/// - Parameter closure: A closure that returns the resource needed.
+/// - Returns: A descriptor for this preloading.
+///
+/// You can get resource in any method in this closure, and return a result.
+/// The closure provided will be performed quickly
+/// after calling this function.
+///
+/// You need to keep the reference of the returned descriptor.
+/// If it loses reference, the preloading task will be cancelled.
+///
+/// When you need the resource, use the ``PreloadDescriptor/value``
+/// variable of descriptor to get the resource.
+/// This variable gives you the resource immediately
+/// if it has already finished preloading, or it will wait
+/// until the resource becomes available.
+///
+/// ```swift
+/// let preload = preload {
+///     return await getMyResource()
+/// }
+///
+/// // Do something another...
+///
+/// doSomething(withResource: await preload.value)
+/// ```
+///
+/// When working with SekaiKit networking, you can use
+/// ``withPreloaded(_:isolation:operation:)``
+/// to provide descriptors for all requests in a closure.
+///
+/// ```swift
+/// let preloadCharacters = preload {
+///     await Character.all()
+/// }
+/// let preloadBands = preload {
+///     await Band.main()
+/// }
+///
+/// // Do something another...
+///
+/// withPreloaded(preloadCharacters, preloadBands) {
+///     // The two requests below are actually started
+///     // when you call `preload` before.
+///     let characters = await Character.all()
+///     let bands = await Band.main()
+/// }
+/// ```
+@inline(__always)
+public func preload<T: Sendable>(_ closure: sending @escaping () async -> T?) -> PreloadDescriptor<T> {
+    SekaiCache.preload(closure)
+}
+@inline(__always)
+public func withPreloaded<each T, Result>(
+    _ descriptors: repeat PreloadDescriptor<each T>?,
+    isolation: isolated (any Actor)? = #isolation,
+    operation: () async throws -> Result
+) async rethrows -> Result {
+    try await SekaiCache.withPreloaded(repeat each descriptors, isolation: isolation, operation: operation)
+}

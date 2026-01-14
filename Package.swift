@@ -5,10 +5,10 @@ import PackageDescription
 import CompilerPluginSupport
 
 let package = Package(
-    name: "DoriKit",
+    name: "SekaiKit",
     platforms: [.iOS(.v17), .macCatalyst(.v17), .macOS(.v14), .visionOS(.v1), .watchOS(.v10)],
     products: [
-        .library(name: "DoriKit", type: .dynamic, targets: ["DoriKit"])
+        .library(name: "SekaiKit", type: .dynamic, targets: ["SekaiKit"])
     ],
     dependencies: [
         .package(url: "https://github.com/Alamofire/Alamofire", from: "5.10.2"),
@@ -18,11 +18,11 @@ let package = Package(
     ],
     targets: [
         .target(
-            name: "DoriKit",
+            name: "SekaiKit",
             dependencies: [
                 "Alamofire",
                 "SwiftyJSON",
-                "DoriKitMacros",
+                "SekaiKitMacros",
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftDiagnostics", package: "swift-syntax"),
                 .product(name: "SwiftOperators", package: "swift-syntax"),
@@ -32,7 +32,7 @@ let package = Package(
                 .product(name: "SwiftIDEUtils", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxBuilder", package: "swift-syntax")
             ],
-            path: "DoriKit/",
+            path: "SekaiKit/",
             resources: [
                 .process("Localizable.xcstrings")
             ],
@@ -46,7 +46,7 @@ let package = Package(
             ]
         ),
         .macro(
-            name: "DoriKitMacros",
+            name: "SekaiKitMacros",
             dependencies: [
                 .product(name: "SwiftSyntax", package: "swift-syntax"),
                 .product(name: "SwiftSyntaxMacros", package: "swift-syntax"),
@@ -54,7 +54,7 @@ let package = Package(
                 .product(name: "SwiftCompilerPlugin", package: "swift-syntax"),
                 .product(name: "SwiftDiagnostics", package: "swift-syntax")
             ],
-            path: "DoriKitMacros/"
+            path: "SekaiKitMacros/"
         )
     ]
 )

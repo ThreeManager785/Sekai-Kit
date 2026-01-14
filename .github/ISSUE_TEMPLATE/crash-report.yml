@@ -57,7 +57,7 @@ body:
         Provide the library version, tag, or revision.
         The name and version of build tool and its holder platform.
       placeholder: |
-        DoriKit 1.0.0
+        SekaiKit 1.0.0
         $ swiftc -version
         $ xcodebuild -version
     validations:

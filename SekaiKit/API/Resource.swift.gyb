@@ -1,0 +1,763 @@
+//===---*- Greatdori! -*---------------------------------------------------===//
+//
+// Resource.swift.gyb
+//
+// This source file is part of the Greatdori! open source project
+//
+// Copyright (c) 2025 the Greatdori! project authors
+// Licensed under Apache License v2.0
+//
+// See https://greatdori.com/LICENSE.txt for license information
+// See https://greatdori.com/CONTRIBUTORS.txt for the list of Greatdori! project authors
+//
+//===----------------------------------------------------------------------===//
+
+import SwiftUI
+import Foundation
+private import Builtin
+
+@usableFromInline
+internal let _doriResourceBundle = Bundle(path: #bundle.path(forResource: "SekaiResource", ofType: "bundle")!)
+
+extension SekaiAPI.Locale {
+    @inlinable
+    public var iconImageURL: URL {
+        _doriResourceBundle?.url(forResource: self.rawValue, withExtension: "svg")
+        ?? .init(string: "https://bestdori.com/res/icon/\(self.rawValue).svg")!
+    }
+}
+
+extension SekaiAPI.Attribute {
+    @inlinable
+    public var iconImageURL: URL {
+        _doriResourceBundle?.url(forResource: self.rawValue, withExtension: "svg")
+        ?? .init(string: "https://bestdori.com/res/icon/\(self.rawValue).svg")!
+    }
+}
+
+%{
+    properties = ["PreviewEvent", "Event"]
+}%
+% for property in properties:
+extension SekaiAPI.Events.${property} {
+    @inlinable
+    public var bannerImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/event/\(self.assetBundleName)/images_rip/banner.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func bannerImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/event/\(self.assetBundleName)/images_rip/banner.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public var homeBannerImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/homebanner_rip/banner_event\(self.id).png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func homeBannerImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/homebanner_rip/banner_event\(self.id).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var logoImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/event/\(self.assetBundleName)/images_rip/logo.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func logoImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/event/\(self.assetBundleName)/images_rip/logo.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var topScreenTrimmedImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/event/\(self.assetBundleName)/topscreen_rip/trim_eventtop.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func topScreenTrimmedImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/event/\(self.assetBundleName)/topscreen_rip/trim_eventtop.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public var topScreenBackgroundImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/event/\(self.assetBundleName)/topscreen_rip/bg_eventtop.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func topScreenBackgroundImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/event/\(self.assetBundleName)/topscreen_rip/bg_eventtop.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+% end
+extension SekaiAPI.Events.Event {
+    @inlinable
+    public var bgmURL: URL {
+        if self.bgmFileName.hasPrefix("bgm") && self.bgmFileName.hasSuffix("_chorus") {
+            let i = Double(String(Array(self.bgmFileName)[3...self.bgmFileName.count - 10]))!
+            return .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/musicscore/musicscore\(ceil(i / 10) * 10)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/\(self.bgmAssetBundleName)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func bgmURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            if self.bgmFileName.hasPrefix("bgm") && self.bgmFileName.hasSuffix("_chorus") {
+                let i = Double(String(Array(self.bgmFileName)[3...self.bgmFileName.count - 10]))!
+                return .init(string: "https://bestdori.com/assets/\(locale)/musicscore/musicscore\(ceil(i / 10) * 10)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+            }
+            return .init(string: "https://bestdori.com/assets/\(locale)/\(self.bgmAssetBundleName)_rip/\(self.bgmFileName).mp3")!.respectOfflineAssetContext()
+        } else {
+            return nil
+        }
+    }
+}
+extension SekaiAPI.Events.EventCharacter {
+    @inlinable
+    public var iconImageURL: URL {
+        _doriResourceBundle?.url(forResource: "chara_icon_\(self.characterID)", withExtension: "png")
+        ?? .init(string: "https://bestdori.com/res/icon/chara_icon_\(self.characterID).png")!
+    }
+}
+extension SekaiAPI.Events.Event.FestivalTeam {
+    % for property in properties:
+    @inlinable
+    public func iconImageURL(with event: ${property}) -> URL {
+        .init(string: "https://bestdori.com/assets/jp/event/\(event.assetBundleName)/images_rip/\(self.iconFileName).png")!.respectOfflineAssetContext()
+    }
+    % end
+}
+
+extension SekaiAPI.Bands.Band {
+    @inlinable
+    public var logoImageURL: URL {
+        var id = String(self.id)
+        while id.count < 3 {
+            id = "0" + id
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.bandName.availableLocale()!.rawValue)/band/logo/\(id)_rip/logoL.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func logoImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        var id = String(self.id)
+        while id.count < 3 {
+            id = "0" + id
+        }
+        return if let locale = _resLocale(locale, by: self.bandName, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/band/logo/\(id)_rip/logoL.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var iconImageURL: URL {
+        _doriResourceBundle?.url(forResource: "band_\(self.id)", withExtension: "svg")
+        ?? .init(string: "https://bestdori.com/res/icon/band_\(self.id).svg")!
+    }
+}
+
+%{
+    properties = ["PreviewCharacter", "BirthdayCharacter", "Character"]
+}%
+% for property in properties:
+extension SekaiAPI.Characters.${property} {
+    @inlinable
+    public var keyVisualImageURL: URL {
+        var id = String(self.id)
+        while id.count < 3 {
+            id = "0" + id
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.characterName.availableLocale()!.rawValue)/ui/character_kv_image/\(id)_rip/image.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func keyVisualImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        var id = String(self.id)
+        while id.count < 3 {
+            id = "0" + id
+        }
+        return if let locale = _resLocale(locale, by: self.characterName, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/ui/character_kv_image/\(id)_rip/image.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var iconImageURL: URL {
+        _doriResourceBundle?.url(forResource: "chara_icon_\(self.id)", withExtension: "png")
+        ?? .init(string: "https://bestdori.com/res/icon/chara_icon_\(self.id).png")!
+    }
+}
+% end
+
+%{
+    properties = ["PreviewCard", "Card"]
+}%
+% for property in properties:
+extension SekaiAPI.Cards.${property} {
+    @inlinable
+    public var coverNormalImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/characters/resourceset/\(self.resourceSetName)_rip/card_normal.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public var coverAfterTrainingImageURL: URL? {
+        if self.rarity >= 3 {
+            .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/characters/resourceset/\(self.resourceSetName)_rip/card_after_training.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func coverNormalImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/characters/resourceset/\(self.resourceSetName)_rip/card_normal.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func coverAfterTrainingImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if self.rarity >= 3,
+           let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/characters/resourceset/\(self.resourceSetName)_rip/card_after_training.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var trimmedNormalImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/characters/resourceset/\(self.resourceSetName)_rip/trim_normal.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public var trimmedAfterTrainingImageURL: URL? {
+        if self.rarity >= 3 {
+            .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/characters/resourceset/\(self.resourceSetName)_rip/trim_after_training.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func trimmedNormalImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/characters/resourceset/\(self.resourceSetName)_rip/trim_normal.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func trimmedAfterTrainingImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if self.rarity >= 3,
+           let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/characters/resourceset/\(self.resourceSetName)_rip/trim_after_training.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var thumbNormalImageURL: URL {
+        var ripID = String(Int(Double(self.id) / 50))
+        while ripID.count < 5 {
+            ripID = "0" + ripID
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/thumb/chara/card\(ripID)_rip/\(self.resourceSetName)_normal.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public var thumbAfterTrainingImageURL: URL? {
+        if self.rarity >= 3 {
+            var ripID = String(Int(Double(self.id) / 50))
+            while ripID.count < 5 {
+                ripID = "0" + ripID
+            }
+            return .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/thumb/chara/card\(ripID)_rip/\(self.resourceSetName)_after_training.png")!.respectOfflineAssetContext()
+        } else {
+            return nil
+        }
+    }
+    @inlinable
+    public func thumbNormalImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        var ripID = String(Int(Double(self.id) / 50))
+        while ripID.count < 5 {
+            ripID = "0" + ripID
+        }
+        return if let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/thumb/chara/card\(ripID)_rip/\(self.resourceSetName)_normal.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func thumbAfterTrainingImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if self.rarity >= 3 {
+            var ripID = String(Int(Double(self.id) / 50))
+            while ripID.count < 5 {
+                ripID = "0" + ripID
+            }
+            return if let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+                .init(string: "https://bestdori.com/assets/\(locale)/thumb/chara/card\(ripID)_rip/\(self.resourceSetName)_after_training.png")!.respectOfflineAssetContext()
+            } else {
+                nil
+            }
+        } else {
+            return nil
+        }
+    }
+    
+    @inlinable
+    public var gachaVoiceURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/sound/voice/gacha/limitedspin_rip/\(self.resourceSetName).mp3")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func gachaVoiceURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/sound/voice/gacha/limitedspin_rip/\(self.resourceSetName).mp3")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+% end
+extension SekaiAPI.Cards.Card {
+    @inlinable
+    public var sdImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/characters/livesd/\(self.sdResourceName)_rip/sdchara.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func sdImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/characters/livesd/\(self.sdResourceName)_rip/sdchara.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var animationVideoURL: URL? {
+        if let bundleName = self.animation?.assetBundleName {
+            .init(string: "https://bestdori.com/assets/\(self.releasedAt.availableLocale()!.rawValue)/movie/animation_episode/\(bundleName)_rip/\(bundleName).mp4")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func animationVideoURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let bundleName = self.animation?.assetBundleName,
+           let locale = _resLocale(locale, by: self.releasedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/movie/animation_episode/\(bundleName)_rip/\(bundleName).mp4")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+
+extension SekaiAPI.Comics.Comic {
+    public var imageURL: URL? {
+        switch self.type {
+        case .singleFrame:
+            .init(string: "https://bestdori.com/assets/\(self.title.availableLocale()!.rawValue)/comic/comic_singleframe/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+        case .fourFrame:
+            .init(string: "https://bestdori.com/assets/\(self.title.availableLocale()!.rawValue)/comic/comic_fourframe/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+        case .none:
+            nil
+        }
+    }
+    public func imageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.title, allowsFallback: allowsFallback) {
+            switch self.type {
+            case .singleFrame:
+                .init(string: "https://bestdori.com/assets/\(locale)/comic/comic_singleframe/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+            case .fourFrame:
+                .init(string: "https://bestdori.com/assets/\(locale)/comic/comic_fourframe/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+            case .none:
+                nil
+            }
+        } else {
+            nil
+        }
+    }
+    
+    public var thumbImageURL: URL? {
+        switch self.type {
+        case .singleFrame:
+            .init(string: "https://bestdori.com/assets/\(self.title.availableLocale()!.rawValue)/comic/comic_singleframe_thumbnail/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+        case .fourFrame:
+            .init(string: "https://bestdori.com/assets/\(self.title.availableLocale()!.rawValue)/comic/comic_fourframe_thumbnail/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+        case .none:
+            nil
+        }
+    }
+    public func thumbImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.title, allowsFallback: allowsFallback) {
+            switch self.type {
+            case .singleFrame:
+                .init(string: "https://bestdori.com/assets/\(locale)/comic/comic_singleframe_thumbnail/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+            case .fourFrame:
+                .init(string: "https://bestdori.com/assets/\(locale)/comic/comic_fourframe_thumbnail/\(self.assetBundleName)_rip/\(self.assetBundleName).png")?.respectOfflineAssetContext()
+            case .none:
+                nil
+            }
+        } else {
+            nil
+        }
+    }
+}
+
+%{
+    properties = ["PreviewCostume", "Costume"]
+}%
+% for property in properties:
+extension SekaiAPI.Costumes.${property} {
+    @inlinable
+    public var thumbImageURL: URL {
+        let groupID = String(Int(Double(self.id) / 50))
+        return .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale()!.rawValue)/thumb/costume/group\(groupID)_rip/\(self.assetBundleName).png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func thumbImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        let groupID = String(Int(Double(self.id) / 50))
+        return if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/thumb/costume/group\(groupID)_rip/\(self.assetBundleName).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var live2dResourceFileURL: URL {
+        .init(string: "https://bestdori.com/assets/jp/live2d/chara/\(self.assetBundleName)_rip/buildData.asset")!.respectOfflineAssetContext()
+    }
+}
+% end
+extension SekaiAPI.Characters.SeasonCostume {
+    @inlinable
+    public var live2dResourceFileURL: URL {
+        .init(string: "https://bestdori.com/assets/jp/live2d/chara/\(self.live2dAssetBundleName)_rip/buildData.asset")!.respectOfflineAssetContext()
+    }
+}
+
+extension SekaiAPI.Degrees.Degree {
+    @inlinable
+    public var baseImageURL: URL {
+        let locale = self.degreeName.availableLocale()!
+        return .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/degree_rip/\(self.baseImageName.forLocale(locale)!).png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func baseImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.degreeName, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/thumb/degree_rip/\(self.baseImageName.forLocale(.init(rawValue: locale)!)!).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var rankImageURL: URL? {
+        if let locale = self.rank.availableLocale(),
+           let rank = self.rank.forLocale(locale),
+           let type = self.degreeType.forLocale(locale) {
+            .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/degree_rip/\(type.rawValue)_\(rank).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func rankImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.rank, allowsFallback: allowsFallback) {
+            if let rank = self.rank.forLocale(.init(rawValue: locale)!),
+               let type = self.degreeType.forLocale(.init(rawValue: locale)!) {
+                .init(string: "https://bestdori.com/assets/\(locale)/thumb/degree_rip/\(type.rawValue)_\(rank).png")!.respectOfflineAssetContext()
+            } else {
+                nil
+            }
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var iconImageURL: URL? {
+        if let locale = self.iconImageName.availableLocale(),
+           let rank = self.rank.forLocale(locale),
+           let iconImageName = self.iconImageName.forLocale(locale) {
+            .init(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/degree_rip/\(iconImageName)_\(rank).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    @inlinable
+    public func iconImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.iconImageName, allowsFallback: allowsFallback) {
+            if let rank = self.rank.forLocale(.init(rawValue: locale)!),
+               let iconImageName = self.iconImageName.forLocale(.init(rawValue: locale)!) {
+                .init(string: "https://bestdori.com/assets/\(locale)/thumb/degree_rip/\(iconImageName)_\(rank).png")!.respectOfflineAssetContext()
+            } else {
+                nil
+            }
+        } else {
+            nil
+        }
+    }
+}
+
+%{
+    properties = ["PreviewGacha", "Gacha"]
+}%
+% for property in properties:
+extension SekaiAPI.Gachas.${property} {
+    @inlinable
+    public var bannerImageURL: URL {
+        if !bannerAssetBundleName.isEmpty {
+            .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale(prefer: .jp)!.rawValue)/homebanner_rip/\(self.bannerAssetBundleName).png")!.respectOfflineAssetContext()
+        } else {
+            .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale(prefer: .jp)!.rawValue)/gacha/screen/\(self.resourceName)_rip/logo.png")!.respectOfflineAssetContext()
+        }
+    }
+    @inlinable
+    public func bannerImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
+            if !bannerAssetBundleName.isEmpty {
+                .init(string: "https://bestdori.com/assets/\(locale)/homebanner_rip/\(self.bannerAssetBundleName).png")!.respectOfflineAssetContext()
+            } else {
+                .init(string: "https://bestdori.com/assets/\(locale)/gacha/screen/\(self.resourceName)_rip/logo.png")!.respectOfflineAssetContext()
+            }
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var logoImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale(prefer: .jp)!.rawValue)/gacha/screen/\(self.resourceName)_rip/logo.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func logoImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/gacha/screen/\(self.resourceName)_rip/logo.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var pickupImageURLs: [URL] {
+        [
+            .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale(prefer: .jp)!.rawValue)/gacha/screen/\(self.resourceName)_rip/pickup.png")!.respectOfflineAssetContext(),
+            .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale(prefer: .jp)!.rawValue)/gacha/screen/\(self.resourceName)_rip/pickup1.png")!.respectOfflineAssetContext(),
+            .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale(prefer: .jp)!.rawValue)/gacha/screen/\(self.resourceName)_rip/pickup2.png")!.respectOfflineAssetContext()
+        ]
+    }
+    @inlinable
+    public func pickupImageURLs(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> [URL]? {
+        if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
+            [
+                .init(string: "https://bestdori.com/assets/\(locale)/gacha/screen/\(self.resourceName)_rip/pickup.png")!.respectOfflineAssetContext(),
+                .init(string: "https://bestdori.com/assets/\(locale)/gacha/screen/\(self.resourceName)_rip/pickup1.png")!.respectOfflineAssetContext(),
+                .init(string: "https://bestdori.com/assets/\(locale)/gacha/screen/\(self.resourceName)_rip/pickup2.png")!.respectOfflineAssetContext()
+            ]
+        } else {
+            nil
+        }
+    }
+}
+% end
+extension SekaiAPI.Gachas.Gacha.PaymentMethod.Method {
+    public var iconImageURL: URL? {
+        switch self {
+        case .free: nil
+        case .paidStar, .freeStar: URL(string: "https://bestdori.com/assets/\(SekaiAPI.preferredLocale.rawValue)/thumb/common_rip/star.png")?.respectOfflineAssetContext()
+        case .normalTicket: URL(string: "https://bestdori.com/assets/\(SekaiAPI.preferredLocale.rawValue)/thumb/common_rip/gachaTicket1.png")?.respectOfflineAssetContext()
+        case .overThe3StarTicket: URL(string: "https://bestdori.com/assets/\(SekaiAPI.preferredLocale.rawValue)/thumb/common_rip/gachaTicket2.png")?.respectOfflineAssetContext()
+        case .overThe4StarTicket: URL(string: "https://bestdori.com/assets/\(SekaiAPI.preferredLocale.rawValue)/thumb/common_rip/gachaTicket5.png")?.respectOfflineAssetContext()
+        case .fixed5StarTicket: URL(string: "https://bestdori.com/assets/\(SekaiAPI.preferredLocale.rawValue)/thumb/common_rip/gachaTicket4.png")?.respectOfflineAssetContext()
+        @unknown default:
+            Builtin.unreachable()
+        }
+    }
+    public func iconImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        switch self {
+        case .free: nil
+        case .paidStar, .freeStar: URL(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/star.png")?.respectOfflineAssetContext()
+        case .normalTicket: URL(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/gachaTicket1.png")?.respectOfflineAssetContext()
+        case .overThe3StarTicket: URL(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/gachaTicket2.png")?.respectOfflineAssetContext()
+        case .overThe4StarTicket: URL(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/gachaTicket5.png")?.respectOfflineAssetContext()
+        case .fixed5StarTicket: URL(string: "https://bestdori.com/assets/\(locale.rawValue)/thumb/common_rip/gachaTicket4.png")?.respectOfflineAssetContext()
+        @unknown default:
+            Builtin.unreachable()
+        }
+    }
+}
+
+%{
+    properties = ["PreviewCampaign", "Campaign"]
+}%
+% for property in properties:
+extension SekaiAPI.LoginCampaigns.${property} {
+    @inlinable
+    public var backgroundImageURL: URL {
+        let locale = self.assetBundleName.availableLocale()!
+        return .init(string: "https://bestdori.com/assets/\(locale.rawValue)/event/loginbonus/\(self.assetBundleName.forLocale(locale)!)_rip/background.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func backgroundImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.assetBundleName, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/event/loginbonus/\(self.assetBundleName.forLocale(.init(rawValue: locale)!)!)_rip/background.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+% end
+
+extension SekaiAPI.Misc.Area {
+    @inlinable
+    public var iconImageURL: URL {
+        let locale = self.areaName.availableLocale()!
+        return .init(string: "https://bestdori.com/assets/\(locale.rawValue)/worldmap_rip/area_icon\(unsafe String(format: "%03d", self.id)).png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func iconImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.areaName, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/worldmap_rip/area_icon\(unsafe String(format: "%03d", self.id)).png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+
+extension SekaiAPI.Songs.DifficultyType {
+    @inlinable
+    public var color: Color {
+        switch self {
+        case .easy: .init(red: 142 / 255, green: 180 / 255, blue: 253 / 255)
+        case .normal: .init(red: 166 / 255, green: 246 / 255, blue: 146 / 255)
+        case .hard: .init(red: 251 / 255, green: 223 / 255, blue: 140 / 255)
+        case .expert: .init(red: 255 / 255, green: 137 / 255, blue: 139 / 255)
+        case .special: .init(red: 143 / 255, green: 131 / 255, blue: 203 / 255)
+        }
+    }
+    
+    @inlinable
+    public var darkColor: Color {
+        switch self {
+        case .easy: .init(red: 48 / 255, green: 118 / 255, blue: 248 / 255)
+        case .normal: .init(red: 24 / 255, green: 138 / 255, blue: 40 / 255)
+        case .hard: .init(red: 209 / 255, green: 134 / 255, blue: 26 / 255)
+        case .expert: .init(red: 253 / 255, green: 42 / 255, blue: 48 / 255)
+        case .special: .init(red: 241 / 255, green: 33 / 255, blue: 153 / 255)
+        }
+    }
+}
+
+%{
+    properties = ["PreviewSong", "Song"]
+}%
+% for property in properties:
+extension SekaiAPI.Songs.${property} {
+    @available(*, deprecated, renamed: "jacketImageURLs", message: "Use 'jacketImageURLs' instead.")
+    @inlinable
+    public var jacketImageURL: URL {
+        jacketImageURLs[0]
+    }
+    @available(*, deprecated, renamed: "jacketImageURLs(in:allowsFallback:)", message: "Use 'jacketImageURLs(in:allowsFallback:)' instead.")
+    @inlinable
+    public func jacketImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        jacketImageURLs(in: locale, allowsFallback: allowsFallback)?[0]
+    }
+    
+    @inlinable
+    public var jacketImageURLs: [URL] {
+        let jacketID = Int(ceil(Double(self.id) / 10) * 10)
+        return self.jacketImage.map {
+            .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale()!.rawValue)/musicjacket/musicjacket\(jacketID)_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket\(jacketID)-\($0)-jacket.png")!.respectOfflineAssetContext()
+        }
+    }
+    @inlinable
+    public func jacketImageURLs(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> [URL]? {
+        let jacketID = Int(ceil(Double(self.id) / 10) * 10)
+        return if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
+            self.jacketImage.map {
+                .init(string: "https://bestdori.com/assets/\(locale)/musicjacket/musicjacket\(jacketID)_rip/assets-star-forassetbundle-startapp-musicjacket-musicjacket\(jacketID)-\($0)-jacket.png")!.respectOfflineAssetContext()
+            }
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public var soundURL: URL {
+        var id = String(self.id)
+        while id.count < 3 {
+            id = "0" + id
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.publishedAt.availableLocale()!.rawValue)/sound/bgm\(id)_rip/bgm\(id).mp3")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func soundURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        var id = String(self.id)
+        while id.count < 3 {
+            id = "0" + id
+        }
+        return if let locale = _resLocale(locale, by: self.publishedAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/sound/bgm\(id)_rip/bgm\(id).mp3")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+% end
+extension SekaiAPI.Songs.Song.MusicVideoMetadata {
+    @inlinable
+    public var thumbImageURL: URL {
+        .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/thumbnail/mv/\(self.thumbAssetBundleName)_rip/mvThumb.png")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func thumbImageURL(in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/thumbnail/mv/\(self.thumbAssetBundleName)_rip/mvThumb.png")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+    
+    @inlinable
+    public func videoURL(highQuality: Bool) -> URL {
+        var bundleName = self.assetBundleName
+        if highQuality {
+            bundleName += "_hq"
+        }
+        return .init(string: "https://bestdori.com/assets/\(self.startAt.availableLocale()!.rawValue)/movie/mv/\(bundleName)_rip/\(bundleName).mp4")!.respectOfflineAssetContext()
+    }
+    @inlinable
+    public func videoURL(highQuality: Bool, in locale: SekaiAPI.Locale, allowsFallback: Bool = true) -> URL? {
+        var bundleName = self.assetBundleName
+        if highQuality {
+            bundleName += "_hq"
+        }
+        return if let locale = _resLocale(locale, by: self.startAt, allowsFallback: allowsFallback) {
+            .init(string: "https://bestdori.com/assets/\(locale)/movie/mv/\(bundleName)_rip/\(bundleName).mp4")!.respectOfflineAssetContext()
+        } else {
+            nil
+        }
+    }
+}
+
+@usableFromInline
+internal func _resLocale<T>(_ l: SekaiAPI.Locale, by d: SekaiAPI.LocalizedData<T>, allowsFallback f: Bool) -> String? {
+    d.availableInLocale(l) ? l.rawValue : (f ? d.availableLocale(prefer: l)?.rawValue : nil)
+}
